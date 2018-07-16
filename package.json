@@ -1,0 +1,33 @@
+{
+  "name": "futyarn.io",
+  "version": "0.0.1",
+  "description": "room-based cat yarn soccer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grindstaffr/futyarn.io.git"
+  },
+  "keywords": [
+    "cats",
+    "soccer",
+    "web",
+    "app",
+    "game"
+  ],
+  "author": "Elyse Vest, Clayton Lin, Russell Grindstaff",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grindstaffr/futyarn.io/issues"
+  },
+  "homepage": "https://github.com/Grindstaffr/futyarn.io#readme",
+  "dependencies": {
+    "angular": "^1.7.2",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "lodash": "^4.17.10",
+    "mysql": "^2.15.0"
+  }
+}
