@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Grindstaffr/futyarn.io.git"
+    "url": "git+https://github.com/litterbawks/futyarn.io.git"
   },
   "keywords": [
     "cats",
@@ -20,9 +20,9 @@
   "author": "Elyse Vest, Clayton Lin, Russell Grindstaff",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Grindstaffr/futyarn.io/issues"
+    "url": "https://github.com/litterbawks/futyarn.io/issues"
   },
-  "homepage": "https://github.com/Grindstaffr/futyarn.io#readme",
+  "homepage": "https://github.com/litterbawks/futyarn.io#readme",
   "dependencies": {
     "angular": "^1.7.2",
     "body-parser": "^1.18.3",
