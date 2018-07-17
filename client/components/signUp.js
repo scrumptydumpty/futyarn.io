@@ -1,10 +1,11 @@
 angular.module('app')
-.controller('signUpCtrl', (/*requiered services live here*/) => {
-
+.controller('signUpCtrl', (/*login/signup service*/) => {
+  this.username = 'tony'
+  this.password = 'tonyRules!'
 })
 .component('signUp', {
   bindings : {},
   controller : 'signUpCtrl',
-  templateUrl : '/templates/signUp.html'
+  templateUrl : '/templates/sign-up.html'
 
 })
