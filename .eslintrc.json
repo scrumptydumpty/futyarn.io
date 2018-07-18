@@ -27,11 +27,5 @@
             "error",
             "always"
         ]
-    },
-
-    "globals": {
-        "angular": false,
-        "module": false,
-        "inject": false
-      }
+    }
 }
