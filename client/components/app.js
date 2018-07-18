@@ -1,9 +1,9 @@
 angular.module('app')
-.controller('appCtrl', (/*required services go in here*/)=>{
- console.log('tryiing out git!')
-})
-.component('app', {
-  bindings : {},
-  controller : 'appCtrl',
-  templateUrl : './templates/app.html'
-})
+    .controller('appCtrl', (/*required services go in here*/)=>{
+        console.log('Hello from app js!');
+    })
+    .component('app', {
+        bindings : {},
+        controller : 'appCtrl',
+        templateUrl : './templates/app.html'
+    });

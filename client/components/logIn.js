@@ -1,11 +1,15 @@
 angular.module('app')
-.controller('logInCtrl', (/*LogIN/Signup service*/) => {
-  this.username = 'tony'
-  this.password = 'tonyRules!'
-})
-.component('logIn', {
-  bindings : {},
-  controller : 'logInCtrl',
-  templateUrl : '/templates/log-in.html'
+    .controller('logInCtrl', function() {
+        this.handleLogin = () => {
+            console.log('click works!');
+            // auth.login('russell', 'elyse', function(data) {
+            //     console.log(data);
+            // });
+        };
+    })
+    .component('logIn', {
+        bindings : {},
+        controller : 'logInCtrl',
+        templateUrl : '/templates/log-in.html'
 
-})
+    });
