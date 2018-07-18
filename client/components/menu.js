@@ -4,6 +4,7 @@ angular.module('app')
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
+        this.showLogOut = false;
 
         this.toggleLoginForm = () => {
             if (this.showLoginForm) {
@@ -27,10 +28,20 @@ angular.module('app')
             } else {
                 this.showRules = true;
             }
-        }
+        };
+
+        this.toggle = () => {
+            console.log('toggle pressed');
+            if (this.showLogOut) {
+                this.showLogOut = false;
+            } else {
+                this.showLogOut = true;
+            }
+        };
     })
     .component('menu', {
-        bindings : {},
+        bindings : {
+        },
         controller : 'menuCtrl',
         templateUrl : '/templates/menu.html'
 

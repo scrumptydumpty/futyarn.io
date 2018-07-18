@@ -5,12 +5,14 @@ angular.module('app')
         this.password = '';
         this.handleLogin = () => {
             auth.login(this.username, this.password);
+            // this.toggle();
         };
+
+
     })
     .component('logIn', {
         bindings : {
-            username: '<',
-            password: '<'
+            toggle: '<'
         },
         controller : 'logInCtrl',
         templateUrl : '/templates/log-in.html'

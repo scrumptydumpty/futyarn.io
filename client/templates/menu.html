@@ -8,9 +8,11 @@
   <div>  
     <input type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
     <div ng-if="$ctrl.showLoginForm">
-      <log-in />
+      <log-in toggle="$ctrl.toggle"/>
     </div>
-<div>  <button class='mainmenubtn'> Logout </button></div>
+  <div ng-if="$ctrl.showLogOut">
+    <input type="button" value="Logout" ng-click="$ctrl.toggle()"/>
+  </div>
   <div> 
     <input type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
     <div ng-if="$ctrl.showSignUpForm">
