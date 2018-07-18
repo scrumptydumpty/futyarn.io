@@ -1,31 +1,46 @@
 var express = require('express');
 var router = express.Router();
+var db = require('../database/postgreSQL-index');
 
 
 
-// /api/login
-router.get('/login', (req, res, next) => {
-    //hit up that DB
-    
+// hit up DB to find user info and login
+// establish a session
+router.post('/api/login', (req, res, next) => {
     res.setStatus = 200;
     res.end('<div><div> hello!!!  </div> </div>');
 });
 
-router.get('/leaderboards', (req, res, next) => {
-    //hit up that DB
+// get user leaderboard info from DB
+router.get('/api/leaderboards', (req, res, next) => {
+    db.getLeaderboard(/* callback */ (err, data) => {
+        if (err) {
+
+        } else {
+
+        }
+    });
+});
+
+// add user to DB
+router.post('/api/signup', (req, res, next) => {
     
 });
 
-router.post('/signup', (req, res, next) => {
-    //hit up that DB
+// hit up russell's server
+router.get('/api/joingame', (req, res, next) => {
+    
     
 });
 
-router.get('/joingame', (req, res, next) => {
-    //hit up russell's server
+// post game resultes to DB
+router.post('/api/gameresults', (req, res, next) => {
+    
     
 });
 
+
+// catch all route
 // router.get('/*', (req, res, next) => {
 //     //should serve static html
   
