@@ -1,0 +1,92 @@
+{
+    "cat01" : {
+        "user_id" : 1,
+        "username" : "good kitty",
+        "password" : "password",
+        "wins" : 10,
+        "losses" : 10,
+        "games_played": 20,
+        "goals" : 40
+    },
+    "cat02" : {
+        "user_id" : 2,
+        "username" : "good kitty",
+        "password" : "password",
+        "wins" : 10,
+        "losses" : 10,
+        "games_played": 20,
+        "goals" : 40
+    },
+    "cat03" : {
+        "user_id" : 3,
+        "username" : "good kitty",
+        "password" : "password",
+        "wins" : 10,
+        "losses" : 10,
+        "games_played": 20,
+        "goals" : 40
+    },
+    "cat04" : {
+        "user_id" : 4,
+        "username" : "good kitty",
+        "password" : "password",
+        "wins" : 10,
+        "losses" : 10,
+        "games_played": 20,
+        "goals" : 40
+    },
+    "cat05" : {
+      "user_id" : 5,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    },
+    "cat06" : {
+      "user_id" : 6,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    },
+    "cat07" : {
+      "user_id" : 7,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    },
+    "cat08" : {
+      "user_id" : 8,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    },
+    "cat09" : {
+      "user_id" : 9,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    },
+    "cat10" : {
+      "user_id" : 10,
+      "username" : "good kitty",
+      "password" : "password",
+      "wins" : 10,
+      "losses" : 10,
+      "games_played": 20,
+      "goals" : 40
+    }
+}
