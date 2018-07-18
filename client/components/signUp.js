@@ -1,11 +1,17 @@
 angular.module('app')
-.controller('signUpCtrl', (/*login/signup service*/) => {
-  this.username = 'tony'
-  this.password = 'tonyRules!'
-})
-.component('signUp', {
-  bindings : {},
-  controller : 'signUpCtrl',
-  templateUrl : '/templates/sign-up.html'
+    .controller('signUpCtrl', function (auth) {
+        this.username = '';
+        this.password = '';
+        this.handleSignUp = () => {
+            auth.signUp(this.username, this.password);
+        };
+    })
+    .component('signUp', {
+        bindings: {
+            username: '<', 
+            password: '<'
+        },
+        controller: 'signUpCtrl',
+        templateUrl: '/templates/sign-up.html'
 
-})
+    });
