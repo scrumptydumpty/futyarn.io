@@ -1,5 +1,5 @@
-{
-    "gameOne" : {
+[
+    {
         "game_id" : 1,
         "team_one_one" : 1,
         "team_one_two" : 2,
@@ -11,11 +11,13 @@
         "team_two_three" : 8,
         "team_two_four" : 9,
         "team_two_five" : 10,
+        "team_one_score": 50,
+        "team_two_score": 30,
         "winning_team" : "team_one",
         "losing_team" : "team_two",
         "cat_of_the_game" : 1
     },
-    "gameTwo" : {
+    {
         "game_id" : 2,
         "team_one_one" : 1,
         "team_one_two" : 2,
@@ -27,11 +29,13 @@
         "team_two_three" : 8,
         "team_two_four" : 9,
         "team_two_five" : 10,
+        "team_one_score": 50,
+        "team_two_score": 30,
         "winning_team" : "team_one",
         "losing_team" : "team_two",
         "cat_of_the_game" : 1
     },
-    "gameThree" : {
+    {
         "game_id" : 3,
         "team_one_one" : 1,
         "team_one_two" : 2,
@@ -43,11 +47,13 @@
         "team_two_three" : 8,
         "team_two_four" : 9,
         "team_two_five" : 10,
+        "team_one_score": 50,
+        "team_two_score": 30,
         "winning_team" : "team_one",
         "losing_team" : "team_two",
         "cat_of_the_game" : 1
     },
-    "gameFour" : {
+    {
         "game_id" : 4,
         "team_one_one" : 1,
         "team_one_two" : 2,
@@ -57,13 +63,13 @@
         "team_two_one" : 6,
         "team_two_two" : 7,
         "team_two_three" : 8,
-        "team_two_four" : 9,
-        "team_two_five" : 10,
+        "team_one_score": 50,
+        "team_two_score": 30,
         "winning_team" : "team_one",
         "losing_team" : "team_two",
         "cat_of_the_game" : 1
     },
-    "gameFive" : {
+    {
         "game_id" : 5,
         "team_one_one" : 1,
         "team_one_two" : 2,
@@ -73,10 +79,10 @@
         "team_two_one" : 6,
         "team_two_two" : 7,
         "team_two_three" : 8,
-        "team_two_four" : 9,
-        "team_two_five" : 10,
+        "team_one_score": 50,
+        "team_two_score": 30,
         "winning_team" : "team_one",
         "losing_team" : "team_two",
         "cat_of_the_game" : 1
     }
-}
+  ]
