@@ -1,7 +1,8 @@
 angular.module('app')
     .service('auth', function($http) {
         this.login = function(username, password, callback) {
-          console.log('you are in the service')
+            console.log('username', username);
+            console.log('password', password)
             var obj = {
                 username: username,
                 password: password

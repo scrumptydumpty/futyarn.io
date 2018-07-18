@@ -1,14 +1,18 @@
 angular.module('app')
-    .controller('logInCtrl', function() {
+    .controller('logInCtrl', function(auth) {
+        this.username = '';
+        this.password = '';
         this.handleLogin = () => {
-            console.log('click works!');
-            // auth.login('russell', 'elyse', function(data) {
-            //     console.log(data);
-            // });
+            auth.login(this.username, this.password, function(data) {
+                console.log(data);
+            });
         };
     })
     .component('logIn', {
-        bindings : {},
+        bindings : {
+            username: '<',
+            password: '<'
+        },
         controller : 'logInCtrl',
         templateUrl : '/templates/log-in.html'
 
