@@ -1,0 +1,92 @@
+[
+    {
+        "user_id" : 1,
+        "username" : "good kitty",
+        "password" : "password",
+        "wins" : 5,
+        "losses" : 0,
+        "games_played": 5,
+        "goals_made" : 40
+    },
+    {
+        "user_id" : 2,
+        "username" : "bad kitty",
+        "password" : "password",
+        "wins" : 5,
+        "losses" : 0,
+        "games_played": 5,
+        "goals_made" : 10
+    },
+    {
+        "user_id" : 3,
+        "username" : "fat kitty",
+        "password" : "password",
+        "wins" : 5,
+        "losses" : 0,
+        "games_played": 5,
+        "goals_made" : 20
+    },
+    {
+        "user_id" : 4,
+        "username" : "crass kitty",
+        "password" : "password",
+        "wins" : 5,
+        "losses" : 0,
+        "games_played": 5,
+        "goals_made" : 15
+    },
+    {
+      "user_id" : 5,
+      "username" : "meow kitty",
+      "password" : "password",
+      "wins" : 5,
+      "losses" : 0,
+      "games_played": 5,
+      "goals_made" : 13
+    },
+    {
+      "user_id" : 6,
+      "username" : "fuzzy kitty",
+      "password" : "password",
+      "wins" : 0,
+      "losses" : 5,
+      "games_played": 5,
+      "goals_made" : 5
+    },
+    {
+      "user_id" : 7,
+      "username" : "bald kitty",
+      "password" : "password",
+      "wins" : 0,
+      "losses" : 5,
+      "games_played": 5,
+      "goals_made" : 20
+    },
+    {
+      "user_id" : 8,
+      "username" : "dirty kitty",
+      "password" : "password",
+      "wins" : 0,
+      "losses" : 5,
+      "games_played": 5,
+      "goals_made" : 30
+    },
+    {
+      "user_id" : 9,
+      "username" : "smelly kitty",
+      "password" : "password",
+      "wins" : 0,
+      "losses" : 3,
+      "games_played": 3,
+      "goals_made" : 10
+    },
+    {
+      "user_id" : 10,
+      "username" : "sucky kitty",
+      "password" : "password",
+      "wins" : 0,
+      "losses" : 3,
+      "games_played": 3,
+      "goals_made" : 0
+    }
+  ]

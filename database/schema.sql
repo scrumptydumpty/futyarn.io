@@ -1,30 +1,45 @@
-CREATE SCHEMA fyschme
-  
-  DROP TABLE IF EXISTS players
-  CREATE TABLE players (
-    userid INTEGER PRIMARY KEY,
-    username VARCHAR(20),
-    password VARCHAR(255),
-    wins INTEGER,
-    losses INTEGER,
-    goals INTEGER,
-    games_played INTEGER 
-    )
-  
-  DROP TABLE IF EXISTS games
-  CREATE TABLE games ( 
-    game_id INTEGER AUTO_INCREMENT PRIMARY KEY ,
-    win_team_one   INTEGER FOREIGN KEY REFERENCES players(userid),
-    win_team_two   INTEGER FOREIGN KEY REFERENCES players(userid),
-    win_team_three INTEGER FOREIGN KEY REFERENCES players(userid),
-    win_team_four  INTEGER FOREIGN KEY REFERENCES players(userid),
-    win_team_five  INTEGER FOREIGN KEY REFERENCES players(userid),
-    lose_team_one   INTEGER FOREIGN KEY REFERENCES players(userid),
-    lose_team_two   INTEGER FOREIGN KEY REFERENCES players(userid),
-    lose_team_three INTEGER FOREIGN KEY REFERENCES players(userid),
-    lose_team_four  INTEGER FOREIGN KEY REFERENCES players(userid),
-    lose_team_five  INTEGER FOREIGN KEY REFERENCES players(userid),
-    team_one_score INTEGER,
-    team_two_score INTEGER
-    cat_of_the_game INTEGER FOREIGN KEY REFERENCES players(userid)
-    )
+-- CREATE SCHEMA fyschme
+-- Explicit schema not necessary since we only have single user (app server)
+-- Use the default Public shema
+
+CREATE DATABASE futyarn.io;
+
+USE futyarn.io;
+
+-- DROP TABLE IF EXISTS players
+
+-- Postgres uses SERIAL instead of AUTO_INCREMENT. If using SERIAL, do not have to use INTERGER.
+-- PG does not need FOREIGN KEY property. Using REFERENCES is all that is required.
+-- CHECK establishes a constraint. If condition not met, throws error.
+
+CREATE TABLE players (
+    user_id      SERIAL PRIMARY KEY,
+    username     VARCHAR(255) NOT NULL UNIQUE,
+    password     VARCHAR(255) NOT NULL,
+    wins         INTEGER NOT NULL,
+    losses       INTEGER NOT NULL,
+    games_played INTEGER NOT NULL,
+    goals_made   INTEGER NOT NULL, 
+    CHECK ((wins + losses) = games_played)
+)
+
+-- DROP TABLE IF EXISTS games
+
+CREATE TABLE games ( 
+    game_id            SERIAL PRIMARY KEY,
+    team_one_one       INTEGER REFERENCES players(user_id) NULL,
+    team_one_two       INTEGER REFERENCES players(user_id) NULL,
+    team_one_three     INTEGER REFERENCES players(user_id) NULL,
+    team_one_four      INTEGER REFERENCES players(user_id) NULL,
+    team_one_five      INTEGER REFERENCES players(user_id) NULL,
+    team_two_one       INTEGER REFERENCES players(user_id) NULL,
+    team_two_two       INTEGER REFERENCES players(user_id) NULL,
+    team_two_three     INTEGER REFERENCES players(user_id) NULL,
+    team_two_four      INTEGER REFERENCES players(user_id) NULL,
+    team_two_five      INTEGER REFERENCES players(user_id) NULL,
+    team_one_score     INTEGER NOT NULL,
+    team_two_score     INTEGER NOT NULL,
+    winning_team       VARCHAR(10) NOT NULL,
+    losing_team        VARCHAR(10) NOT NULL,
+    cat_of_the_game    INTEGER REFERENCES players(user_id)
+)
