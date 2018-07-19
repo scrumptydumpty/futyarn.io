@@ -30,7 +30,6 @@ angular.module('app')
         };
 
         this.toggleLeaderboard = () => {
-            console.log(auth);
             this.showLeaderboard = !this.showLeaderboard;
         };
 
@@ -47,7 +46,6 @@ angular.module('app')
             }).then((response) => {
                 console.log('response', response);
                 this.leaderboardInfo = response.data;
-                console.log(this.leaderboardInfo);
             }, (error) => {
                 console.log(error);
             }).then(() => {
@@ -58,8 +56,7 @@ angular.module('app')
                     this.goals_made.push(this.leaderboardInfo[i].goals_made);
                     this.games_played.push(this.leaderboardInfo[i].games_played);
                 }
-                console.log('usernames', this.usernames)
-            })
+            });
         };
     })
     .component('menu', {

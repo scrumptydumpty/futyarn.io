@@ -16,7 +16,7 @@
   <div> 
     <input type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
     <div ng-if="$ctrl.showSignUpForm">
-      <sign-up />
+      <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
     </div>
   </div>
   <div>  
