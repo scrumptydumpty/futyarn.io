@@ -13,11 +13,12 @@ router.post('/api/login', (req, res, next) => {
 
 // get user leaderboard info from DB
 router.get('/api/leaderboards', (req, res, next) => {
-    db.getLeaderboard(/* callback */ (err, data) => {
+    db.getLeaderboard((err, data) => {
         if (err) {
-
+            console.log('error getting leaderboards');
         } else {
-
+            console.log(data.rows);
+            res.send(data.rows);
         }
     });
 });

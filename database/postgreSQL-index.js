@@ -1,7 +1,7 @@
 var pg = require('pg');
 // var connection = "postgres://userName:password@serverName/ip:port/nameOfDatabase";
 // var connection = "postgres://userName:password@servername/ip:port/futyarn.io";
-var connection = 'postgres://localhost/futyarn.io';
+var connection = 'postgres://localhost:5432/futyarn.io';
 var pgClient = new pg.Client(connection);
 
 pgClient.connect();
@@ -39,20 +39,26 @@ pgClient.once('open', function ()
 
 // updateUserInfo
 
-// getLeaderboard
 function getLeaderboard (callback)
 {
     let getLeaderboardQuery = 
-        'SELECT * FROM players ORDER BY wins DESC, goals_made DESC LIMIT 5';
-        // 'SELECT array_to_json(array_agg(SELECT players ORDER BY wins DESC, goals_made DESC LIMIT 5)) FROM players';
-     pgClient.query(getLeaderboardQuery, (err, results, fields) => {
-         if (err) {
-             callback(err. null);
-         } else {
-             callback(null, results);
-         }
-     });
+    'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
+    pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
+        if (err) {
+            callback(err. null);
+        } else {
+            callback(null, results);
+        }
+    });
 }
+// Returns the top 10 players, sorted by wins, and then by goals made
+// Data is an array of 10 objects.
+// Each object is a JavaScript object and contains the following key: value pairs:
+// { username: 'meow kitty',
+//   wins: 5,
+//   losses: 0,
+//   games_played: 5,
+//   goals_made: 13 }
 
 
 // addGameInfo
@@ -83,7 +89,9 @@ function getLeaderboard (callback)
 
 
 
+module.exports.pgClient = pgClient;
 module.exports.getLeaderboard = getLeaderboard;
+
 
 // module.exports = {
 //     getLeaderboard
