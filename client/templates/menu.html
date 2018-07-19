@@ -20,7 +20,7 @@
     </div>
   </div>
   <div>  
-    <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard()"/>
+    <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
     <div ng-if="$ctrl.showLeaderboard">
       <leaderboard />
     </div>

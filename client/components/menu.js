@@ -1,5 +1,5 @@
 angular.module('app')
-    .controller('menuCtrl', function () {
+    .controller('menuCtrl', function (auth) {
         console.log('hello from menu js');
         this.showLoginForm = false;
         this.showSignUpForm = false;
@@ -30,7 +30,17 @@ angular.module('app')
         };
 
         this.toggleLeaderboard = () => {
+            console.log(auth);
             this.showLeaderboard = !this.showLeaderboard;
+        };
+
+        this.username = '';
+        this.wins = '';
+        this.losses = '';
+        this.games_played = '';
+        this.goals_made = '';
+        this.handleLeaderboard = () => {
+            auth.retrieveLeaderboardInfo();
         };
     })
     .component('menu', {

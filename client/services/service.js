@@ -27,4 +27,15 @@ angular.module('app')
                     console.log(err); 
                 });
         };
+
+        this.retrieveLeaderboardInfo = function() {
+            $http.get('/api/leaderboards')
+                .then(data => {
+                    console.log('success', data)
+                }, err => {
+                    console.log('error', err)
+                })
+
+            console.log('inside function')
+        };
     });

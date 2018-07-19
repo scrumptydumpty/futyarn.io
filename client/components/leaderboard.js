@@ -1,6 +1,6 @@
 angular.module('app')
-    .controller('leaderboardCtrl', (/*login/signup service*/) => {
-  
+    .controller('leaderboardCtrl', function() {
+        
     })
     .component('leaderboard', {
         bindings : {},
