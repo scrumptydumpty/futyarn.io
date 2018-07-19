@@ -5,7 +5,7 @@ angular.module('app')
                 username: username,
                 password: password
             };
-            $http.post('/login', obj)
+            $http.post('/api/login', obj)
                 .then(function({data}) {
                     console.log(data);
                 })
@@ -19,7 +19,7 @@ angular.module('app')
                 username: username,
                 password: password
             };
-            $http.post('/signup', obj)
+            $http.post('/api/signup', obj)
                 .then(function({data}) {
                     console.log(data);
                 }) 

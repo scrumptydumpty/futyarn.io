@@ -5,6 +5,7 @@ angular.module('app')
         this.showSignUpForm = false;
         this.showRules = false;
         this.showLogOut = false;
+        this.showLoginButton = false;
 
         this.toggleLoginForm = () => {
             if (this.showLoginForm) {
@@ -34,8 +35,18 @@ angular.module('app')
             console.log('toggle pressed');
             if (this.showLogOut) {
                 this.showLogOut = false;
+                this.toggleLoginForm();
             } else {
                 this.showLogOut = true;
+                this.toggleLoginForm();
+            }
+        };
+
+        this.toggleLoginButton = () => {
+            if (this.showLoginButton) {
+                this.showLoginButton = false;
+            } else {
+                this.showLoginButton = true;
             }
         };
     })
