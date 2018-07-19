@@ -1,8 +1,8 @@
 <div>
-<form ng-controller="signUpCtrl">
+<form ng-submit="$ctrl.handleSignUp()">
   <input type="text" ng-model="$ctrl.username" />
-  <input type="text" ng-model="$ctrl.password" />
-  <input type="submit" />
+  <input type="password" ng-model="$ctrl.password" />
+  <input type="submit" value="Sign Up!" />
 </form>
 <div>{{$ctrl.username}} {{$ctrl.password}} </div>
 </div>
