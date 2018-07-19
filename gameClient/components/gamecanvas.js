@@ -34,13 +34,15 @@ angular.module('gameinstance')
         }
         
         this.tempBallVector = {
-            currentX : 0,
+            currentX : 10,
             currentY : 320,
             right : 5,
             down  : 0,
         }
-      var pos = this.speed
-                var neg = 0 - this.speed       
+        var pos = this.speed
+        var neg = 0 - this.speed
+               
+
     this.rotation = {
                     [neg] : {
                         [neg] : 315,
@@ -138,11 +140,28 @@ angular.module('gameinstance')
                         } else {
                             ball.down += .025
                         }
-                        if (Math.abs(playerX - ballX) < 10 && Math.abs(playerY - ballY) < 10 && ball.right < 8){
-                            console.log(true)
-                            ball.right += (ctrl.playerVector.right - ball.right)
+                        if (Math.abs(playerX - ballX) < 100 && Math.abs(playerY - ballY) < 100){
+                            // console.log(ball.right)
+                            ball.right -= (2 * (ball.right))
+                            ball.down  -= (2 * (ball.down))
+                            ball.right += (ctrl.playerVector.right)
+                            ball.down += (ctrl.playerVector.down)
+                        }
+                        if (isWallBounce()){
+                            ball.right -= (2 * (ball.right))
+                            ball.down  -= (2 * (ball.down))
                         }
                         
+                    }
+
+                    var isWallBounce = function() {
+                        var ball = ctrl.tempBallVector;
+                        var playerX = ctrl.playerVector.currentX;
+                        var playerY = ctrl.playerVector.currentY;
+                        var ballX = ball.currentX;
+                        var ballY = ball.currentY;
+                        // console.log(ball.currentX , ball.currentY)
+                        return (ballX < 5|| ballX > (canvas.width - 5) || ballY < 5 || ballY > (canvas.height - 5) )
                     }
                     
 //iterate through keys pressed, check for true
@@ -200,31 +219,16 @@ angular.module('gameinstance')
                 var pos = ctrl.speed
                 var neg = 0 - ctrl.speed
 //map between player direction and rotation
-                var rotation = {
-                    [neg] : {
-                        [neg] : 315,
-                        0  : 270,
-                        [pos]  : 225
-                    },
-                    0 : {
-                        [neg] : 0,
-                        0  : 0,
-                        [pos]  : 180
-                    },
-                    [pos] : {
-                        [neg] : 45,
-                        0 : 90,
-                        [pos] : 135
-                    }
-                    
-                }
+            
                 
                 console.log(ctrl.cat)
                 
                 function gameLoop(){
                         window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0,canvas.height, canvas.width)
-                        var spin = rotation[ctrl.playerVector.right][ctrl.playerVector.down]
+                        var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
+                        ctrl.rotation[0][0] = spin
+                        console.log(ctrl.rotation[0][0])
                         ctx.translate(canvas.width/2, canvas.height/2)
                         ctx.rotate(spin*Math.PI / 180)
                         ctx.drawImage(ctrl.img,0,0,25,60,-12,-20,25,60)
