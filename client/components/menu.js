@@ -23,6 +23,7 @@ angular.module('app')
         this.toggle = () => {
             this.showLogOut = !this.showLogOut;
             this.toggleLoginForm();
+            this.toggleLoginButton();
         };
 
         this.toggleLoginButton = () => {
