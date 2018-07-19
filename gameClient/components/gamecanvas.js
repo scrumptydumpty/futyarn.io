@@ -13,36 +13,36 @@ angular.module('gameinstance')
             32 : [/*TEMPORARY SPEED INCREASE*/]
         }
 //map of keycodes to whether or not they're currently pressed                    
-        this.keysPressed = {
-            65 : false, // "A"-key
-            68 : false, //"D" - key
-            87 : false, //"W" -key
-            83 : false, //"S" -key
-            32 : false, //space -key
-        } 
+    this.keysPressed = {
+        65 : false, // "A"-key
+        68 : false, //"D" - key
+        87 : false, //"W" -key
+        83 : false, //"S" -key
+        32 : false, //space -key
+    } 
 //holder for frame to frame variance in location
 //right is a postive or negative number (left neg)
 //down is a positive or negative number (up neg)
 //holder for keypresses
-        this.playerVector = {
-            currentX : 200,
-            currentY : 200,
-            right : 0,
-            down : 0
-            //left : 0 - this.right
-            //up : 0 - this.down
-        }
+    this.playerVector = {
+        currentX : 200,
+        currentY : 200,
+        right : 0,
+        down : 0
+        //left : 0 - this.right
+        //up : 0 - this.down
+    }
         
-        this.tempBallVector = {
-            currentX : 10,
-            currentY : 320,
-            right : 5,
-            down  : 0,
-        }
-        var pos = this.speed
-        var neg = 0 - this.speed
-               
-
+    this.tempBallVector = {
+        currentX : 10,
+        currentY : 320,
+        right : 5,
+        down  : 0,
+    }
+    var pos = this.speed
+    var neg = 0 - this.speed
+            
+//map player vector to rotation in degrees           
     this.rotation = {
                     [neg] : {
                         [neg] : 315,
@@ -61,13 +61,16 @@ angular.module('gameinstance')
                     }
                     
                 }
-    this.mouseoverHandler = function (e)
-    {
-        console.log(e.target.value)  
-        
+    this.mouseoverHandler = function (e){
+        console.log('X. ' + e.originalEvent.layerX)
+        console.log('Y. ' + e.originalEvent.layerY)
     }
+    var context = this
+    this.spin = function () {
+        return context.rotation[context.playerVector.right][context.playerVector.down]
+    }
+    
                 
-
 })
 .directive('anim', function()
     {   
@@ -100,16 +103,36 @@ angular.module('gameinstance')
                         ctx.fillRect(0,0,canvas.width,canvas.height);
                         drawBall()
                         drawTestCat()
+                        isCatBallCollision()
                     }
                     var drawTestCat = function ()
                     {
                         ctx.drawImage(ctrl.canvas, ctrl.playerVector.currentX, ctrl.playerVector.currentY)
-                       ctrl.playerVector.currentX += ctrl.playerVector.right;
-                       ctrl.playerVector.currentY += ctrl.playerVector.down;
+                        ctrl.playerVector.currentX += ctrl.playerVector.right;
+                        ctrl.playerVector.currentY += ctrl.playerVector.down;
                     }
                     var isCatBallCollision = function ()
                     {
+                        var hitBoxMap = {
+                            0   : [50,45],
+                            45  : [56,48],
+                            90  : [60,55],
+                            135 : [56,58],
+                            180 : [50,62],
+                            225 : [44,58],
+                            270 : [40,55],
+                            315 : [44,48],
+                        }
+                        var currentCenterX = ctrl.playerVector.currentX + hitBoxMap[ctrl.spin()][0]
+                        var currentCenterY = ctrl.playerVector.currentY + hitBoxMap[ctrl.spin()][1]
+                        var ball = ctrl.tempBallVector
+                        var ballCenterX = ball.currentX +5
+                        var ballCenterY = ball.currentY +5
                         
+                        
+                        var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY),2))
+                        // console.log(ballCenterDelta)
+                        return (ballCenterDelta < 10)
                     }
                     
                     var drawBall = function () 
@@ -140,10 +163,8 @@ angular.module('gameinstance')
                         } else {
                             ball.down += .025
                         }
-                        if (Math.abs(playerX - ballX) < 100 && Math.abs(playerY - ballY) < 100){
+                        if (isCatBallCollision()){
                             // console.log(ball.right)
-                            ball.right -= (2 * (ball.right))
-                            ball.down  -= (2 * (ball.down))
                             ball.right += (ctrl.playerVector.right)
                             ball.down += (ctrl.playerVector.down)
                         }
@@ -226,12 +247,13 @@ angular.module('gameinstance')
                 function gameLoop(){
                         window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0,canvas.height, canvas.width)
+                        ctx.rect(0,0,canvas.width, canvas.height);
+                        ctx.stroke()
                         var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
                         ctrl.rotation[0][0] = spin
-                        console.log(ctrl.rotation[0][0])
                         ctx.translate(canvas.width/2, canvas.height/2)
                         ctx.rotate(spin*Math.PI / 180)
-                        ctx.drawImage(ctrl.img,0,0,25,60,-12,-20,25,60)
+                        ctx.drawImage(ctrl.img,0,0,25,60,-14,-20,25,60)
                         // ctx.drawImage(this.catImage,0,0,25,60,-12,-30,25,60)
                         ctx.rotate((0 - spin)*Math.PI / 180)
                         ctx.translate(-canvas.width/2, -canvas.height/2)
