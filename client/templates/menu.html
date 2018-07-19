@@ -1,19 +1,30 @@
 <div>
-<div>  <button class='mainmenubtn'> Rules </button></div>
-  <div>
-    <rules ng-hide="" />
+  <div>  
+    <input type="button" value="Rules" ng-click="$ctrl.toggleRules()"/>
+    <div ng-if="$ctrl.showRules">
+      <rules />
+    </div>
   </div>
-<div>  <button class='mainmenubtn'> Login </button></div>
-  <div>
-    <log-in ng-hide="" />
+  <div>  
+    <input type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
+    <div ng-if="$ctrl.showLoginForm">
+      <log-in toggle="$ctrl.toggle"/>
+    </div>
+    <div ng-if="$ctrl.showLogOut">
+      <input type="button" value="Logout" ng-click="$ctrl.toggle()"/>
+    </div>
+  <div> 
+    <input type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
+    <div ng-if="$ctrl.showSignUpForm">
+      <sign-up />
+    </div>
   </div>
-<div>  <button class='mainmenubtn'> Logout </button></div>
-<div>  <button class='mainmenubtn'> Sign Up </button></div>
-  <div>
-    <sign-up ng-hide="" />
+  <div>  
+    <button class='mainmenubtn'> Leaderboard </button>
   </div>
-<div>  <button class='mainmenubtn'> Leaderboard </button></div>
-<div>  <button class='mainmenubtn'> Join Game </button></div>
+  <div>  
+    <button class='mainmenubtn'> Join Game </button>
+  </div>
 </div>
 
 
