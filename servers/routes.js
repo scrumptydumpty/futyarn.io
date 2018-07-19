@@ -3,12 +3,10 @@ var router = express.Router();
 var db = require('../database/postgreSQL-index');
 
 
-
 // hit up DB to find user info and login
 // establish a session
 router.post('/api/login', (req, res, next) => {
-    res.setStatus = 200;
-    res.end('<div><div> hello!!!  </div> </div>');
+    res.end();
 });
 
 // get user leaderboard info from DB
@@ -18,7 +16,23 @@ router.get('/api/leaderboards', (req, res, next) => {
             console.log('error getting leaderboards');
         } else {
             console.log(data.rows);
+            res.setStatus = 200;
             res.send(data.rows);
+        }
+    });
+});
+
+// get user leaderboard info from DB
+router.get('/api/userinfo', (req, res, next) => {
+    let tempName = 'sucky kitty'
+    let username = `\'${tempName}\'`;
+    db.getUserInfo(username, (err, data) => {
+        if (err) {
+            console.log('error getting userinfo');
+        } else {
+            console.log(data.rows[0]);
+            res.setStatus = 200;
+            res.send(data.rows[0]);
         }
     });
 });

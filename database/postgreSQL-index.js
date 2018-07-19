@@ -16,44 +16,27 @@ pgClient.once('open', function ()
     console.log('postgres connected successfully');
 });
 
-// var pg = require('knex')({
-//     client: 'pg',
-//     connection: {
-//         host: '127.0.0.1',
-//         user: 'student',
-//         password: 'student',
-//         database: 'futyarndb'
-//     }
-// });
 
-
-
-// PGHOST
-// PGPORT
-
-// FUNCTIONS NEEDED
-
+// FUNCTION NEEDED
 // addNewUser
 
-// getUserInfo
 
-// updateUserInfo
-
-function getLeaderboard (callback)
+const getUserInfo = (username, callback) =>
 {
-    let getLeaderboardQuery = 
-    'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
-    pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
+    let getUserInfoQuery = `SELECT username, wins, losses, games_played, goals_made FROM players WHERE username = ${username}`;
+    console.log(getUserInfoQuery);
+    pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         if (err) {
+            console.log('error: getUserInfoQuery failed');
             callback(err. null);
         } else {
+            console.log('getUserInfoQuery results: ', results);
             callback(null, results);
         }
     });
-}
-// Returns the top 10 players, sorted by wins, and then by goals made
-// Data is an array of 10 objects.
-// Each object is a JavaScript object and contains the following key: value pairs:
+};
+// Returns user data for the requested player
+// Data is a JavaScript object and contains the following key:value pairs
 // { username: 'meow kitty',
 //   wins: 5,
 //   losses: 0,
@@ -61,8 +44,39 @@ function getLeaderboard (callback)
 //   goals_made: 13 }
 
 
-// addGameInfo
+// FUNCTION NEEDED
+// updateUserInfo
 
+
+
+const getLeaderboard = (callback) =>
+{
+    let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
+    pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: getLeaderboardQuery failed');
+            callback(err. null);
+        } else {
+            console.log('getLeaderboardQuery results:', results);
+            callback(null, results);
+        }
+    });
+};
+// Returns the top 10 players, sorted by wins, and then by goals made
+// Data is an array of 10 objects.
+// Each object is a JavaScript object and contains the following key:value pairs
+// { username: 'meow kitty',
+//   wins: 5,
+//   losses: 0,
+//   games_played: 5,
+//   goals_made: 13 }
+
+
+// FUNCTION NEEDED
+// postGameInfo
+
+
+// FUNCTION NEEDED
 // getGameInfo
 
 
@@ -87,12 +101,23 @@ function getLeaderboard (callback)
 // UPDATE mytable SET a = 5, b = 3, c = 1 WHERE a > 0;
 
 
+module.exports = {
+    pgClient,
+    getUserInfo,
+    getLeaderboard
+};
 
+// IGNORE FOR NOW
 
-module.exports.pgClient = pgClient;
-module.exports.getLeaderboard = getLeaderboard;
+// var pg = require('knex')({
+//     client: 'pg',
+//     connection: {
+//         host: '127.0.0.1',
+//         user: 'student',
+//         password: 'student',
+//         database: 'futyarndb'
+//     }
+// });
 
-
-// module.exports = {
-//     getLeaderboard
-// }
+// PGHOST
+// PGPORT
