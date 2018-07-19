@@ -1,53 +1,46 @@
 angular.module('app')
-    .controller('menuCtrl', function () {
+    .controller('menuCtrl', function (auth) {
         console.log('hello from menu js');
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
         this.showLogOut = false;
         this.showLoginButton = false;
+        this.showLeaderboard = false;
 
         this.toggleLoginForm = () => {
-            if (this.showLoginForm) {
-                this.showLoginForm = false;
-            } else {
-                this.showLoginForm = true;
-            }
+            this.showLoginForm = !this.showLoginForm;
         };
 
         this.toggleSignUpForm = () => {
-            if (this.showSignUpForm) {
-                this.showSignUpForm = false;
-            } else {
-                this.showSignUpForm = true;
-            }
+            this.showSignUpForm = !this.showSignUpForm;
         };
 
         this.toggleRules = () => {
-            if (this.showRules) {
-                this.showRules = false;
-            } else {
-                this.showRules = true;
-            }
+            this.showRules = !this.showRules;
         };
 
         this.toggle = () => {
-            console.log('toggle pressed');
-            if (this.showLogOut) {
-                this.showLogOut = false;
-                this.toggleLoginForm();
-            } else {
-                this.showLogOut = true;
-                this.toggleLoginForm();
-            }
+            this.showLogOut = !this.showLogOut;
+            this.toggleLoginForm();
         };
 
         this.toggleLoginButton = () => {
-            if (this.showLoginButton) {
-                this.showLoginButton = false;
-            } else {
-                this.showLoginButton = true;
-            }
+            this.showLoginButton = !this.showLoginButton;
+        };
+
+        this.toggleLeaderboard = () => {
+            console.log(auth);
+            this.showLeaderboard = !this.showLeaderboard;
+        };
+
+        this.username = '';
+        this.wins = '';
+        this.losses = '';
+        this.games_played = '';
+        this.goals_made = '';
+        this.handleLeaderboard = () => {
+            auth.retrieveLeaderboardInfo();
         };
     })
     .component('menu', {

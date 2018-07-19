@@ -20,7 +20,10 @@
     </div>
   </div>
   <div>  
-    <button class='mainmenubtn'> Leaderboard </button>
+    <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
+    <div ng-if="$ctrl.showLeaderboard">
+      <leaderboard />
+    </div>
   </div>
   <div>  
     <button class='mainmenubtn'> Join Game </button>
