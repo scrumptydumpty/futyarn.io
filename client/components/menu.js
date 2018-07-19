@@ -8,46 +8,24 @@ angular.module('app')
         this.showLoginButton = false;
 
         this.toggleLoginForm = () => {
-            if (this.showLoginForm) {
-                this.showLoginForm = false;
-            } else {
-                this.showLoginForm = true;
-            }
+            this.showLoginForm = !this.showLoginForm;
         };
 
         this.toggleSignUpForm = () => {
-            if (this.showSignUpForm) {
-                this.showSignUpForm = false;
-            } else {
-                this.showSignUpForm = true;
-            }
+            this.showSignUpForm = !this.showSignUpForm;
         };
 
         this.toggleRules = () => {
-            if (this.showRules) {
-                this.showRules = false;
-            } else {
-                this.showRules = true;
-            }
+            this.showRules = !this.showRules;
         };
 
         this.toggle = () => {
-            console.log('toggle pressed');
-            if (this.showLogOut) {
-                this.showLogOut = false;
-                this.toggleLoginForm();
-            } else {
-                this.showLogOut = true;
-                this.toggleLoginForm();
-            }
+            this.showLogOut = !this.showLogOut;
+            this.toggleLoginForm();
         };
 
         this.toggleLoginButton = () => {
-            if (this.showLoginButton) {
-                this.showLoginButton = false;
-            } else {
-                this.showLoginButton = true;
-            }
+            this.showLoginButton = !this.showLoginButton;
         };
     })
     .component('menu', {
