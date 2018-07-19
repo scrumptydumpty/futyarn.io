@@ -6,6 +6,7 @@ angular.module('app')
         this.showRules = false;
         this.showLogOut = false;
         this.showLoginButton = false;
+        this.showLeaderboard = false;
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -26,6 +27,10 @@ angular.module('app')
 
         this.toggleLoginButton = () => {
             this.showLoginButton = !this.showLoginButton;
+        };
+
+        this.toggleLeaderboard = () => {
+            this.showLeaderboard = !this.showLeaderboard;
         };
     })
     .component('menu', {
