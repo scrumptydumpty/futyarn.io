@@ -34,25 +34,32 @@ angular.module('app')
             this.showLeaderboard = !this.showLeaderboard;
         };
 
-        this.leaderboardInfo = {};
+        this.leaderboardInfo;
+        this.usernames = [];
+        this.wins = [];
+        this.losses = [];
+        this.goals_made = [];
+        this.games_played = [];
         this.handleLeaderboard = () => {
             $http({
                 method: 'GET',
                 url: '/api/leaderboards'
             }).then((response) => {
                 console.log('response', response);
-                for (let i = 0; i < response.data.length; i++) {
-                    this.leaderboardInfo[i] = {};
-                    this.leaderboardInfo[i]['username'] = response.data[i].username;
-                    this.leaderboardInfo[i]['wins'] = response.data[i].wins;
-                    this.leaderboardInfo[i]['losses'] = response.data[i].losses;
-                    this.leaderboardInfo[i]['goals_made'] = response.data[i]['goals_made'];
-                    this.leaderboardInfo[i]['games_played'] = response.data[i]['games_played'];
-                }
+                this.leaderboardInfo = response.data;
                 console.log(this.leaderboardInfo);
             }, (error) => {
                 console.log(error);
-            });
+            }).then(() => {
+                for (let i = 0; i < this.leaderboardInfo.length; i++) {
+                    this.usernames.push(this.leaderboardInfo[i].username);
+                    this.wins.push(this.leaderboardInfo[i].wins);
+                    this.losses.push(this.leaderboardInfo[i].losses);
+                    this.goals_made.push(this.leaderboardInfo[i].goals_made);
+                    this.games_played.push(this.leaderboardInfo[i].games_played);
+                }
+                console.log('usernames', this.usernames)
+            })
         };
     })
     .component('menu', {

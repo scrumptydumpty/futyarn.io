@@ -22,7 +22,26 @@
   <div>  
     <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
     <div ng-if="$ctrl.showLeaderboard">
-      <leaderboard />
+      <div>
+        Name
+        <div ng-repeat="name in $ctrl.usernames">{{name}}</div>
+      </div>
+      <div>
+        Wins
+        <div ng-repeat="win in $ctrl.wins track by $index">{{win}}</div>
+      </div>
+      <div>
+        Losses
+        <div ng-repeat="loss in $ctrl.losses track by $index">{{loss}}</div>
+      </div>
+      <div>
+        Goals
+        <div ng-repeat="goal in $ctrl.goals_made track by $index">{{goal}}</div>
+      </div>
+      <div>
+        Games Played
+        <div ng-repeat="game in $ctrl.games_played track by $index">{{game}}</div>
+      </div>
     </div>
   </div>
   <div>  
