@@ -1,5 +1,5 @@
 angular.module('app')
-    .controller('menuCtrl', function (auth) {
+    .controller('menuCtrl', function (auth, $http) {
         console.log('hello from menu js');
         this.showLoginForm = false;
         this.showSignUpForm = false;
@@ -34,13 +34,25 @@ angular.module('app')
             this.showLeaderboard = !this.showLeaderboard;
         };
 
-        this.username = '';
-        this.wins = '';
-        this.losses = '';
-        this.games_played = '';
-        this.goals_made = '';
+        this.leaderboardInfo = {};
         this.handleLeaderboard = () => {
-            auth.retrieveLeaderboardInfo();
+            $http({
+                method: 'GET',
+                url: '/api/leaderboards'
+            }).then((response) => {
+                console.log('response', response);
+                for (let i = 0; i < response.data.length; i++) {
+                    this.leaderboardInfo[i] = {};
+                    this.leaderboardInfo[i]['username'] = response.data[i].username;
+                    this.leaderboardInfo[i]['wins'] = response.data[i].wins;
+                    this.leaderboardInfo[i]['losses'] = response.data[i].losses;
+                    this.leaderboardInfo[i]['goals_made'] = response.data[i]['goals_made'];
+                    this.leaderboardInfo[i]['games_played'] = response.data[i]['games_played'];
+                }
+                console.log(this.leaderboardInfo);
+            }, (error) => {
+                console.log(error);
+            });
         };
     })
     .component('menu', {
