@@ -1,5 +1,5 @@
 <div >
     <img ng-src="assets/images/blackCatUp.gif" id="cat"/> 
 <canvas id="maincanvas" height="650" width="1100" anim></canvas>
-<canvas id='playercanvas' height ="100" width ="100" ng-mouseover="Window.mouseoverHandler"move></canvas>
+<canvas id='playercanvas' height ="100" width ="100" ng-mousemove="$ctrl.mouseoverHandler($event)"move></canvas>
 </div>
