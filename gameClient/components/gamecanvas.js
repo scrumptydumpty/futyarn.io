@@ -32,12 +32,16 @@ angular.module('gameinstance')
         //left : 0 - this.right
         //up : 0 - this.down
     }
+    this.goals = {
+        team1 : 0,
+        team2 : 0
+    }
         
     this.tempBallVector = {
-        currentX : 10,
-        currentY : 320,
-        right : 5,
-        down  : 0,
+        currentX : 600,
+        currentY : 0,
+        right : 0,
+        down  : 4.76,
     }
     var pos = this.speed
     var neg = 0 - this.speed
@@ -69,7 +73,12 @@ angular.module('gameinstance')
     this.spin = function () {
         return context.rotation[context.playerVector.right][context.playerVector.down]
     }
-    
+    this.resetBall = function () {
+        this.tempBallVector.currentX = 600
+        this.tempBallVector.currentY = 325
+        this.tempBallVector.right = 0
+        this.tempBallVector.down = 0
+    } 
                 
 })
 .directive('anim', function()
@@ -101,9 +110,24 @@ angular.module('gameinstance')
                         ctx.clearRect(0,0, canvas.width, canvas.height)
                         ctx.fillStyle = "LightGreen"
                         ctx.fillRect(0,0,canvas.width,canvas.height);
+                        ctx.font = "40px Arial"
+                        
+                        ctx.fillStyle = "white"
+                        ctx.fillText(`${ctrl.goals.team2} : ${ctrl.goals.team1}`,561, 40)
+                        ctx.fillRect(50,0,4,650)
+                        ctx.fillRect(1146,0,4,650)
+                        ctx.fillRect(598,0,4,650)
+                        ctx.beginPath();
+                        ctx.arc(600,325 , 75, 0, 2 * Math.PI, false)
+                        ctx.lineWidth = 4;
+                        ctx.strokeStyle = 'white'
+                        ctx.stroke();
                         drawBall()
                         drawTestCat()
                         isCatBallCollision()
+                        ctx.fillStyle = "white"
+                        ctx.fillRect(0,250, 50, 150)
+                        ctx.fillRect(1150,250,50,150)
                     }
                     var drawTestCat = function ()
                     {
@@ -132,7 +156,32 @@ angular.module('gameinstance')
                         
                         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY),2))
                         // console.log(ballCenterDelta)
-                        return (ballCenterDelta < 10)
+                        return (ballCenterDelta < 11)
+                    }
+                    var isCatBodyCollision = function (){
+                         var currentCenterX = ctrl.playerVector.currentX + 50
+                        var currentCenterY = ctrl.playerVector.currentY + 50
+                        var ball = ctrl.tempBallVector
+                        var ballCenterX = ball.currentX +5
+                        var ballCenterY = ball.currentY +5
+                        
+                        
+                        var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY),2))
+                        return (ballCenterDelta < 12)
+                    } 
+                    
+                    var getKickDirection = function (){
+                       var map = {
+                           0   : [0,-9],
+                           45  : [9,-9],
+                           90  : [9,0],
+                           135 : [9,9],
+                           180 : [0,9],
+                           225 : [-9,9],
+                           270 : [-9,0],
+                           315 : [-9,-9]
+                       }
+                       return map[ctrl.spin()]
                     }
                     
                     var drawBall = function () 
@@ -142,6 +191,7 @@ angular.module('gameinstance')
                         var playerY = ctrl.playerVector.currentY;
                         var ballX = ball.currentX;
                         var ballY = ball.currentY;
+                        var bounce = isWallBounce()
                         ctx.beginPath();
                         ctx.arc(ball.currentX, ball.currentY, 7, 0, 2 * Math.PI, false)
                         ctx.fillStyle = 'red';
@@ -150,29 +200,58 @@ angular.module('gameinstance')
                         ctx.strokeStyle = '#8b0000'
                         ctx.stroke();
                         
+                        // console.log(ball.currentX)
+                        if (bounce){
+                            if (bounce === 'x'){
+                                ball.currentX -= (2 * ball.right)
+                                ball.right -= (2 * (ball.right))
+                            } else if (bounce === 'y'){
+                                ball.currentY -= (2 * ball.down)
+                                ball.down  -= (2 * (ball.down))
+                            } else if (bounce === '1'){
+                                ctrl.goals.team1 += 1
+                                ctrl.resetBall()
+                            } else if (bounce === '2'){
+                                ctrl.goals.team2 += 1
+                                ctrl.resetBall()
+                            }                        
+                        }
                         ball.currentX += ball.right
                         ball.currentY += ball.down
-                        
-                        if (ball.right > 0 ){
-                            ball.right -= .025
+                        if (Math.abs(ball.right) > 0.25){
+                            if (ball.right > 0) {
+                                ball.right -= .035
+                            } else {
+                                ball.right += .035
+                            }
                         } else {
-                            ball.right += .025
+                            ball.right = 0
                         }
-                        if (ball.down > 0){
-                            ball.down -= .025
+                        if (Math.abs(ball.down) > 0.25){
+                            if (ball.down > 0){
+                                ball.down -= .035
+                            } else {
+                                ball.down += .035
+                            }
                         } else {
-                            ball.down += .025
+                            ball.down = 0
                         }
                         if (isCatBallCollision()){
                             // console.log(ball.right)
-                            ball.right += (ctrl.playerVector.right)
-                            ball.down += (ctrl.playerVector.down)
+                            ball.right += (ctrl.playerVector.right - ball.right)
+                            ball.down += (ctrl.playerVector.down - ball.down)
+                            if (ctrl.keysPressed[32]){
+                                var kick = getKickDirection()
+                                ctrl.tempBallVector.right = kick[0]
+                                ctrl.tempBallVector.currentX += (3 * kick[0])
+                                ctrl.tempBallVector.down = kick[1]
+                                ctrl.tempBallVector.currentY += (3 * kick[1])
+                                console.log(ctrl.tempBallVector)
+                            }
+                        } else if (isCatBodyCollision()) {
+                            ball.right -= (2 * (ball.right)) 
+                            ball.down -= (2 * (ball.down)) 
                         }
-                        if (isWallBounce()){
-                            ball.right -= (2 * (ball.right))
-                            ball.down  -= (2 * (ball.down))
-                        }
-                        
                     }
 
                     var isWallBounce = function() {
@@ -182,8 +261,21 @@ angular.module('gameinstance')
                         var ballX = ball.currentX;
                         var ballY = ball.currentY;
                         // console.log(ball.currentX , ball.currentY)
-                        return (ballX < 5|| ballX > (canvas.width - 5) || ballY < 5 || ballY > (canvas.height - 5) )
-                    }
+                        if (ballY > 250 && ballY < 400){
+                            if (ballX < 55){
+                                return '1'
+                            } else if (ballX > (canvas.width - 55)){
+                                return '2'
+                            }
+                        }
+                        if (ballX < 55|| ballX > (canvas.width - 55)){
+                            return 'x'
+                        } 
+                        if (ballY < 0 || ballY > (canvas.height - 10)){
+                            return 'y' 
+                        }
+                        return false;
+                        }
                     
 //iterate through keys pressed, check for true
 //if the key is pressed, change player vector based on keymap
@@ -247,8 +339,6 @@ angular.module('gameinstance')
                 function gameLoop(){
                         window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0,canvas.height, canvas.width)
-                        ctx.rect(0,0,canvas.width, canvas.height);
-                        ctx.stroke()
                         var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
                         ctrl.rotation[0][0] = spin
                         ctx.translate(canvas.width/2, canvas.height/2)
