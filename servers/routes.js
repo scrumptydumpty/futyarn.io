@@ -11,11 +11,12 @@ router.post('/api/login', (req, res, next) => {
 
 // get user leaderboard info from DB
 router.get('/api/leaderboards', (req, res, next) => {
-    db.getLeaderboard((err, data) => {
+    db.getLeaderboards((err, data) => {
         if (err) {
             console.log('error getting leaderboards');
         } else {
-            console.log(data.rows);
+            console.log('leaderboard data received');
+            // console.log(data.rows);
             res.setStatus = 200;
             res.send(data.rows);
         }
@@ -24,13 +25,14 @@ router.get('/api/leaderboards', (req, res, next) => {
 
 // get user leaderboard info from DB
 router.get('/api/userinfo', (req, res, next) => {
-    let tempName = 'sucky kitty'
+    let tempName = 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
     let username = `\'${tempName}\'`;
     db.getUserInfo(username, (err, data) => {
         if (err) {
             console.log('error getting userinfo');
         } else {
-            console.log(data.rows[0]);
+            console.log('user info received');
+            // console.log(data.rows[0]);
             res.setStatus = 200;
             res.send(data.rows[0]);
         }

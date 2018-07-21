@@ -1,7 +1,6 @@
 var pg = require('pg');
-// var connection = "postgres://userName:password@serverName/ip:port/nameOfDatabase";
-// var connection = "postgres://userName:password@servername/ip:port/futyarn.io";
-var connection = 'postgres://localhost:5432/futyarn.io';
+var config = require('../config.js');
+var connection = config.connection;
 var pgClient = new pg.Client(connection);
 
 pgClient.connect();
@@ -49,7 +48,7 @@ const getUserInfo = (username, callback) =>
 
 
 
-const getLeaderboard = (callback) =>
+const getLeaderboards = (callback) =>
 {
     let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
     pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
@@ -104,7 +103,7 @@ const getLeaderboard = (callback) =>
 module.exports = {
     pgClient,
     getUserInfo,
-    getLeaderboard
+    getLeaderboards
 };
 
 // IGNORE FOR NOW
