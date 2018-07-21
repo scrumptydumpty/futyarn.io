@@ -39,7 +39,7 @@ const addNewUser = (username, password, callback) =>
 const getUserInfo = (username, callback) =>
 {
     console.log('getUserInfo function fired, username: ', username);
-    let getUserInfoQuery = `SELECT username, wins, losses, games_played, goals_made FROM players WHERE username = ${username}`;
+    let getUserInfoQuery = `SELECT username, wins, losses, games_played, goals_made FROM players WHERE username = '${username}'`;
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: getUserInfoQuery failed');

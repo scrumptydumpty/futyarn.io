@@ -6,8 +6,8 @@ var db = require('../database/postgreSQL-index');
 
 // add user to DB
 router.post('/api/signup', (req, res, next) => {
-    let username = 'cheetara';
-    let password = 'password';
+    let username = req.body.username;
+    let password = req.body.password;
     db.addNewUser(username, password, (err, data) => {
         if (err) {
             console.log('error with user signup');
@@ -26,6 +26,8 @@ router.post('/api/login', (req, res, next) => {
     res.end();
 });
 
+
+
 // get user leaderboard info from DB
 router.get('/api/leaderboards', (req, res, next) => {
     db.getLeaderboards((err, data) => {
@@ -42,8 +44,7 @@ router.get('/api/leaderboards', (req, res, next) => {
 
 // get user leaderboard info from DB
 router.get('/api/userinfo', (req, res, next) => {
-    let tempName = 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
-    let username = `\'${tempName}\'`;
+    let username = 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
     db.getUserInfo(username, (err, data) => {
         if (err) {
             console.log('error getting userinfo');
