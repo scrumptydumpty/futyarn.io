@@ -35,11 +35,6 @@ angular.module('app')
         };
 
         this.leaderboardInfo;
-        this.usernames = [];
-        this.wins = [];
-        this.losses = [];
-        this.goals_made = [];
-        this.games_played = [];
         this.submitGetRequest = false;
         this.handleLeaderboard = () => {
             if (!this.submitGetRequest) {
@@ -52,14 +47,6 @@ angular.module('app')
                     this.leaderboardInfo = response.data;
                 }, (error) => {
                     console.log(error);
-                }).then(() => {
-                    for (let i = 0; i < this.leaderboardInfo.length; i++) {
-                        this.usernames.push(this.leaderboardInfo[i].username);
-                        this.wins.push(this.leaderboardInfo[i].wins);
-                        this.losses.push(this.leaderboardInfo[i].losses);
-                        this.goals_made.push(this.leaderboardInfo[i].goals_made);
-                        this.games_played.push(this.leaderboardInfo[i].games_played);
-                    }
                 });
             }
         };

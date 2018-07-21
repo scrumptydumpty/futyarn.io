@@ -28,26 +28,41 @@
   <div>  
     <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
     <div ng-if="$ctrl.showLeaderboard">
-      <div>
-        Name
-        <div ng-repeat="name in $ctrl.usernames">{{name}}</div>
-      </div>
-      <div>
-        Wins
-        <div ng-repeat="win in $ctrl.wins track by $index">{{win}}</div>
-      </div>
-      <div>
-        Losses
-        <div ng-repeat="loss in $ctrl.losses track by $index">{{loss}}</div>
-      </div>
-      <div>
-        Goals
-        <div ng-repeat="goal in $ctrl.goals_made track by $index">{{goal}}</div>
-      </div>
-      <div>
-        Games Played
-        <div ng-repeat="game in $ctrl.games_played track by $index">{{game}}</div>
-      </div>
+      <table>
+        
+      
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Goals</th>
+          <th>Games Played</th>
+        </tr>
+      </thead>
+      <tbody align="right">
+       
+              <!-- <row  ng-repeat="info in $ctrl.leaderboardInfo" leaderboard="info" /> -->
+              <tr ng-repeat="info in $ctrl.leaderboardInfo">
+                  <td>
+                      {{info.username}}
+                  </td>
+                  <td>
+                      {{info.wins}}
+                  </td>
+                  <td>
+                      {{info.losses}}
+                  </td>
+                  <td>
+                      {{info.goals_made}}
+                  </td>
+                  <td>
+                      {{info.games_played}}
+                  </td>
+              </tr>
+            
+            </tbody>
+          </table>
     </div>
   </div>
   <div>  
