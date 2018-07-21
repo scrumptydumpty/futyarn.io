@@ -3,6 +3,23 @@ var router = express.Router();
 var db = require('../database/postgreSQL-index');
 
 
+
+// add user to DB
+router.post('/api/signup', (req, res, next) => {
+    let username = 'cheetara';
+    let password = 'password';
+    db.addNewUser(username, password, (err, data) => {
+        if (err) {
+            console.log('error with user signup');
+        } else {
+            console.log('user signup completed');
+            res.setStatus = 201;
+            res.send('user successfully signed up');
+        }
+    });
+});
+
+
 // hit up DB to find user info and login
 // establish a session
 router.post('/api/login', (req, res, next) => {
@@ -39,10 +56,6 @@ router.get('/api/userinfo', (req, res, next) => {
     });
 });
 
-// add user to DB
-router.post('/api/signup', (req, res, next) => {
-    
-});
 
 // hit up russell's server
 router.get('/api/joingame', (req, res, next) => {

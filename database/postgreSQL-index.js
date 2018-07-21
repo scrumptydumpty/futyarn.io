@@ -19,11 +19,27 @@ pgClient.once('open', function ()
 // FUNCTION NEEDED
 // addNewUser
 
+const addNewUser = (username, password, callback) =>
+{
+    console.log('addNewUser function fired, username: ', username);
+    let addNewUserQuery = `INSERT INTO players (username, password, wins, losses, games_played, goals_made) VALUES ('${username}', '${password}', 0, 0, 0, 0)`;
+    pgClient.query(addNewUserQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: addNewUser failed');
+            callback(err. null);
+        } else {
+            console.log('addNewUser completed, results: ', results);
+            callback(null, results);
+        }
+    });
+}
+
+
 
 const getUserInfo = (username, callback) =>
 {
+    console.log('getUserInfo function fired, username: ', username);
     let getUserInfoQuery = `SELECT username, wins, losses, games_played, goals_made FROM players WHERE username = ${username}`;
-    console.log(getUserInfoQuery);
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: getUserInfoQuery failed');
@@ -43,13 +59,16 @@ const getUserInfo = (username, callback) =>
 //   goals_made: 13 }
 
 
+
 // FUNCTION NEEDED
 // updateUserInfo
 
 
 
+
 const getLeaderboards = (callback) =>
 {
+    console.log('getLeaderboards function')
     let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
     pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
         if (err) {
@@ -71,12 +90,16 @@ const getLeaderboards = (callback) =>
 //   goals_made: 13 }
 
 
+
 // FUNCTION NEEDED
 // postGameInfo
+// handlepost request from game server
+
 
 
 // FUNCTION NEEDED
 // getGameInfo
+// handle get request from client
 
 
 
@@ -102,6 +125,7 @@ const getLeaderboards = (callback) =>
 
 module.exports = {
     pgClient,
+    addNewUser,
     getUserInfo,
     getLeaderboards
 };
