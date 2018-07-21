@@ -29,35 +29,48 @@ INSERT INTO players (username, password, wins, losses, games_played, goals_made)
 
 -- Create users table
 CREATE TABLE games ( 
-    game_id            SERIAL PRIMARY KEY,
-    team_one_one       INTEGER REFERENCES players(user_id) NULL,
-    team_one_two       INTEGER REFERENCES players(user_id) NULL,
-    team_one_three     INTEGER REFERENCES players(user_id) NULL,
-    team_one_four      INTEGER REFERENCES players(user_id) NULL,
-    team_one_five      INTEGER REFERENCES players(user_id) NULL,
-    team_two_one       INTEGER REFERENCES players(user_id) NULL,
-    team_two_two       INTEGER REFERENCES players(user_id) NULL,
-    team_two_three     INTEGER REFERENCES players(user_id) NULL,
-    team_two_four      INTEGER REFERENCES players(user_id) NULL,
-    team_two_five      INTEGER REFERENCES players(user_id) NULL,
-    team_one_score     INTEGER NOT NULL,
-    team_two_score     INTEGER NOT NULL,
-    winning_team       VARCHAR(255) NOT NULL,
-    losing_team        VARCHAR(255) NOT NULL,
-    cat_of_the_game    INTEGER REFERENCES players(user_id)
+    game_id                SERIAL PRIMARY KEY,
+    team_one_one           INTEGER REFERENCES players(user_id) NULL,
+    team_one_two           INTEGER REFERENCES players(user_id) NULL,
+    team_one_three         INTEGER REFERENCES players(user_id) NULL,
+    team_one_four          INTEGER REFERENCES players(user_id) NULL,
+    team_one_five          INTEGER REFERENCES players(user_id) NULL,
+    team_two_one           INTEGER REFERENCES players(user_id) NULL,
+    team_two_two           INTEGER REFERENCES players(user_id) NULL,
+    team_two_three         INTEGER REFERENCES players(user_id) NULL,
+    team_two_four          INTEGER REFERENCES players(user_id) NULL,
+    team_two_five          INTEGER REFERENCES players(user_id) NULL,
+    team_one_score         INTEGER NOT NULL,
+    team_two_score         INTEGER NOT NULL,
+    team_one_one_score     INTEGER NOT NULL,
+    team_one_two_score     INTEGER NOT NULL,
+    team_one_three_score   INTEGER NOT NULL,
+    team_one_four_score    INTEGER NOT NULL,
+    team_one_five_score    INTEGER NOT NULL,
+    team_two_one_score     INTEGER NOT NULL,
+    team_two_two_score     INTEGER NOT NULL,
+    team_two_three_score   INTEGER NOT NULL,
+    team_two_four_score    INTEGER NOT NULL,
+    team_two_five_score    INTEGER NOT NULL,
+    winning_team           VARCHAR(255) NOT NULL,
+    losing_team            VARCHAR(255) NOT NULL,
+    cat_of_the_game        INTEGER REFERENCES players(user_id)
 );
 
 -- Add sample game data
 INSERT INTO games (
     team_one_one, team_one_two, team_one_three, team_one_four, team_one_five,
     team_two_one, team_two_two, team_two_three, team_two_four, team_two_five,
-    team_one_score, team_two_score, winning_team, losing_team, cat_of_the_game) 
+    team_one_score, team_two_score, 
+    team_one_one_score, team_one_two_score, team_one_three_score, team_one_four_score, team_one_five_score,    
+    team_two_one_score, team_two_two_score, team_two_three_score, team_two_four_score, team_two_five_score,
+    winning_team, losing_team, cat_of_the_game) 
     VALUES
-    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 'team_one', 'team_two', 1),
-    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 'team_one', 'team_two', 1),
-    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 'team_one', 'team_two', 1),
-    (1, 2, 3, 4, 5, 6, 7, 8, NULL, NULL, 50, 30, 'team_one', 'team_two', 1),
-    (1, 2, 3, 4, 5, 6, 7, 8, NULL, NULL, 50, 30, 'team_one', 'team_two', 1);
+    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 10, 10, 10, 10, 10, 6, 6, 6, 6, 6, 'team_one', 'team_two', 1),
+    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 50, 0, 0, 0, 0, 30, 0, 0, 0, 0, 'team_one', 'team_two', 1),
+    (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 30, 10, 10, 10, 10, 10, 6, 6, 6, 6, 6, 'team_one', 'team_two', 1),
+    (1, 2, 3, 4, 5, 6, 7, 8, NULL, NULL, 50, 30, 20, 20, 10, 0, 0, 20, 10, 0, 0, 0, 'team_one', 'team_two', 1),
+    (1, 2, 3, 4, 5, 6, 7, 8, NULL, NULL, 50, 30, 50, 0, 0, 0, 0, 15, 15, 0, 0, 0, 'team_one', 'team_two', 1);
 
 
 

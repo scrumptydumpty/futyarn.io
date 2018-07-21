@@ -5,12 +5,12 @@ var pgClient = new pg.Client(connection);
 
 pgClient.connect();
 
-pgClient.on('error', function () 
+pgClient.on('error', () => 
 {
     console.log('postgres connection error');
 });
 
-pgClient.once('open', function () 
+pgClient.once('open', () => 
 {
     console.log('postgres connected successfully');
 });
@@ -32,7 +32,7 @@ const addNewUser = (username, password, callback) =>
             callback(null, results);
         }
     });
-}
+};
 
 
 
@@ -68,7 +68,7 @@ const getUserInfo = (username, callback) =>
 
 const getLeaderboards = (callback) =>
 {
-    console.log('getLeaderboards function')
+    console.log('getLeaderboards function');
     let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
     pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
         if (err) {
