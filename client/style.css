@@ -1,0 +1,149 @@
+/* body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Graduate', cursive;
+    color: white;
+}
+
+.img1, .img2, .img3 {
+    position: relative;
+    opacity: 0.65;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.img1 {
+    background-image: url('./images/soccerField.jpg');
+    min-height: 100%;
+}
+
+.img2 {
+    background-image: url('./images/angryCat.jpg');
+    min-height: 400px:
+}
+
+.img3 {
+    background-image: url('./images/determinedCat.jpg');
+    min-height: 400px;
+}
+
+.caption {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    color: #000;
+  }
+  
+  .caption span.border {
+    background-color: #111;
+    color: #fff;
+    padding: 18px;
+    font-size: 25px;
+    letter-spacing: 10px;
+  }
+  
+  .content {
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font: 20px "Lato", sans-serif;
+    color: #111;
+  }
+  
+  /* Turn off parallax scrolling for tablets and phones */
+  /* @media only screen and (max-device-width: 1024px) {
+      .bgimg-1, .bgimg-2, .bgimg-3 {
+          background-attachment: scroll;
+      }
+  } */ 
+
+
+
+
+
+
+
+/* .wrapper {
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    perspective: 1px;
+    background: black;
+    background-size: cover;
+    background-image: url('./images/soccerField.jpg');
+    background-repeat: no-repeat;
+    margin: 0;
+  } */
+
+  html {
+      height: 100%;
+      overflow: hidden;
+  }
+
+  body {
+      margin: 0;
+      padding: 0;
+      transform-style: preserve-3d;
+      perspective: 1px;
+      height: 100%;
+      width: 100%;
+      background-image: url('./images/soccerField.jpg');
+      overflow-x: hidden;
+      overflow-y: scroll;
+      background-repeat: no-repeat;
+      background-size: cover;
+  }
+
+  .section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 80px;
+    color: white;
+    font-family: 'Graduate', cursive;
+    letter-spacing: 4px;
+  }
+  
+  .parallax::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateZ(-1px) scale(2);
+    background-size: cover;
+    z-index: -1;
+    /* background-image: url('./images/soccerField.jpg'); */
+    background-size: 100%;
+    background-repeat: no-repeat;
+    
+  }
+
+  .content {
+    height: 200vh;
+    display: flex;
+    justify-content: center;
+    background-image: url('./images/angryCat.jpg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    margin: 0;
+  }
+  
+  .btns {
+      /* text-align: center; */
+      height: 100vh;
+    display: flex;
+    justify-content: center;
+    /* background-image: url('./images/angryCat.jpg'); */
+    /* background-repeat: no-repeat; */
+    /* background-size: 100%; */
+    margin: 0;
+    font-size: 60px;
+  }
+  
