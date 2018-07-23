@@ -8,8 +8,7 @@ angular.module('app')
     })
     .component('signUp', {
         bindings: {
-            username: '<', 
-            password: '<'
+            togglesignup: '<'
         },
         controller: 'signUpCtrl',
         templateUrl: '/templates/sign-up.html'
