@@ -1,9 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 
-var router = require('./routes.js');
-var db = require('../database/postgreSQL-index.js');
-
 var app = express();
 
 var routes = require('./routes.js');

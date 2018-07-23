@@ -4,29 +4,59 @@ var db = require('../database/postgreSQL-index');
 
 
 
+// add user to DB
+router.post('/api/signup', (req, res, next) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    db.addNewUser(username, password, (err, data) => {
+        if (err) {
+            console.log('error with user signup');
+        } else {
+            console.log('user signup completed');
+            res.setStatus = 201;
+            res.send('user successfully signed up');
+        }
+    });
+});
+
+
 // hit up DB to find user info and login
 // establish a session
 router.post('/api/login', (req, res, next) => {
-    res.setStatus = 200;
-    res.end('<div><div> hello!!!  </div> </div>');
+    res.end();
 });
+
+
 
 // get user leaderboard info from DB
 router.get('/api/leaderboards', (req, res, next) => {
-    db.getLeaderboard((err, data) => {
+    db.getLeaderboards((err, data) => {
         if (err) {
             console.log('error getting leaderboards');
         } else {
-            console.log(data.rows);
+            console.log('leaderboard data received');
+            // console.log(data.rows);
+            res.setStatus = 200;
             res.send(data.rows);
         }
     });
 });
 
-// add user to DB
-router.post('/api/signup', (req, res, next) => {
-    
+// get user leaderboard info from DB
+router.get('/api/userinfo', (req, res, next) => {
+    let username = 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
+    db.getUserInfo(username, (err, data) => {
+        if (err) {
+            console.log('error getting userinfo');
+        } else {
+            console.log('user info received');
+            // console.log(data.rows[0]);
+            res.setStatus = 200;
+            res.send(data.rows[0]);
+        }
+    });
 });
+
 
 // hit up russell's server
 router.get('/api/joingame', (req, res, next) => {
