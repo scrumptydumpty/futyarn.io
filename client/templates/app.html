@@ -1,6 +1,74 @@
 <div>
-  <div>
-    <menu />
-  </div>
-
+    <div>
+        <h1 class="section">
+          Fútyarn
+        </h1>
+        <h4 class="section">
+          Soccer for Cats!
+        </h4>
+        <div class="info">
+        <div>
+            <h3>Rules</h3>
+            <p>Kick The Ball!</p>
+          </div>
+        <div>
+        <div>  
+          <input type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
+          <div ng-if="$ctrl.showLoginForm">
+            <log-in toggle="$ctrl.toggle"/>
+          </div>
+          <div ng-if="$ctrl.showLogOut">
+            <input type="button" value="Logout" ng-click="$ctrl.toggle()"/>
+          </div>
+          </div>
+        <div> 
+          <input type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
+          <div ng-if="$ctrl.showSignUpForm">
+            <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
+          </div>
+        </div>
+        </div>
+        <div>  
+          <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
+          <div ng-if="$ctrl.showLeaderboard">
+            <div>Leaderboard</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Wins</th>
+                  <th>Losses</th>
+                  <th>Goals</th>
+                  <th>Games Played</th>
+                </tr>
+              </thead>
+              <tbody align="right">
+                <tr ng-repeat="info in $ctrl.leaderboardInfo">
+                  <td>
+                      {{info.username}}
+                  </td>
+                  <td>
+                      {{info.wins}}
+                  </td>
+                  <td>
+                      {{info.losses}}
+                  </td>
+                  <td>
+                      {{info.goals_made}}
+                  </td>
+                  <td>
+                      {{info.games_played}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>  
+          <input type="button" value="Let's Play!">
+        </div>
+      </div>
+      </div>
+      </div>
+      
 </div>
