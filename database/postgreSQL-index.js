@@ -44,11 +44,13 @@ const getUserInfo = (method, identifier, callback) =>
         getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}'`;
     } else if (method === 'id') {
         console.log('getUserInfo function fired, id: ', identifier);
-        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE id = '${identifier}'`;
+        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier}`;
     }
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
+        // console.log('error ---------------------------------------');
+        // console.log(err);
         if (err) {
-            console.log('error: getUserInfoQuery failed');
+            console.log('error: getUserInfo failed');
             callback(err, null);
         } else {
             console.log('getUserInfoQuery results: ', results);

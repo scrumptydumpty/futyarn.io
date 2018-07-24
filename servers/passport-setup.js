@@ -10,15 +10,19 @@ const db = require('../database/postgreSQL-index');
 
 // app.use(passport.initialize());
 
-passport.serializeUser((user, done) => {
-    done(null, user.user_id)
-});
+// passport.serializeUser((user, done) => {
+//     console.log('serilizeUser function fired');
+//     done(null, user.user_id)
+// });
 
-passport.serializeUser((id, done) => {
-    db.getUserInfo('id', id, (user) => {
-        done(null, user);
-    });
-});
+// passport.deserializeUser((id, done) => {
+//     console.log('deserilizeUser function fired');
+//     console.log('id: what is going on ?????????????????????????????????????????????????????????????');
+//     console.log(id);
+//     db.getUserInfo('id', id, (user) => {
+//         done(null, user);
+//     });
+// });
 
 passport.use(
     new GoogleStrategy({

@@ -28,6 +28,7 @@ router.get('/api/login/google', passport.authenticate('google', {
 router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
     failureRedirect: '/api/login/google/nope'
 }*/), (req, res) => {
+    // res.send(req.user);
     res.redirect('/');
     // res.send('you are logged in via google');
 });

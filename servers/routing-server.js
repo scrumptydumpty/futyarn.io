@@ -1,15 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var routes = require('./routes.js');
+const express = require('express');
+const bodyParser = require('body-parser');
+const routes = require('./routes.js');
 const passportSetup = require('./passport-setup.js');
+const cookieSession = require('cookie-session');
+const keys = require('../config/config.js');
+const passport = require('passport');
 
-// var cookieParser = require('cookie-parser');
-// var session = require('express-session');
-// var passport = require('passport');
+// const cookieParser = require('cookie-parser');
+// const session = require('express-session');
 
-var app = express();
+const app = express();
 
-var port = process.env.PORT || 3000;
+let port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/../client'));
 app.use(express.static(__dirname + '/../node_modules'));
@@ -20,6 +22,16 @@ app.use(bodyParser.json());
 // app.use('/auth', someFile); // for auth routes
 
 // app.use('/auth', authRoutes.authRouter);
+
+app.use(cookieSession(
+    {
+        maxAge: 24 * 60 * 60 * 1000,
+        keys: [keys.session.cookieKey]
+    }
+));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', routes.router); // maybe '/*' insead of '/'
 
