@@ -1,8 +1,7 @@
 <div>
 <form ng-submit="$ctrl.handleLogin(); $ctrl.toggle();">
-  <input type="text" ng-model="$ctrl.username" />
-  <input type="password" ng-model="$ctrl.password" />
-  <input type="submit" value="Log In!"/>
+  <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
+  <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
+  <input type="submit" class="submit" value="Log In!"/>
 </form>
-<div>{{$ctrl.username}} {{$ctrl.password}} </div>
 </div>
