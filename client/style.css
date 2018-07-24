@@ -114,6 +114,10 @@ html {
       height: 60px;
   }
 
+  input {
+      width: 10%;
+  }
+
   h2 {
       text-align: center;
   }
@@ -132,6 +136,27 @@ html {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
   }
 
+  .submit {
+      color: white;
+      width: 10%;
+      background-color: rgba(0, 0, 0, 0.5);
+      font: 20px 'Graduate', cursive;
+      border-radius: 10px;
+      border: none;
+      margin: 40px;
+  }
+
+  .submit:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+
+  .user-input {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: none;
+    border-radius: 5px;
+    font: 20px 'Graduate', cursive;
+    color: white;
+  }
 
   /* Arrow button on home page*/
 
