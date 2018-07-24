@@ -4,18 +4,20 @@
           Fútyarn
         </h1>
         <div class="scroll-down"></div>
-        <h4 class="section">
-          Soccer for Cats!
-        </h4>
         <div class="info">
+        <div>
           <div>
+            <input class="btn" type="button" value="Rules" ng-click="$ctrl.toggleRules();" />
+            <div ng-if="$ctrl.showRules">
               <h3>Rules</h3>
-              <p>Kick The Ball!</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Arcu dui vivamus arcu felis bibendum. Diam vulputate ut pharetra sit. Proin sed libero enim sed faucibus turpis in. Tincidunt id aliquet risus feugiat in ante metus dictum. Convallis aenean et tortor at. Habitant morbi tristique senectus et netus. Elit ut aliquam purus sit amet luctus venenatis lectus magna. Nunc consequat interdum varius sit. Aliquet nibh praesent tristique magna sit. Scelerisque felis imperdiet proin fermentum leo vel orci. Ultricies mi quis hendrerit dolor magna eget est. Aenean et tortor at risus viverra. In massa tempor nec feugiat nisl pretium fusce id velit. Etiam non quam lacus suspendisse faucibus interdum posuere lorem. Interdum velit laoreet id donec ultrices. Ultrices dui sapien eget mi proin sed libero. Sed odio morbi quis commodo. Nulla pellentesque dignissim enim sit amet. Lacus vestibulum sed arcu non odio euismod lacinia at quis.
+
+                </p>
+              </div>
           </div>
         </div>
-        <div class="section"></div>
-        <div class="info">  
-            <input type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
+        <div>  
+            <input class="btn" type="button" value="Leaderboard" ng-click="$ctrl.toggleLeaderboard(); $ctrl.handleLeaderboard();"/>
             <div ng-if="$ctrl.showLeaderboard">
               <h2><strong>Leaderboard</strong></h2>
               <table>
@@ -50,27 +52,28 @@
               </table>
             </div>
           </div>
-        <div class="info">
+        <div>
            <div>  
-             <input type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
+             <input class="btn" type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
                <div ng-if="$ctrl.showLoginForm">
                  <log-in toggle="$ctrl.toggle"/>
                </div>
                <div ng-if="$ctrl.showLogOut">
-                 <input type="button" value="Logout" ng-click="$ctrl.toggle()"/>
+                 <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle()"/>
                </div>
            </div>
         </div>
-        <div class="info"> 
-          <input type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
+        <div> 
+          <input class="btn" type="button" value="Signup" ng-click="$ctrl.toggleSignUpForm()"/>
              <div ng-if="$ctrl.showSignUpForm">
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
              </div>
         </div>
-        <div class="section"></div>
-        <div class="content">  
-          <input type="button" value="Let's Play!">
+        <!-- <div class="section"></div> -->
+        <div>  
+          <input class="btn" type="button" value="Let's Play!">
         </div>
     </div>
+  </div>
 </div>
     
