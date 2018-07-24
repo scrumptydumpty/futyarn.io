@@ -130,6 +130,7 @@ html {
       border-radius: 10px;
       border: none;
       margin: 40px;
+      outline: none;
   }
 
   .btn:hover {
@@ -144,6 +145,7 @@ html {
       border-radius: 10px;
       border: none;
       margin: 40px;
+      outline: none;
   }
 
   .submit:hover {
@@ -156,6 +158,7 @@ html {
     border-radius: 5px;
     font: 20px 'Graduate', cursive;
     color: white;
+    outline: none;
   }
 
   /* Arrow button on home page*/
