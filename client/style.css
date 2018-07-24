@@ -81,7 +81,7 @@ html {
   } */
 
   .info {
-    height: 85vh;
+    height: cover;
     margin:0;
     padding:0;
     color:black;
@@ -111,7 +111,7 @@ html {
   }
 
   tr {
-      height: 100px;
+      height: 60px;
   }
 
   h2 {
