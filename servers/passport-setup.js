@@ -10,6 +10,16 @@ const db = require('../database/postgreSQL-index');
 
 // app.use(passport.initialize());
 
+passport.serializeUser((user, done) => {
+    done(null, user.user_id)
+});
+
+passport.serializeUser((id, done) => {
+    db.getUserInfo('id', id, (user) => {
+        done(null, user);
+    });
+});
+
 passport.use(
     new GoogleStrategy({
     // options for the google strategy
@@ -23,13 +33,14 @@ passport.use(
         // const googleId = profile.id; // add later
         const username = profile.displayName;
         const password = 'password';
-        db.getUserInfo(username, (err, data) => {
-            if (data.rows[0]) {
+        db.getUserInfo('username', username, (err, data) => {
+            const foundUser = data.rows[0];
+            if (foundUser) {
                 console.log(`user ${username} already exists in database`);
-
+                done(null, foundUser);
             } else {
                 console.log('user will be created with google oauth credentials')
-                db.addNewUser(username, password, (err, data) => {
+                db.addNewUser(username, password, (err, newUser) => {
                     if (err) {
                         console.log('error with user signup via google oauth');
                         console.log(err);
@@ -37,6 +48,7 @@ passport.use(
                         console.log('user signup via google oauth completed');
                         // res.setStatus = 201;
                         // res.send('user successfully signed up via google oauth');
+                        done(null, data);
                     }
                 });
             }

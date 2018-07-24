@@ -58,8 +58,9 @@ router.post('/api/signup', (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    db.getUserInfo(username, (err, data) => {
-        if (data.rows[0]) {
+    db.getUserInfo('username', username, (err, data) => {
+        const foundUser = data.rows[0];
+        if (foundUser) {
             console.log(`user ${username} already exists in database`);
         } else {
             db.addNewUser(username, password, (err, data) => {
@@ -98,7 +99,7 @@ router.get('/api/leaderboards', (req, res, next) => {
 // get user leaderboard info from DB
 router.get('/api/userinfo', (req, res, next) => {
     let username = req.body.username || 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
-    db.getUserInfo(username, (err, data) => {
+    db.getUserInfo('username', username, (err, data) => {
         if (err) {
             console.log('error getting userinfo');
         } else {

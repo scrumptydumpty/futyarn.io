@@ -36,10 +36,16 @@ const addNewUser = (username, password, callback) =>
 
 
 
-const getUserInfo = (username, callback) =>
+const getUserInfo = (method, identifier, callback) =>
 {
-    console.log('getUserInfo function fired, username: ', username);
-    let getUserInfoQuery = `SELECT username, wins, losses, games_played, goals_made FROM players WHERE username = '${username}'`;
+    let getUserInfoQuery;
+    if (method === 'username') {
+        console.log('getUserInfo function fired, username: ', identifier);
+        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}'`;
+    } else if (method === 'id') {
+        console.log('getUserInfo function fired, id: ', identifier);
+        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE id = '${identifier}'`;
+    }
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: getUserInfoQuery failed');
@@ -52,7 +58,8 @@ const getUserInfo = (username, callback) =>
 };
 // Returns user data for the requested player
 // Data is a JavaScript object and contains the following key:value pairs
-// { username: 'meow kitty',
+// { user_id: 1,
+//   username: 'meow kitty',
 //   wins: 5,
 //   losses: 0,
 //   games_played: 5,
