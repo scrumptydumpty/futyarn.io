@@ -1,5 +1,5 @@
 var pg = require('pg');
-var config = require('../config.js');
+var config = require('../config/config.js');
 var connection = config.connection;
 var pgClient = new pg.Client(connection);
 
@@ -26,7 +26,7 @@ const addNewUser = (username, password, callback) =>
     pgClient.query(addNewUserQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: addNewUser failed');
-            callback(err. null);
+            callback(err, null);
         } else {
             console.log('addNewUser completed, results: ', results);
             callback(null, results);
@@ -43,7 +43,7 @@ const getUserInfo = (username, callback) =>
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: getUserInfoQuery failed');
-            callback(err. null);
+            callback(err, null);
         } else {
             console.log('getUserInfoQuery results: ', results);
             callback(null, results);

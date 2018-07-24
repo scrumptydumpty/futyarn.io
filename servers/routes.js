@@ -1,31 +1,84 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../database/postgreSQL-index');
+const express = require('express');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20');
+const keys = require('../config/config.js');
+
+const db = require('../database/postgreSQL-index');
+const passportSetup = require('./passport-setup.js');
+
+// const cookieParser = require('cookie-parser')
+// app.use(cookieParser());
+
+// app.use(passport.initialize());
+
+const router = express.Router();
+
+router.get('/api/login', (req, res) => {
+    res.send();
+});
+
+
+// auth with google
+router.get('/api/login/google', passport.authenticate('google', {
+    scope: ['profile']
+}));
+
+// callback route for google to redirect to
+router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
+    failureRedirect: '/api/login/google/nope'
+}*/), (req, res) => {
+    res.redirect('/');
+    // res.send('you are logged in via google');
+});
+
+
+router.get('/logout', (req, res) => {
+    res.send('logging out');
+});
 
 
 
-// add user to DB
+router.post('/login',
+    passport.authenticate('local', 
+        {
+            successRedirect: '/',
+            failureRedirect: '/login',
+            failureFlash: true
+        },
+        function(req, res)
+        {
+            res.redirect('/');
+        }
+    )
+);
+
+
 router.post('/api/signup', (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
-    db.addNewUser(username, password, (err, data) => {
-        if (err) {
-            console.log('error with user signup');
+
+    db.getUserInfo(username, (err, data) => {
+        if (data.rows[0]) {
+            console.log(`user ${username} already exists in database`);
         } else {
-            console.log('user signup completed');
-            res.setStatus = 201;
-            res.send('user successfully signed up');
+            db.addNewUser(username, password, (err, data) => {
+                if (err) {
+                    console.log('error with user signup');
+                } else {
+                    console.log('user signup completed');
+                    res.setStatus = 201;
+                    res.send('user successfully signed up');
+                }
+            });
         }
     });
 });
 
-
-// hit up DB to find user info and login
-// establish a session
-router.post('/api/login', (req, res, next) => {
-    res.end();
+// add user to DB
+router.post('/api/signup/google', (req, res, next) => {
+  
 });
-
 
 
 // get user leaderboard info from DB
@@ -44,7 +97,7 @@ router.get('/api/leaderboards', (req, res, next) => {
 
 // get user leaderboard info from DB
 router.get('/api/userinfo', (req, res, next) => {
-    let username = 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
+    let username = req.body.username || 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
     db.getUserInfo(username, (err, data) => {
         if (err) {
             console.log('error getting userinfo');
@@ -58,23 +111,31 @@ router.get('/api/userinfo', (req, res, next) => {
 });
 
 
-// hit up russell's server
+// contact game server to join a new game
 router.get('/api/joingame', (req, res, next) => {
-    
-    
 });
 
-// post game resultes to DB
+// receive game results from game server and post to db
 router.post('/api/gameresults', (req, res, next) => {
-    
-    
 });
 
 
 // catch all route
 // router.get('/*', (req, res, next) => {
 //     //should serve static html
-  
 // });
 
+
 module.exports.router = router;
+
+
+
+// UNCOMMENT FOR SESSIONS
+// const session = require('express-session');
+// app.use(passport.session());
+// app.use(session({
+//     secret: 'secret',
+//     saveUninitialized: true,
+//     resave: true
+// }));
+
