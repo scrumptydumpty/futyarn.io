@@ -53,14 +53,14 @@
             </div>
           </div>
         <div>
-           <div>  
+           <div ng-if="$ctrl.showLoginButton">  
              <input class="btn" type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
                <div ng-if="$ctrl.showLoginForm">
                  <log-in toggle="$ctrl.toggle"/>
                </div>
-               <div ng-if="$ctrl.showLogOut">
-                 <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle()"/>
-               </div>
+           </div>
+           <div ng-if="$ctrl.showLogOut">
+             <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle()"/>
            </div>
         </div>
         <div> 

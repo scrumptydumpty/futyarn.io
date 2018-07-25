@@ -4,7 +4,7 @@ angular.module('app')
         this.showSignUpForm = false;
         this.showRules = false;
         this.showLogOut = false;
-        this.showLoginButton = false;
+        this.showLoginButton = true;
         this.showLeaderboard = false;
 
         this.toggleLoginForm = () => {
