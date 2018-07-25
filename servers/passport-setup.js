@@ -52,7 +52,7 @@ passport.use(
                         console.log('user signup via google oauth completed');
                         // res.setStatus = 201;
                         // res.send('user successfully signed up via google oauth');
-                        done(null, data);
+                        done(null, newUser);
                     }
                 });
             }

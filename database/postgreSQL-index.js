@@ -1,5 +1,5 @@
 var pg = require('pg');
-var config = require('../config/config.js');
+var config = require('../config.js');
 var connection = config.connection;
 var pgClient = new pg.Client(connection);
 
@@ -16,16 +16,61 @@ pgClient.once('open', () =>
 });
 
 
-// FUNCTION NEEDED
-// addNewUser
+const storeSession = (session, user_id, username, callback) => {
+    console.log(`storeSession fired for username: ${username}, session: ${session}`);
+    let storeSessionQuery = `INSERT INTO sessions (session, user_id, username) VALUES ('${session}', ${user_id}, '${username}');`;
+    pgClient.query(storeSessionQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: storeSession failed');
+            console.log(err);
+            callback(err, null);
+        } else {
+            console.log('storeSession completed, stored session: ', session);
+            callback(null, results);
+        }
+    });
+};
+
+const verifySession = (session, callback) => {
+    console.log(`verifySession fired session: ${session}`);
+    let verifySessionQuery = `SELECT * FROM sessions WHERE session = '${session}';`;
+    pgClient.query(verifySessionQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: verifySession failed');
+            console.log(err);
+            callback(err, null);
+        } else {
+            console.log('verifySession completed, verified session: ', session);
+            callback(null, results);
+        }
+    });
+};
+
+const removeSession = (session, callback) => {
+    console.log(`removeSession fired for session: ${session}`);
+    let removeSessionQuery = `DELETE FROM sessions WHERE session = '${session}';`;
+    pgClient.query(removeSessionQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: removeSession failed');
+            console.log(err);
+            callback(err, null);
+        } else {
+            console.log('removeSession completed: removed session: ', session);
+            callback(null, results);
+        }
+    });
+};
+
+
 
 const addNewUser = (username, password, callback) =>
 {
     console.log('addNewUser function fired, username: ', username);
-    let addNewUserQuery = `INSERT INTO players (username, password, wins, losses, games_played, goals_made) VALUES ('${username}', '${password}', 0, 0, 0, 0)`;
+    let addNewUserQuery = `INSERT INTO players (username, password, wins, losses, games_played, goals_made) VALUES ('${username}', '${password}', 0, 0, 0, 0);`;
     pgClient.query(addNewUserQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: addNewUser failed');
+            console.log(err);
             callback(err, null);
         } else {
             console.log('addNewUser completed, results: ', results);
@@ -41,24 +86,27 @@ const getUserInfo = (method, identifier, callback) =>
     let getUserInfoQuery;
     if (method === 'username') {
         console.log('getUserInfo function fired, username: ', identifier);
-        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}'`;
+        getUserInfoQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}';`;
     } else if (method === 'id') {
         console.log('getUserInfo function fired, id: ', identifier);
-        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier}`;
+        getUserInfoQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier};`;
     }
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
         // console.log('error ---------------------------------------');
         // console.log(err);
         if (err) {
             console.log('error: getUserInfo failed');
+            console.log(err);
             callback(err, null);
         } else {
-            console.log('getUserInfoQuery results: ', results);
-            callback(null, results);
+            const foundUser = results.rows[0];
+            console.log('getUserInfoQuery results: ', foundUser);
+            callback(null, foundUser);
         }
     });
 };
 // Returns user data for the requested player
+// DOES NOT RETRIEVE PASSWORD INFO
 // Data is a JavaScript object and contains the following key:value pairs
 // { user_id: 1,
 //   username: 'meow kitty',
@@ -78,10 +126,11 @@ const getUserInfo = (method, identifier, callback) =>
 const getLeaderboards = (callback) =>
 {
     console.log('getLeaderboards function');
-    let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10';
+    let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10;';
     pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: getLeaderboardQuery failed');
+            console.log(err);
             callback(err. null);
         } else {
             console.log('getLeaderboardQuery results:', results);
@@ -113,43 +162,12 @@ const getLeaderboards = (callback) =>
 
 
 
-
-
-// OPERATIONS EXAMPLES
-
-// insert single entry
-// INSERT INTO players () VALUES ();
-
-// insert multiple entries
-// INSERT INTO products (product_no, name, price) VALUES
-//     (1, 'Cheese', 9.99),
-//     (2, 'Bread', 1.99),
-//     (3, 'Milk', 2.99);
-
-// update examples
-// UPDATE products SET price = 10 WHERE price = 5;
-// UPDATE products SET price = price * 1.10;
-// UPDATE mytable SET a = 5, b = 3, c = 1 WHERE a > 0;
-
-
 module.exports = {
     pgClient,
+    storeSession,
+    verifySession,
+    removeSession,
     addNewUser,
     getUserInfo,
     getLeaderboards
 };
-
-// IGNORE FOR NOW
-
-// var pg = require('knex')({
-//     client: 'pg',
-//     connection: {
-//         host: '127.0.0.1',
-//         user: 'student',
-//         password: 'student',
-//         database: 'futyarndb'
-//     }
-// });
-
-// PGHOST
-// PGPORT

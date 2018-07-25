@@ -55,3 +55,10 @@ CREATE TABLE games (
     losing_team            VARCHAR(10) NOT NULL,
     cat_of_the_game        INTEGER REFERENCES players(user_id)
 )
+
+CREATE TABLE sessions ( 
+    session_id             SERIAL PRIMARY KEY,
+    session                VARCHAR(255) NOT NULL,
+    user_id                INTEGER REFERENCES players(user_id) NULL,
+    username               VARCHAR(255) NOT NULL
+)
