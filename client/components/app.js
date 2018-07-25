@@ -57,12 +57,29 @@ angular.module('app')
         };
 
         this.handleLogOut = () => {
+            console.log('inside handle log out function');
             $http({
                 method: 'GET',
                 url: '/api/logout'
             }).then((response) => {
+                console.log(response);
                 console.log('you logged out!');
             }, (error) => {
+                console.log(error);
+            });
+        };
+        
+        this.notLoggedIn = false;
+        this.handleJoinGame = () => {
+            console.log('inside join game function');
+            $http({
+                method: 'GET',
+                url: 'api/joingame'
+            }).then((response) => {
+                console.log(response);
+                console.log('you joined the game');
+            }, error => {
+                this.notLoggedIn = true;
                 console.log(error);
             });
         };

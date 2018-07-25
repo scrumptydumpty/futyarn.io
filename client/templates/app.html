@@ -70,8 +70,12 @@
              </div>
         </div>
         <div>  
-          <input class="btn" type="button" value="Let's Play!">
+          <input class="btn" type="button" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
+          <div ng-if="$ctrl.notLoggedIn">
+              Please log in first to join the game!
+            </div>
         </div>
+        
     </div>
   </div>
 </div>
