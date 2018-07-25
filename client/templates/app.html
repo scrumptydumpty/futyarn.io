@@ -63,7 +63,7 @@
              <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle()"/>
            </div>
         </div>
-        <div> 
+        <div ng-if="$ctrl.showSignUpButton"> 
           <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
              <div ng-if="$ctrl.showSignUpForm">
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>

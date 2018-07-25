@@ -5,6 +5,7 @@ angular.module('app')
         this.showRules = false;
         this.showLogOut = false;
         this.showLoginButton = true;
+        this.showSignUpButton = true;
         this.showLeaderboard = false;
 
         this.toggleLoginForm = () => {
@@ -23,10 +24,15 @@ angular.module('app')
             this.showLogOut = !this.showLogOut;
             this.toggleLoginForm();
             this.toggleLoginButton();
+            this.toggleSignUpButton();
         };
 
         this.toggleLoginButton = () => {
             this.showLoginButton = !this.showLoginButton;
+        };
+
+        this.toggleSignUpButton = () => {
+            this.showSignUpButton = !this.showSignUpButton;
         };
 
         this.toggleLeaderboard = () => {
