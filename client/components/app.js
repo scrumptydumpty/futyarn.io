@@ -55,6 +55,17 @@ angular.module('app')
                 });
             }
         };
+
+        this.handleLogOut = () => {
+            $http({
+                method: 'GET',
+                url: '/api/logout'
+            }).then((response) => {
+                console.log('you logged out!');
+            }, (error) => {
+                console.log(error);
+            });
+        };
     })
     .component('app', {
         bindings : {},
