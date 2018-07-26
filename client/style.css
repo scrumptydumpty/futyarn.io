@@ -124,12 +124,13 @@ html {
 
   .btn {
       color: white;
-      width: 40%;
+      width: auto;
       background-color: rgba(0, 0, 0, 0.5);
       font: 60px 'Graduate', cursive;
       border-radius: 10px;
       border: none;
       margin: 40px;
+      padding: 20px;
       outline: none;
   }
 
@@ -152,12 +153,13 @@ html {
 
   .submit {
       color: white;
-      width: 10%;
+      width: auto;
       background-color: rgba(0, 0, 0, 0.5);
       font: 20px 'Graduate', cursive;
       border-radius: 10px;
       border: none;
       margin: 40px;
+      padding: 5px 10px 5px 10px;
       outline: none;
   }
 
@@ -167,6 +169,7 @@ html {
 
   .user-input {
     background-color: rgba(0, 0, 0, 0.8);
+    width: auto;
     border: none;
     border-radius: 5px;
     font: 20px 'Graduate', cursive;

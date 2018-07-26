@@ -1,4 +1,8 @@
 <div>
+<input type="button" class="submit" value="Login with Google!" ng-click="$ctrl.handleGoogleLogin()"/>
+<div>
+  OR
+</div>
 <form ng-submit="$ctrl.handleLogin(); $ctrl.toggle();">
   <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
   <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
