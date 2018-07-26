@@ -53,26 +53,29 @@
             </div>
           </div>
         <div>
-           <div>  
+           <div ng-if="$ctrl.showLoginButton">  
              <input class="btn" type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
                <div ng-if="$ctrl.showLoginForm">
                  <log-in toggle="$ctrl.toggle"/>
                </div>
-               <div ng-if="$ctrl.showLogOut">
-                 <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle()"/>
-               </div>
+           </div>
+           <div ng-if="$ctrl.showLogOut">
+             <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle(); $ctrl.handleLogOut();"/>
            </div>
         </div>
-        <div> 
+        <div ng-if="$ctrl.showSignUpButton"> 
           <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
              <div ng-if="$ctrl.showSignUpForm">
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
              </div>
         </div>
-        <!-- <div class="section"></div> -->
         <div>  
-          <input class="btn" type="button" value="Let's Play!">
+          <input class="btn" type="button" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
+          <div ng-if="$ctrl.notLoggedIn">
+              Please log in first to join the game!
+            </div>
         </div>
+        
     </div>
   </div>
 </div>
