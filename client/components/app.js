@@ -4,7 +4,8 @@ angular.module('app')
         this.showSignUpForm = false;
         this.showRules = false;
         this.showLogOut = false;
-        this.showLoginButton = false;
+        this.showLoginButton = true;
+        this.showSignUpButton = true;
         this.showLeaderboard = false;
 
         this.toggleLoginForm = () => {
@@ -23,10 +24,15 @@ angular.module('app')
             this.showLogOut = !this.showLogOut;
             this.toggleLoginForm();
             this.toggleLoginButton();
+            this.toggleSignUpButton();
         };
 
         this.toggleLoginButton = () => {
             this.showLoginButton = !this.showLoginButton;
+        };
+
+        this.toggleSignUpButton = () => {
+            this.showSignUpButton = !this.showSignUpButton;
         };
 
         this.toggleLeaderboard = () => {
@@ -48,6 +54,34 @@ angular.module('app')
                     console.log(error);
                 });
             }
+        };
+
+        this.handleLogOut = () => {
+            console.log('inside handle log out function');
+            $http({
+                method: 'GET',
+                url: '/api/logout'
+            }).then((response) => {
+                console.log(response);
+                console.log('you logged out!');
+            }, (error) => {
+                console.log(error);
+            });
+        };
+        
+        this.notLoggedIn = false;
+        this.handleJoinGame = () => {
+            console.log('inside join game function');
+            $http({
+                method: 'GET',
+                url: 'api/joingame'
+            }).then((response) => {
+                console.log(response);
+                console.log('you joined the game');
+            }, error => {
+                this.notLoggedIn = true;
+                console.log(error);
+            });
         };
     })
     .component('app', {
