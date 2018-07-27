@@ -35,6 +35,7 @@ const storeSession = (session, user_id, username, callback) => {
 };
 
 
+
 // function queries db to check if a session is stored in the sessions table
     // if yes, user is in an active session and is allowed to continue
     // if no, user is asked to login or sign up
@@ -100,27 +101,53 @@ const addNewUser = (username, password, callback) =>
 //   losses: 0,
 //   games_played: 5,
 //   goals_made: 13 }
+const authenticateUser = (username, callback) =>
+{
+    let authenticateUserQuery;
+    console.log('authenticateUser function fired, username: ', username);
+    authenticateUserQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE username = '${username}';`;
+    pgClient.query(authenticateUserQuery, (err, results/*, fields*/) => {
+        if (err) {
+            console.log('error: authenticateUser failed');
+            console.log(err);
+            callback(err, null);
+        } else {
+            const foundUser = results.rows[0];
+            console.log('authenticateUser results: ', foundUser);
+            callback(null, foundUser);
+        }
+    });
+};
 
+
+// function queries the db using the provided identifier (second arg) and returns user data
+    // identifier is either username or user_id
+    // the method (first arg) is a string 
+// data returned is a JavaScript object and contains the following key:value pairs
+// { user_id: 1,
+//   username: 'meow kitty',
+//   wins: 5,
+//   losses: 0,
+//   games_played: 5,
+//   goals_made: 13 }
 const getUserInfo = (method, identifier, callback) =>
 {
     let getUserInfoQuery;
     if (method === 'username') {
         console.log('getUserInfo function fired, username: ', identifier);
-        getUserInfoQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}';`;
+        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}';`;
     } else if (method === 'id') {
         console.log('getUserInfo function fired, id: ', identifier);
-        getUserInfoQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier};`;
+        getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier};`;
     }
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
-        // console.log('error ---------------------------------------');
-        // console.log(err);
         if (err) {
             console.log('error: getUserInfo failed');
             console.log(err);
             callback(err, null);
         } else {
             const foundUser = results.rows[0];
-            console.log('getUserInfoQuery results: ', foundUser);
+            console.log('getUserInfo results: ', foundUser);
             callback(null, foundUser);
         }
     });
@@ -179,6 +206,7 @@ module.exports = {
     verifySession,
     removeSession,
     addNewUser,
+    authenticateUser,
     getUserInfo,
     getLeaderboards
 };

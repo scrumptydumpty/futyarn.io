@@ -6,6 +6,7 @@ const keys = require('../config.js');
 const db = require('../database/postgreSQL-index');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+var bcrypt = require('bcryptjs');
 
 
 
@@ -57,13 +58,26 @@ passport.use(
     // if found, runs the done callback
 passport.use(new LocalStrategy(
     (username, password, done) => {
-        db.getUserInfo('username', username, (err, foundUser) => {
-            console.log('localstrategy error: ', err);
-            console.log('localstrategy foundUser: ', foundUser);
-            if (err) { return done(err); }
-            if (!foundUser) { return done(null, false); }
-            if (foundUser.password != password) { return done(null, false); }
-            return done(null, foundUser);
+        db.authenticateUser(username, (err, foundUser) => {
+            if (err) {
+                console.log('error during LocalStrategy auth: ', err);
+                return done(err, null); 
+            } else if (!foundUser) {
+                console.log(`user ${username} not found during LocalStrategy auth`);
+                return done(null, false); 
+            } else {
+                console.log('LocalStrategy found user: ', foundUser);
+                const hash = foundUser.password;
+                bcrypt.compare(password, hash, function(err, res) {
+                    if (res) {
+                        console.log(`user ${username} has been authenticated`);
+                        return done(null, foundUser);
+                    } else {
+                        console.log(`entered password is incorrect`);
+                        return done(null, false); 
+                    }
+                });
+            }
         });
     }
 ));
@@ -109,14 +123,18 @@ router.post('/api/signup', (req, res) => {
             res.setStatus = 409;
             res.send(`user ${username} already exists in database`);
         } else {
-            db.addNewUser(username, password, (err, data) => {
-                if (err) {
-                    console.log('error with user signup');
-                } else {
-                    console.log('user signup completed');
-                    res.setStatus = 201;
-                    res.send('user successfully signed up');
-                }
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(password, salt, function(err, hash) {
+                    db.addNewUser(username, hash, (err, data) => {
+                        if (err) {
+                            console.log('error with user signup');
+                        } else {
+                            console.log('user signup completed');
+                            res.setStatus = 201;
+                            res.send('user successfully signed up');
+                        }
+                    });
+                });
             });
         }
     });
