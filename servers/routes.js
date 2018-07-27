@@ -7,61 +7,107 @@ const db = require('../database/postgreSQL-index');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
+
+
+// passport middleware to handle google authentication
+// sends user to google's login page
+// when autheticated by google, google sends back the user's profile info
+    // checks if user is in db
+        // if user found, done is called to proceed to the next step (redirect to the '/api/login/google/redirect' route)
+        // if user not found, add user to db and run done to proceed
+passport.use(
+    new GoogleStrategy({
+        // options for the google strategy
+        clientID: keys.google.clientID,
+        clientSecret: keys.google.clientSecret,
+        callbackURL: '/api/login/google/redirect'
+    }, (accessToken, refreshToken, profile, done) => {
+        // passport callback function
+        console.log('passport callback function fired');
+        console.log(profile);
+        // const googleId = profile.id; // add later
+        const username = profile.displayName;
+        const password = 'password';
+        db.getUserInfo('username', username, (err, foundUser) => {
+            if (foundUser) {
+                console.log(`user ${username} already exists in database`);
+                done(null, foundUser);
+            } else {
+                console.log('user will be created with google oauth credentials');
+                db.addNewUser(username, password, (err, newUser) => {
+                    if (err) {
+                        console.log('error with user signup via google oauth');
+                        console.log(err);
+                    } else {
+                        console.log('user signup via google oauth completed');
+                        // res.setStatus = 201;
+                        // res.send('user successfully signed up via google oauth');
+                        done(null, newUser);
+                    }
+                });
+            }
+        });
+        // done();
+    }
+    ));
+
+
+// passport middleware to handle local logins (via username and password)
+// looks in database for user
+    // if found, runs the done callback
+passport.use(new LocalStrategy(
+    (username, password, done) => {
+        db.getUserInfo('username', username, (err, foundUser) => {
+            console.log('localstrategy error: ', err);
+            console.log('localstrategy foundUser: ', foundUser);
+            if (err) { return done(err); }
+            if (!foundUser) { return done(null, false); }
+            if (foundUser.password != password) { return done(null, false); }
+            return done(null, foundUser);
+        });
+    }
+));
+
+// passport middleware to store user_id in session data
+passport.serializeUser((user, done) => {
+    console.log('serilizeUser function fired');
+    done(null, user.user_id);
+});
+
+// passport middleware to retreive user_id from session data and use to find the user in the db
+passport.deserializeUser((id, done) => {
+    console.log('deserilizeUser function fired');
+    db.getUserInfo('id', id, (err, foundUser) => {
+        done(null, foundUser);
+    });
+});
+
+
+// create router instance and use middleware
 const router = express.Router();
-// router.use(cookieParser());
-// router.use(session({
-//     secret: keys.session.secret,
-//     resave: false,
-//     saveUninitialized: false
-// }));
-// router.use(passport.initialize());
-// router.use(passport.session());
-// const cookieSession = require('cookie-session');
-// const passportSetup = require('./passport-setup.js');
-
-// passport.use(new LocalStrategy(
-//     {
-//         // usernameField: 'email',
-//         // passwordField: 'passwd',
-//         passReqToCallback: true
-//     },
-//     (req, username, password, done) => {
-//         db.getUserInfo('username', username, (err, foundUser) => {
-//             console.log('localstrategy error: ', err);
-//             console.log('localstrategy foundUser: ', foundUser);
-//             if (err) { return done(err); }
-//             if (!foundUser) { return done(null, false); }
-//             if (foundUser.password != password) { return done(null, false); }
-//             return done(null, foundUser);
-//         });
-//     }
-// ));
-  
-
-// passport.serializeUser((user, done) => {
-//     console.log('serilizeUser function fired');
-//     done(null, user.user_id);
-// });
-
-// passport.deserializeUser((id, done) => {
-//     console.log('deserilizeUser function fired');
-//     console.log('id: what is going on ?????????????????????????????????????????????????????????????');
-//     console.log(id);
-//     db.getUserInfo('id', id, (err, foundUser) => {
-//         done(null, foundUser);
-//     });
-// });
+router.use(cookieParser());
+router.use(session({
+    secret: keys.session.secret,
+    resave: false,
+    saveUninitialized: false
+}));
+router.use(passport.initialize());
+router.use(passport.session());
 
 
-
-
-router.post('/api/signup', (req, res, next) => {
-    let username = req.body.username;
-    let password = req.body.password;
+// route adds user to the db
+// first checks if user is already in db
+    // if yes, send back 409 status
+    // if no, adds user to db
+router.post('/api/signup', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
 
     db.getUserInfo('username', username, (err, foundUser) => {
         if (foundUser) {
             console.log(`user ${username} already exists in database`);
+            res.setStatus = 409;
+            res.send(`user ${username} already exists in database`);
         } else {
             db.addNewUser(username, password, (err, data) => {
                 if (err) {
@@ -77,102 +123,72 @@ router.post('/api/signup', (req, res, next) => {
 });
 
 
-
-// router.post('/api/login',
-//     passport.authenticate('local', { 
-//         failureRedirect: '/api/login'
-//     }, (req, res) => {
-//         console.log('user sucessfully logged in via local auth');
-//         console.log('req', req);
-//         console.log('res', res);
-//         // res.redirect('/');
-//     })
-// );
-
-// router.get('/api/logout', (req, res) => {
-//     // req.logout();
-//     req.session.destroy(() => { console.log('session destroyed'); });
-//     console.log('user sucessfully logged out');
-//     res.redirect('/');
-// });    
+// authenticates user using passport
+// if authentication succeeds, session is automatically created (via passport)
+// and session is stored in session table in db via db.storeSession
+router.post('/api/login',
+    passport.authenticate('local', { 
+        failureRedirect: '/api/login'
+    }), (req, res) => {
+        const { sessionID, user } = req;
+        db.storeSession(sessionID, user.user_id, user.username, () => {});
+        console.log('user sucessfully logged in via local auth');
+        res.send('user sucessfully logged in via local auth');
+    }
+);
 
 
+// authenticates user using passport via google oauth
+// first route receives user google profile info back from google and redirects user to the second route
+    // (data returned is determined by items listed in scope)
+// second route creates a session for the authenticated user and stores the session in db
+// CURRENTLY HAS A CORS ISSUE 
+router.get('/api/login/google', passport.authenticate('google', {
+    scope: ['profile']
+}));
+router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
+failureRedirect: '/api/login/google/nope'
+}*/), (req, res) => {
+    console.log(req);
+    const { sessionID, user } = req;
+    db.storeSession(sessionID, user.user_id, user.username, () => {});
+    console.log('user sucessfully logged in via google auth');
+    // res.send('user sucessfully logged in via google auth');
+});    
 
 
-
-// GOOGLE AUTH
-// passport.use(
-//     new GoogleStrategy({
-//         // options for the google strategy
-//         clientID: keys.google.clientID,
-//         clientSecret: keys.google.clientSecret,
-//         callbackURL: '/api/login/google/redirect' // ------------------------------------update
-//     }, (accessToken, refreshToken, profile, done) => {
-//         // passport callback function
-//         console.log('passport callback function fired');
-//         console.log(profile);
-//         // const googleId = profile.id; // add later
-//         const username = profile.displayName;
-//         const password = 'password';
-//         db.getUserInfo('username', username, (err, foundUser) => {
-//             if (foundUser) {
-//                 console.log(`user ${username} already exists in database`);
-//                 done(null, foundUser);
-//             } else {
-//                 console.log('user will be created with google oauth credentials')
-//                 db.addNewUser(username, password, (err, newUser) => {
-//                     if (err) {
-//                         console.log('error with user signup via google oauth');
-//                         console.log(err);
-//                     } else {
-//                         console.log('user signup via google oauth completed');
-//                         // res.setStatus = 201;
-//                         // res.send('user successfully signed up via google oauth');
-//                         done(null, newUser);
-//                     }
-//                 });
-//             }
-//         });
-//         done();
-//     }
-// ));
-
-// router.get('/api/login/google', passport.authenticate('google', {
-//     scope: ['profile']
-// }));        
-
-// router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
-//     failureRedirect: '/api/login/google/nope'
-// }*/), (req, res) => {
-//     // res.send(req.user);
-//     res.redirect('/');
-//     // res.send('you are logged in via google');
-// });    
+// logs out user
+// session is removed from db via db.removeSession
+// session is removed from request header
+// user is redirected back to main page
+router.get('/api/logout', (req, res) => {
+    const { sessionID } = req;
+    db.removeSession(sessionID, () => {});
+    req.session.destroy(() => { console.log(`session ${sessionID} destroyed`); });
+    console.log('user sucessfully logged out');
+    res.redirect('/');
+});    
 
 
 
-
-
-
-
-
-// get user leaderboard info from DB
-router.get('/api/leaderboards', (req, res, next) => {
-    db.getLeaderboards((err, data) => {
+// get user leaderboard info (stats from top 10 users) from DB
+router.get('/api/leaderboards', (req, res) => {
+    db.getLeaderboards((err, topTenPlayers) => {
         if (err) {
             console.log('error getting leaderboards');
         } else {
-            console.log('leaderboard data received');
-            // console.log(data.rows);
+            console.log('leaderboard data fetched');
             res.setStatus = 200;
-            res.send(data.rows);
+            res.send(topTenPlayers);
         }
     });
 });
 
-// get user leaderboard info from DB
-router.get('/api/userinfo', (req, res, next) => {
-    let username = req.body.username || 'sucky kitty'; // CHANGE ME -----------------------------------------------------------------------------------------
+
+// get info for a single user from DB
+// currently not used in the client
+router.get('/api/userinfo', (req, res) => {
+    let username = req.body.username || 'good kitty';
     db.getUserInfo('username', username, (err, foundUser) => {
         if (err) {
             console.log('error getting userinfo');
@@ -187,10 +203,12 @@ router.get('/api/userinfo', (req, res, next) => {
 
 
 // contact game server to join a new game
+// not yet implemented
 router.get('/api/joingame', (req, res, next) => {
 });
 
 // receive game results from game server and post to db
+// not yet implemented
 router.post('/api/gameresults', (req, res, next) => {
 });
 

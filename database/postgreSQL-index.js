@@ -16,6 +16,9 @@ pgClient.once('open', () =>
 });
 
 
+// function stores session in db
+// db is queried to insert the session, user_id, and username into the sessions table
+// note: for various endpoints, active session is verified via verifySession function before being allowed to continue
 const storeSession = (session, user_id, username, callback) => {
     console.log(`storeSession fired for username: ${username}, session: ${session}`);
     let storeSessionQuery = `INSERT INTO sessions (session, user_id, username) VALUES ('${session}', ${user_id}, '${username}');`;
@@ -31,6 +34,10 @@ const storeSession = (session, user_id, username, callback) => {
     });
 };
 
+
+// function queries db to check if a session is stored in the sessions table
+    // if yes, user is in an active session and is allowed to continue
+    // if no, user is asked to login or sign up
 const verifySession = (session, callback) => {
     console.log(`verifySession fired session: ${session}`);
     let verifySessionQuery = `SELECT * FROM sessions WHERE session = '${session}';`;
@@ -46,6 +53,9 @@ const verifySession = (session, callback) => {
     });
 };
 
+
+// removes session from the sessions table
+// this ends the active session for the user becasue the user can no longer be authorized
 const removeSession = (session, callback) => {
     console.log(`removeSession fired for session: ${session}`);
     let removeSessionQuery = `DELETE FROM sessions WHERE session = '${session}';`;
@@ -62,7 +72,8 @@ const removeSession = (session, callback) => {
 };
 
 
-
+// function used to add a new user to the db in the users table using the inputted username and password
+// wins, losses, games_played, goals_made are set to 0 for a new user
 const addNewUser = (username, password, callback) =>
 {
     console.log('addNewUser function fired, username: ', username);
@@ -79,7 +90,16 @@ const addNewUser = (username, password, callback) =>
     });
 };
 
-
+// function queries the db using the provided identifier (second arg) and returns user data
+    // identifier is either username or user_id
+    // the method (first arg) is a string 
+// data returned is a JavaScript object and contains the following key:value pairs
+// { user_id: 1,
+//   username: 'meow kitty',
+//   wins: 5,
+//   losses: 0,
+//   games_played: 5,
+//   goals_made: 13 }
 
 const getUserInfo = (method, identifier, callback) =>
 {
@@ -105,16 +125,6 @@ const getUserInfo = (method, identifier, callback) =>
         }
     });
 };
-// Returns user data for the requested player
-// DOES NOT RETRIEVE PASSWORD INFO
-// Data is a JavaScript object and contains the following key:value pairs
-// { user_id: 1,
-//   username: 'meow kitty',
-//   wins: 5,
-//   losses: 0,
-//   games_played: 5,
-//   goals_made: 13 }
-
 
 
 // FUNCTION NEEDED
@@ -125,7 +135,7 @@ const getUserInfo = (method, identifier, callback) =>
 
 const getLeaderboards = (callback) =>
 {
-    console.log('getLeaderboards function');
+    console.log('getLeaderboards function fired');
     let getLeaderboardQuery = 'SELECT username, wins, losses, games_played, goals_made FROM players ORDER BY wins DESC, goals_made DESC LIMIT 10;';
     pgClient.query(getLeaderboardQuery, (err, results/*, fields*/) => {
         if (err) {
@@ -134,7 +144,8 @@ const getLeaderboards = (callback) =>
             callback(err. null);
         } else {
             console.log('getLeaderboardQuery results:', results);
-            callback(null, results);
+            const topTenPlayers = results.rows;
+            callback(null, topTenPlayers);
         }
     });
 };
