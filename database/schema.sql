@@ -13,13 +13,15 @@ USE futyarn.io;
 -- CHECK establishes a constraint. If condition not met, throws error.
 
 CREATE TABLE players (
-    user_id      SERIAL PRIMARY KEY,
-    username     VARCHAR(255) NOT NULL UNIQUE,
-    password     VARCHAR(255) NOT NULL,
-    wins         INTEGER NOT NULL,
-    losses       INTEGER NOT NULL,
-    games_played INTEGER NOT NULL,
-    goals_made   INTEGER NOT NULL, 
+    user_id          SERIAL PRIMARY KEY,
+    username         VARCHAR(255) NOT NULL UNIQUE,
+    hash             VARCHAR(255), -- hash not required if doing google oauth
+    google_id        VARCHAR(255) NULL,
+    -- last_signed_in   DATETIME NOT NULL,  -- stretch feature: sign in time stamps
+    wins             INTEGER NOT NULL,
+    losses           INTEGER NOT NULL,
+    games_played     INTEGER NOT NULL,
+    goals_made       INTEGER NOT NULL, 
     CHECK ((wins + losses) = games_played)
 )
 
@@ -52,4 +54,11 @@ CREATE TABLE games (
     winning_team           VARCHAR(10) NOT NULL,
     losing_team            VARCHAR(10) NOT NULL,
     cat_of_the_game        INTEGER REFERENCES players(user_id)
+)
+
+CREATE TABLE sessions ( 
+    session_id             SERIAL PRIMARY KEY,
+    session                VARCHAR(255) NOT NULL,
+    user_id                INTEGER REFERENCES players(user_id) NULL,
+    username               VARCHAR(255) NOT NULL
 )
