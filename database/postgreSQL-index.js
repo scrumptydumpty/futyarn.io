@@ -73,12 +73,12 @@ const removeSession = (session, callback) => {
 };
 
 
-// function used to add a new user to the db in the users table using the inputted username and password
+// function used to add a new user to the db in the users table using the inputted username and hash
 // wins, losses, games_played, goals_made are set to 0 for a new user
-const addNewUser = (username, password, callback) =>
+const addNewUser = (username, hash, google_id, callback) =>
 {
     console.log('addNewUser function fired, username: ', username);
-    let addNewUserQuery = `INSERT INTO players (username, password, wins, losses, games_played, goals_made) VALUES ('${username}', '${password}', 0, 0, 0, 0);`;
+    let addNewUserQuery = `INSERT INTO players (username, hash, google_id, wins, losses, games_played, goals_made) VALUES ('${username}', '${hash}', '${google_id}', 0, 0, 0, 0);`;
     pgClient.query(addNewUserQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: addNewUser failed');
@@ -105,7 +105,7 @@ const authenticateUser = (username, callback) =>
 {
     let authenticateUserQuery;
     console.log('authenticateUser function fired, username: ', username);
-    authenticateUserQuery = `SELECT user_id, username, password, wins, losses, games_played, goals_made FROM players WHERE username = '${username}';`;
+    authenticateUserQuery = `SELECT * FROM players WHERE username = '${username}';`;
     pgClient.query(authenticateUserQuery, (err, results/*, fields*/) => {
         if (err) {
             console.log('error: authenticateUser failed');

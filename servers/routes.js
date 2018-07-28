@@ -23,19 +23,18 @@ passport.use(
         clientSecret: keys.google.clientSecret,
         callbackURL: '/api/login/google/redirect'
     }, (accessToken, refreshToken, profile, done) => {
-        // passport callback function
-        console.log('passport callback function fired');
-        console.log(profile);
-        // const googleId = profile.id; // add later
+        console.log('GoogleStrategy callback function fired');
+        // console.log(profile);
         const username = profile.displayName;
-        const password = 'password';
-        db.getUserInfo('username', username, (err, foundUser) => {
+        const password = '';
+        const google_id = profile.id;
+        db.authenticateUser(username, (err, foundUser) => {
             if (foundUser) {
                 console.log(`user ${username} already exists in database`);
-                done(null, foundUser);
+                done(foundUser);
             } else {
                 console.log('user will be created with google oauth credentials');
-                db.addNewUser(username, password, (err, newUser) => {
+                db.addNewUser(username, password, google_id, (err, newUser) => {
                     if (err) {
                         console.log('error with user signup via google oauth');
                         console.log(err);
@@ -43,14 +42,14 @@ passport.use(
                         console.log('user signup via google oauth completed');
                         // res.setStatus = 201;
                         // res.send('user successfully signed up via google oauth');
-                        done(null, newUser);
+                        done(newUser);
                     }
                 });
             }
         });
         // done();
-    }
-    ));
+    })
+);
 
 
 // passport middleware to handle local logins (via username and password)
@@ -73,7 +72,7 @@ passport.use(new LocalStrategy(
                         console.log(`user ${username} has been authenticated`);
                         return done(null, foundUser);
                     } else {
-                        console.log(`entered password is incorrect`);
+                        console.log('entered password is incorrect');
                         return done(null, false); 
                     }
                 });
@@ -84,7 +83,7 @@ passport.use(new LocalStrategy(
 
 // passport middleware to store user_id in session data
 passport.serializeUser((user, done) => {
-    console.log('serilizeUser function fired');
+    console.log('serializeUser function fired');
     done(null, user.user_id);
 });
 
@@ -116,8 +115,9 @@ router.use(passport.session());
 router.post('/api/signup', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const google_id = '';
 
-    db.getUserInfo('username', username, (err, foundUser) => {
+    db.authenticateUser(username, (err, foundUser) => {
         if (foundUser) {
             console.log(`user ${username} already exists in database`);
             res.setStatus = 409;
@@ -125,7 +125,7 @@ router.post('/api/signup', (req, res) => {
         } else {
             bcrypt.genSalt(10, function(err, salt) {
                 bcrypt.hash(password, salt, function(err, hash) {
-                    db.addNewUser(username, hash, (err, data) => {
+                    db.addNewUser(username, hash, google_id, (err, data) => {
                         if (err) {
                             console.log('error with user signup');
                         } else {
@@ -166,13 +166,23 @@ router.get('/api/login/google', passport.authenticate('google', {
 }));
 router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
 failureRedirect: '/api/login/google/nope'
-}*/), (req, res) => {
-    console.log(req);
+}*/), (err, req, res) => {
+    console.log('==================================', err);
+    console.log('redirected to /api/login/google/redirect');
+    // console.log(req);
     const { sessionID, user } = req;
     db.storeSession(sessionID, user.user_id, user.username, () => {});
     console.log('user sucessfully logged in via google auth');
     // res.send('user sucessfully logged in via google auth');
-});    
+    res.redirect('/');
+});
+
+const errorHandler = require('errorhandler');
+router.use(errorHandler({ log: errorNotification }));
+
+function errorNotification(err, str, req) {
+    console.log('ERROR', err);
+}
 
 
 // logs out user
@@ -238,4 +248,3 @@ router.post('/api/gameresults', (req, res, next) => {
 
 
 module.exports.router = router;
-

@@ -4,7 +4,7 @@ module.exports = {
 
     google: {
         clientID: '677573603347-917gaupvir3b04asdllofjhlctnf4nsr.apps.googleusercontent.com',
-        clientSecret: 'l9tYMeDNxY5YrT6YNKTJCNiK'
+        clientSecret: 'qthhwo7wHx0Bup1vp-GHGTXv'
     },
 
     session: {

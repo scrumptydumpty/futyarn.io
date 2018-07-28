@@ -15,8 +15,8 @@ USE futyarn.io;
 CREATE TABLE players (
     user_id          SERIAL PRIMARY KEY,
     username         VARCHAR(255) NOT NULL UNIQUE,
-    password         VARCHAR(255) NOT NULL,
-    -- googleId         VARCHAR(255) NULL,  -- stretch feature: google oauth
+    hash             VARCHAR(255), -- hash not required if doing google oauth
+    google_id        VARCHAR(255) NULL,
     -- last_signed_in   DATETIME NOT NULL,  -- stretch feature: sign in time stamps
     wins             INTEGER NOT NULL,
     losses           INTEGER NOT NULL,
