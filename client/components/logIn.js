@@ -6,18 +6,18 @@ angular.module('app')
             auth.login(this.username, this.password);
         };
 
-        this.handleGoogleLogin = () => {
-            console.log('Inside handle google login function');
-            $http({
-                method: 'GET',
-                url: 'api/login/google'
-            }).then(response => {
-                console.log(response);
-                console.log('you logged in with google');
-            }, error => {
-                console.log(error);
-            })
-        }
+        // this.handleGoogleLogin = () => {
+        //     console.log('Inside handle google login function');
+        //     $http({
+        //         method: 'GET',
+        //         url: 'api/login/google'
+        //     }).then(response => {
+        //         console.log(response);
+        //         console.log('you logged in with google');
+        //     }, error => {
+        //         console.log(error);
+        //     })
+        // }
     })
     .component('logIn', {
         bindings : {
