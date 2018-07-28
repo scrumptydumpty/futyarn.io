@@ -49,7 +49,8 @@ const verifySession = (session, callback) => {
             callback(err, null);
         } else {
             console.log('verifySession completed, verified session: ', session);
-            callback(null, results);
+            const data = results.rows[0];
+            callback(null, data);
         }
     });
 };
@@ -91,12 +92,13 @@ const addNewUser = (username, hash, google_id, callback) =>
     });
 };
 
-// function queries the db using the provided identifier (second arg) and returns user data
-    // identifier is either username or user_id
-    // the method (first arg) is a string 
+// function queries the db and receives all data (including hashed password) for the queried user
+// used for authentication purporses only, this data should not be sent back to the client
 // data returned is a JavaScript object and contains the following key:value pairs
 // { user_id: 1,
 //   username: 'meow kitty',
+//   hash: $2a$10$JBznJuq9NiSsM318c1cpHuKaK68.JX3wa6U5KkxO9yZ2nkzGxI77G,
+//   google_id: '',
 //   wins: 5,
 //   losses: 0,
 //   games_played: 5,
@@ -124,6 +126,7 @@ const authenticateUser = (username, callback) =>
     // identifier is either username or user_id
     // the method (first arg) is a string 
 // data returned is a JavaScript object and contains the following key:value pairs
+// DOES NOT RETURN HASH INFO
 // { user_id: 1,
 //   username: 'meow kitty',
 //   wins: 5,
@@ -160,6 +163,14 @@ const getUserInfo = (method, identifier, callback) =>
 
 
 
+// Returns the top 10 players, sorted by wins, and then by goals made
+// Data is an array of 10 objects.
+// Each object is a JavaScript object and contains the following key:value pairs
+// { username: 'meow kitty',
+//   wins: 5,
+//   losses: 0,
+//   games_played: 5,
+//   goals_made: 13 }
 const getLeaderboards = (callback) =>
 {
     console.log('getLeaderboards function fired');
@@ -176,14 +187,6 @@ const getLeaderboards = (callback) =>
         }
     });
 };
-// Returns the top 10 players, sorted by wins, and then by goals made
-// Data is an array of 10 objects.
-// Each object is a JavaScript object and contains the following key:value pairs
-// { username: 'meow kitty',
-//   wins: 5,
-//   losses: 0,
-//   games_played: 5,
-//   goals_made: 13 }
 
 
 

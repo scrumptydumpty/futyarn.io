@@ -6,50 +6,50 @@ const keys = require('../config.js');
 const db = require('../database/postgreSQL-index');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-var bcrypt = require('bcryptjs');
+var bcryptjs = require('bcryptjs');
 
 
 
-// passport middleware to handle google authentication
-// sends user to google's login page
-// when autheticated by google, google sends back the user's profile info
-    // checks if user is in db
-        // if user found, done is called to proceed to the next step (redirect to the '/api/login/google/redirect' route)
-        // if user not found, add user to db and run done to proceed
-passport.use(
-    new GoogleStrategy({
-        // options for the google strategy
-        clientID: keys.google.clientID,
-        clientSecret: keys.google.clientSecret,
-        callbackURL: '/api/login/google/redirect'
-    }, (accessToken, refreshToken, profile, done) => {
-        console.log('GoogleStrategy callback function fired');
-        // console.log(profile);
-        const username = profile.displayName;
-        const password = '';
-        const google_id = profile.id;
-        db.authenticateUser(username, (err, foundUser) => {
-            if (foundUser) {
-                console.log(`user ${username} already exists in database`);
-                done(foundUser);
-            } else {
-                console.log('user will be created with google oauth credentials');
-                db.addNewUser(username, password, google_id, (err, newUser) => {
-                    if (err) {
-                        console.log('error with user signup via google oauth');
-                        console.log(err);
-                    } else {
-                        console.log('user signup via google oauth completed');
-                        // res.setStatus = 201;
-                        // res.send('user successfully signed up via google oauth');
-                        done(newUser);
-                    }
-                });
-            }
-        });
-        // done();
-    })
-);
+// // passport middleware to handle google authentication
+// // sends user to google's login page
+// // when autheticated by google, google sends back the user's profile info
+//     // checks if user is in db
+//         // if user found, done is called to proceed to the next step (redirect to the '/api/login/google/redirect' route)
+//         // if user not found, add user to db and run done to proceed
+// passport.use(
+//     new GoogleStrategy({
+//         // options for the google strategy
+//         clientID: keys.google.clientID,
+//         clientSecret: keys.google.clientSecret,
+//         callbackURL: '/api/login/google/redirect'
+//     }, (accessToken, refreshToken, profile, done) => {
+//         console.log('GoogleStrategy callback function fired');
+//         // console.log(profile);
+//         const username = profile.displayName;
+//         const password = '';
+//         const google_id = profile.id;
+//         db.authenticateUser(username, (err, foundUser) => {
+//             if (foundUser) {
+//                 console.log(`user ${username} already exists in database`);
+//                 done(foundUser);
+//             } else {
+//                 console.log('user will be created with google oauth credentials');
+//                 db.addNewUser(username, password, google_id, (err, newUser) => {
+//                     if (err) {
+//                         console.log('error with user signup via google oauth');
+//                         console.log(err);
+//                     } else {
+//                         console.log('user signup via google oauth completed');
+//                         // res.setStatus = 201;
+//                         // res.send('user successfully signed up via google oauth');
+//                         done(newUser);
+//                     }
+//                 });
+//             }
+//         });
+//         // done();
+//     })
+// );
 
 
 // passport middleware to handle local logins (via username and password)
@@ -66,8 +66,8 @@ passport.use(new LocalStrategy(
                 return done(null, false); 
             } else {
                 console.log('LocalStrategy found user: ', foundUser);
-                const hash = foundUser.password;
-                bcrypt.compare(password, hash, function(err, res) {
+                const hash = foundUser.hash;
+                bcryptjs.compare(password, hash, function(err, res) {
                     if (res) {
                         console.log(`user ${username} has been authenticated`);
                         return done(null, foundUser);
@@ -108,6 +108,28 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 
+
+// // middleware for checking if user logged in
+// // has not been implemented
+// function isAuthenticated(req, res, next) {
+//     const { sessionID } = req;
+//     if ( sessionID ) {
+//         return next();
+//     } else {
+//     // IF A USER ISN'T LOGGED IN
+//         res.send(false);
+//         // res.redirect('/');
+//     }
+// }
+// // example
+// router.get('/hello', isAuthenticated, function(req, res) {
+//     res.send('look at me!');
+// });
+
+
+
+
+
 // route adds user to the db
 // first checks if user is already in db
     // if yes, send back 409 status
@@ -123,8 +145,8 @@ router.post('/api/signup', (req, res) => {
             res.setStatus = 409;
             res.send(`user ${username} already exists in database`);
         } else {
-            bcrypt.genSalt(10, function(err, salt) {
-                bcrypt.hash(password, salt, function(err, hash) {
+            bcryptjs.genSalt(10, function(err, salt) {
+                bcryptjs.hash(password, salt, function(err, hash) {
                     db.addNewUser(username, hash, google_id, (err, data) => {
                         if (err) {
                             console.log('error with user signup');
@@ -156,33 +178,27 @@ router.post('/api/login',
 );
 
 
-// authenticates user using passport via google oauth
-// first route receives user google profile info back from google and redirects user to the second route
-    // (data returned is determined by items listed in scope)
-// second route creates a session for the authenticated user and stores the session in db
-// CURRENTLY HAS A CORS ISSUE 
-router.get('/api/login/google', passport.authenticate('google', {
-    scope: ['profile']
-}));
-router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
-failureRedirect: '/api/login/google/nope'
-}*/), (err, req, res) => {
-    console.log('==================================', err);
-    console.log('redirected to /api/login/google/redirect');
-    // console.log(req);
-    const { sessionID, user } = req;
-    db.storeSession(sessionID, user.user_id, user.username, () => {});
-    console.log('user sucessfully logged in via google auth');
-    // res.send('user sucessfully logged in via google auth');
-    res.redirect('/');
-});
+// // authenticates user using passport via google oauth
+// // first route receives user google profile info back from google and redirects user to the second route
+//     // (data returned is determined by items listed in scope)
+// // second route creates a session for the authenticated user and stores the session in db
+// // CURRENTLY HAS A CORS ISSUE ON REDIRECT
+// router.get('/api/login/google', passport.authenticate('google', {
+//     scope: ['profile']
+// }));
+// router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
+// failureRedirect: '/api/login/google/nope'
+// }*/), (err, req, res) => {
+//     console.log('==================================', err);
+//     console.log('redirected to /api/login/google/redirect');
+//     // console.log(req);
+//     const { sessionID, user } = req;
+//     db.storeSession(sessionID, user.user_id, user.username, () => {});
+//     console.log('user sucessfully logged in via google auth');
+//     // res.send('user sucessfully logged in via google auth');
+//     res.redirect('/');
+// });
 
-const errorHandler = require('errorhandler');
-router.use(errorHandler({ log: errorNotification }));
-
-function errorNotification(err, str, req) {
-    console.log('ERROR', err);
-}
 
 
 // logs out user
@@ -231,8 +247,20 @@ router.get('/api/userinfo', (req, res) => {
 
 
 // contact game server to join a new game
-// not yet implemented
 router.get('/api/joingame', (req, res, next) => {
+    const { sessionID } = req;
+    // verify if there is a session stored in sessions table
+    db.verifySession(sessionID, (err, data) => {
+        if (!data) {
+            // if no session is found
+            console.log('session does not exist');
+            res.send(false);
+        } else {
+            // redirect?
+            console.log('session is verified');
+            res.send(true);
+        }
+    });
 });
 
 // receive game results from game server and post to db

@@ -5,7 +5,7 @@ CREATE TABLE players (
   user_id          SERIAL PRIMARY KEY,
   username         VARCHAR(255) NOT NULL UNIQUE,
   hash             VARCHAR(255),
-  google_id        VARCHAR(255) UNIQUE,
+  google_id        VARCHAR(255),
   wins             INTEGER NOT NULL,
   losses           INTEGER NOT NULL,
   games_played     INTEGER NOT NULL,
