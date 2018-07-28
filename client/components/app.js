@@ -70,6 +70,7 @@ angular.module('app')
         };
         
         this.notLoggedIn = false;
+        this.loadPage = false;
         this.handleJoinGame = () => {
             console.log('inside join game function');
             $http({
@@ -77,10 +78,15 @@ angular.module('app')
                 url: 'api/joingame'
             }).then((response) => {
                 console.log(response);
-                console.log('you joined the game');
+                if (response.data) {
+                    this.loadPage = true;
+                    console.log('you are inside the first if statement')
+                } else {
+                    this.notLoggedIn = true;
+                }
             }, error => {
-                this.notLoggedIn = true;
                 console.log(error);
+                // this.notLoggedIn = true;
             });
         };
     })
