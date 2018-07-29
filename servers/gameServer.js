@@ -159,10 +159,7 @@ io.on('connection', function(socket)
 			cache.shouldStart = false;
 		}
 		for (var i = 0; i < cache.players.length; i++){
-			console.log(cache.players[i].id)
-			console.log(socket.id)
 			var earl = (cache.players[i].id === socket.id)
-			console.log(earl)
 			if (cache.players[i].id === socket.id){
 				var index = i
 				cache.players[i] = Object.assign({}, {
@@ -174,17 +171,6 @@ io.on('connection', function(socket)
 			        id : 'disconnected',
 			        index : index
     			})
-			
-
-
-				// cache.players[i] === {
-    //    				currentX : -200,
-			 //        currentY : -200,
-			 //        right : 0,
-			 //        down : 0,
-			 //        id : 'disconnected',
-			 //        index : i
-    // 			}
     			console.log(cache.players[i])
 			}
 		}
