@@ -1,4 +1,4 @@
-<div>
+<div ng-hide="$ctrl.loadPage">
     <div>
         <h1 class="section">
           Fútyarn
@@ -73,10 +73,13 @@
           <input class="btn" type="button" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
           <div ng-if="$ctrl.notLoggedIn">
               Please log in first to join the game!
-            </div>
+          </div>
+          
         </div>
-        
     </div>
   </div>
+</div>
+<div ng-if="$ctrl.loadPage">
+    <loading />
 </div>
     
