@@ -1,5 +1,16 @@
 <div >
     <img ng-src="assets/images/blackCatUp.gif" id="cat"/> 
 <canvas id="maincanvas" height="650" width="1200" anim></canvas>
-<canvas id='playercanvas' height ="100" width ="100" ng-mousemove="$ctrl.mouseoverHandler($event)"move></canvas>
+<canvas id='playercanvas' height ="100" width ="100" move></canvas>
+<!-- NEED TO EXTRACT THE PLAYER'S LOCATION FROM THIS REPEAT, OTHERWISE THERE WILL BE A LAGGY CLONE -->
+<opponentcat ident="'oppCat0'"  teamoneimg="$ctrl.teamoneimg" 
+rotation="$ctrl.playerRotations[0]" playervector="$ctrl.cache.players[0]"/>
+<opponentcat ident="'oppCat1'"  teamoneimg="$ctrl.teamoneimg" 
+rotation="$ctrl.playerRotations[1]" playervector="$ctrl.cache.players[1]"/>
+<opponentcat ident="'oppCat2'"  teamoneimg="$ctrl.teamtwoimg" 
+rotation="$ctrl.playerRotations[2]" playervector="$ctrl.cache.players[2]"/>
+<opponentcat ident="'oppCat3'"  teamoneimg="$ctrl.teamtwoimg" 
+rotation="$ctrl.playerRotations[3]" playervector="$ctrl.cache.players[3]"/>
+
+
 </div>

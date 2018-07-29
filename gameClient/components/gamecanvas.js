@@ -1,10 +1,11 @@
 angular.module('gameinstance')
-.controller('gamecanvasCtrl', function (/*requiered services live here*/) 
+.controller('gamecanvasCtrl', function () 
 {
-    console.log(this)
-    this.cat = this.img
+    this.initTime = Date.now()
+    this.img = this.teamoneimg
     this.canvas;
-    this.speed = 5
+    this.opponents;
+    this.speed = 0.294
     this.keyMap = {
             65 : ['right', 0 - this.speed, 68], //L
             68 : ['right', this.speed, 65], //R
@@ -28,57 +29,74 @@ angular.module('gameinstance')
         currentX : 200,
         currentY : 200,
         right : 0,
-        down : 0
-        //left : 0 - this.right
-        //up : 0 - this.down
+        down : 0,
+        spacePressed: false,
+        rotation: 0,
+        id : 'unassigned',
+        index: -1
     }
+
+    this.playerRotations = [0,0,0,0]
+
     this.goals = {
         team1 : 0,
         team2 : 0
     }
         
     this.tempBallVector = {
-        currentX : 600,
-        currentY : 0,
-        right : 0,
-        down  : 4.76,
+        cx : 600,
+        cy : 0,
+        dx : 0,
+        dy  : .4,
     }
     var pos = this.speed
     var neg = 0 - this.speed
             
 //map player vector to rotation in degrees           
     this.rotation = {
-                    [neg] : {
-                        [neg] : 315,
-                        0  : 270,
-                        [pos]  : 225
-                    },
-                    0 : {
-                        [neg] : 0,
-                        0  : 0,
-                        [pos]  : 180
-                    },
-                    [pos] : {
-                        [neg] : 45,
-                        0 : 90,
-                        [pos] : 135
-                    }
-                    
-                }
+        [neg] : {
+            [neg] : 315,
+            0  : 270,
+            [pos]  : 225
+        },
+        0 : {
+            [neg] : 0,
+            0  : 0,
+            [pos]  : 180
+        },
+        [pos] : {
+            [neg] : 45,
+            0 : 90,
+            [pos] : 135
+        }
+        
+    }
+
     this.mouseoverHandler = function (e){
         console.log('X. ' + e.originalEvent.layerX)
         console.log('Y. ' + e.originalEvent.layerY)
     }
+
     var context = this
+
     this.spin = function () {
         return context.rotation[context.playerVector.right][context.playerVector.down]
     }
+
     this.resetBall = function () {
         this.tempBallVector.currentX = 600
         this.tempBallVector.currentY = 325
         this.tempBallVector.right = 0
         this.tempBallVector.down = 0
+    }
+
+    this.shouldRender = function () {
+        console.log(this.cache.shouldStart)
+        return this.cache.shouldStart
+
     } 
+
+
                 
 })
 .directive('anim', function()
@@ -102,18 +120,24 @@ angular.module('gameinstance')
                     var ctx = canvas.getContext('2d')
     //temp global object for player speed                
                     var speed = 5; 
-                    
+                    var otherPlayers =[]
+                    var shouldStart = false;
+                    var lastTime = Date.now();
+                    var thisTime = Date.now();
+                    var framecount = 0
 //main draw loop (all draw fucntions live in here)                    
                     function gameLoop()
                     {
+                        thisTime = Date.now();
+                        var cache = ctrl.cache
                         window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0, canvas.width, canvas.height)
                         ctx.fillStyle = "LightGreen"
                         ctx.fillRect(0,0,canvas.width,canvas.height);
                         ctx.font = "40px Arial"
-                        
+                        // console.log(ctrl.cache)
                         ctx.fillStyle = "white"
-                        ctx.fillText(`${ctrl.goals.team2} : ${ctrl.goals.team1}`,561, 40)
+                        ctx.fillText(`${ctrl.cache.score.teamTwo} : ${ctrl.cache.score.teamOne}`,561, 40)
                         ctx.fillRect(50,0,4,650)
                         ctx.fillRect(1146,0,4,650)
                         ctx.fillRect(598,0,4,650)
@@ -128,12 +152,27 @@ angular.module('gameinstance')
                         ctx.fillStyle = "white"
                         ctx.fillRect(0,250, 50, 150)
                         ctx.fillRect(1150,250,50,150)
+                        scope.$digest();
+                        ctrl.playerVector.updateTime = Date.now()
+                        lastTime = Date.now()
+                        // console.log(ctrl.initcache)
                     }
                     var drawTestCat = function ()
                     {
+                        console.log(otherPlayers.length)
+                        var frameTimeDelta = thisTime - lastTime;
+                        if (shouldStart){
+                            otherPlayers.forEach((playerCanvas, index)=>{
+                                if(index !== ctrl.playerVector.index){
+                                    // console.log(playerCanvas[0])
+                                    ctx.drawImage(playerCanvas[0], ctrl.cache.players[index].currentX, ctrl.cache.players[index].currentY)
+                                    ctrl.cache.players[index].currentX += (ctrl.cache.players[index].right * frameTimeDelta);
+                                    ctrl.cache.players[index].currentY += (ctrl.cache.players[index].down  * frameTimeDelta);
+                                }
+                            })}
                         ctx.drawImage(ctrl.canvas, ctrl.playerVector.currentX, ctrl.playerVector.currentY)
-                        ctrl.playerVector.currentX += ctrl.playerVector.right;
-                        ctrl.playerVector.currentY += ctrl.playerVector.down;
+                        ctrl.playerVector.currentX += (ctrl.playerVector.right * frameTimeDelta);
+                        ctrl.playerVector.currentY += (ctrl.playerVector.down  * frameTimeDelta);
                     }
                     var isCatBallCollision = function ()
                     {
@@ -150,8 +189,8 @@ angular.module('gameinstance')
                         var currentCenterX = ctrl.playerVector.currentX + hitBoxMap[ctrl.spin()][0]
                         var currentCenterY = ctrl.playerVector.currentY + hitBoxMap[ctrl.spin()][1]
                         var ball = ctrl.tempBallVector
-                        var ballCenterX = ball.currentX +5
-                        var ballCenterY = ball.currentY +5
+                        var ballCenterX = ball.cx +5
+                        var ballCenterY = ball.cy +5
                         
                         
                         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY),2))
@@ -162,8 +201,8 @@ angular.module('gameinstance')
                          var currentCenterX = ctrl.playerVector.currentX + 50
                         var currentCenterY = ctrl.playerVector.currentY + 50
                         var ball = ctrl.tempBallVector
-                        var ballCenterX = ball.currentX +5
-                        var ballCenterY = ball.currentY +5
+                        var ballCenterX = ball.cx +5
+                        var ballCenterY = ball.cy +5
                         
                         
                         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY),2))
@@ -172,42 +211,49 @@ angular.module('gameinstance')
                     
                     var getKickDirection = function (){
                        var map = {
-                           0   : [0,-9],
-                           45  : [9,-9],
-                           90  : [9,0],
-                           135 : [9,9],
-                           180 : [0,9],
-                           225 : [-9,9],
-                           270 : [-9,0],
-                           315 : [-9,-9]
+                           0   : [0,-.506],
+                           45  : [.506,-.506],
+                           90  : [.506,0],
+                           135 : [.506,.506],
+                           180 : [0,.506],
+                           225 : [-.506,.506],
+                           270 : [-.506,0],
+                           315 : [-.506,-.506]
                        }
-                       return map[ctrl.spin()]
+                        var arr = map[ctrl.spin()]
+                        const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000
+                        const ydiff = (Math.floor(Math.random() * 300) - 150) / 1000
+                        arr[0] += xdiff;
+                        arr[1] += ydiff 
+                        return arr
                     }
                     
                     var drawBall = function () 
                     {
-                        var ball = ctrl.tempBallVector;
-                        var playerX = ctrl.playerVector.currentX;
-                        var playerY = ctrl.playerVector.currentY;
-                        var ballX = ball.currentX;
-                        var ballY = ball.currentY;
+                        var timeDelta  = thisTime - lastTime;
+                        var ball = ctrl.tempBallVector;                    
+                        // console.log(ctrl.cache.ballLoc);
+                        // var ball = ctrl.cache.ballLocx                   var playerX = ctrl.playerVector.currentX;
+                        var playerY = ctrl.playerVectordyrentY;
+                        var ballX = ball.cx;
+                        var ballY = ball.cy;
                         var bounce = isWallBounce()
                         ctx.beginPath();
-                        ctx.arc(ball.currentX, ball.currentY, 7, 0, 2 * Math.PI, false)
+                        ctx.arc(ball.cx, ball.cy, 7, 0, 2 * Math.PI, false)
                         ctx.fillStyle = 'red';
                         ctx.fill()
                         ctx.lineWidth = 1;
                         ctx.strokeStyle = '#8b0000'
                         ctx.stroke();
                         
-                        // console.log(ball.currentX)
+                        // console.log(ball.cx)
                         if (bounce){
                             if (bounce === 'x'){
-                                ball.currentX -= (2 * ball.right)
-                                ball.right -= (2 * (ball.right))
+                                ball.cx -= ((2 * ball.dx) * timeDelta)
+                                ball.dx -= (2 * (ball.dx))
                             } else if (bounce === 'y'){
-                                ball.currentY -= (2 * ball.down)
-                                ball.down  -= (2 * (ball.down))
+                                ball.cy -= ((2 * ball.dy) * timeDelta)
+                                ball.dy  -= (2 * (ball.dy))
                             } else if (bounce === '1'){
                                 ctrl.goals.team1 += 1
                                 ctrl.resetBall()
@@ -216,51 +262,52 @@ angular.module('gameinstance')
                                 ctrl.resetBall()
                             }                        
                         }
-                        ball.currentX += ball.right
-                        ball.currentY += ball.down
-                        if (Math.abs(ball.right) > 0.25){
-                            if (ball.right > 0) {
-                                ball.right -= .035
+                        ball.cx += ball.dx * timeDelta;
+                        ball.cy += ball.dy  * timeDelta;
+                        if (Math.abs(ball.dx) > 0.02){
+                            if (ball.dx > 0) {
+                                ball.dx -= .0021
                             } else {
-                                ball.right += .035
+                                ball.dx += .0021
                             }
                         } else {
-                            ball.right = 0
+                            ball.dx = 0
                         }
-                        if (Math.abs(ball.down) > 0.25){
-                            if (ball.down > 0){
-                                ball.down -= .035
+                        if (Math.abs(ball.dy) > 0.02){
+                            if (ball.dy > 0){
+                                ball.dy -= .0021
                             } else {
-                                ball.down += .035
+                                ball.dy += .0021
                             }
                         } else {
-                            ball.down = 0
+                            ball.dy = 0
                         }
                         if (isCatBallCollision()){
-                            // console.log(ball.right)
-                            ball.right += (ctrl.playerVector.right - ball.right)
-                            ball.down += (ctrl.playerVector.down - ball.down)
+                            // console.log(ball.dx)
+                            ball.dx += (1.05 * (ctrl.playerVector.right) - ball.dx) 
+                            ball.dy += (1.05 *(ctrl.playerVector.down) - ball.dy)
                             if (ctrl.keysPressed[32]){
                                 var kick = getKickDirection()
-                                ctrl.tempBallVector.right = kick[0]
-                                ctrl.tempBallVector.currentX += (3 * kick[0])
-                                ctrl.tempBallVector.down = kick[1]
-                                ctrl.tempBallVector.currentY += (3 * kick[1])
+                                ctrl.tempBallVector.dx = kick[0]
+                                ctrl.tempBallVector.cx += (3 * kick[0])
+                                ctrl.tempBallVector.dy = kick[1]
+                                ctrl.tempBallVector.cy += (3 * kick[1])
                                 console.log(ctrl.tempBallVector)
                             }
                         } else if (isCatBodyCollision()) {
-                            ball.right -= (2 * (ball.right)) 
-                            ball.down -= (2 * (ball.down)) 
+                            ball.dx -= (2 * (ball.dx)) 
+                            ball.dy -= (2 * (ball.dy)) 
                         }
                     }
 
-                    var isWallBounce = function() {
+                    var isWallBounce = function() 
+                        {
                         var ball = ctrl.tempBallVector;
                         var playerX = ctrl.playerVector.currentX;
                         var playerY = ctrl.playerVector.currentY;
-                        var ballX = ball.currentX;
-                        var ballY = ball.currentY;
-                        // console.log(ball.currentX , ball.currentY)
+                        var ballX = ball.cx;
+                        var ballY = ball.cy;
+                        // console.log(ball.cx , ball.cy)
                         if (ballY > 250 && ballY < 400){
                             if (ballX < 55){
                                 return '1'
@@ -297,12 +344,18 @@ angular.module('gameinstance')
 //route based on keydown to toggle key press map                    
                     var keyupHandler = function (e){
                         if (ctrl.keysPressed[e.keyCode] === undefined) return;
+                        if (e.keyCode === 32){
+                            ctrl.playerVector.spacePressed = false;
+                        }
                         ctrl.keysPressed[e.keyCode] = false;
                         alterPlayerVector();
                     }
 //route based on keyup to detoggle key press map
                     var keydownHandler = function(e){
                         if (ctrl.keysPressed[e.keyCode] === undefined) return;
+                        if (e.keyCode === 32){
+                            ctrl.playerVector.spacePressed = true;
+                        }
                         ctrl.keysPressed[e.keyCode] = true ;
                         alterPlayerVector();
                     }
@@ -310,7 +363,42 @@ angular.module('gameinstance')
                     angular.element(window).on('keydown', keydownHandler)
                     angular.element(window).on('keyup', keyupHandler)
 
+                    ctrl.socket.on('cache', (msg) => {
+                        // ctrl.playerVector.currentX ++
+                        // console.log('I got some spunk')
+                        ctrl.cache = msg
+                        ctrl.tempBallVector = msg.ballLoc
+                        msg.players.forEach((player, index)=>{
+                            ctrl.playerRotations[index] = msg.players[index].rotation
+                        })
+                        // console.log(msg)
+                        // console.log(ctrl.playerRotations)
+                        ctrl.socket.emit('uploadplayervector', ctrl.playerVector)
+                        // ctrl.socket.emit('howdy', ctrl.playerVector)
+                    })
+
+                    ctrl.socket.on('you', (msg) => {
+                        var data = msg
+                        ctrl.playerVector.id = data[0]
+                        ctrl.playerVector.index = data[1]
+                        console.log(ctrl.playerVector)
+                        console.log(msg[0])
+                    })
+
+                    ctrl.socket.on('initGame', ()=>{
+                        var index = ctrl.playerVector.index;
+                        otherPlayers = []
+                        for (var i = 0; i < 4; i++){
+                                console.log(angular.element(document.querySelector(`#oppCat${i}`)))
+                                otherPlayers.push(angular.element(document.querySelector(`#oppCat${i}`)))
+                        }
+                        shouldStart = true;
+                        console.log(otherPlayers)
+                    
+                    })
+
 //call the main draw loop
+                    // setInterval( gameLoop, 15)
                     gameLoop()
                 }
             
@@ -324,9 +412,10 @@ angular.module('gameinstance')
             link : (scope, element) => 
             {
                 var ctrl = scope.$ctrl
-                console.log(ctrl)
+          
                 ctrl.canvas = element[0]
                 var canvas = element[0];
+                console.log(canvas)
                 var ctx = canvas.getContext('2d')
 
                 var pos = ctrl.speed
@@ -334,16 +423,17 @@ angular.module('gameinstance')
 //map between player direction and rotation
             
                 
-                console.log(ctrl.cat)
+   
                 
                 function gameLoop(){
                         window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0,canvas.height, canvas.width)
                         var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
                         ctrl.rotation[0][0] = spin
+                        ctrl.playerVector.rotation = spin
                         ctx.translate(canvas.width/2, canvas.height/2)
                         ctx.rotate(spin*Math.PI / 180)
-                        ctx.drawImage(ctrl.img,0,0,25,60,-14,-20,25,60)
+                        ctx.drawImage(ctrl.teamoneimg,0,0,25,60,-14,-20,25,60)
                         // ctx.drawImage(this.catImage,0,0,25,60,-12,-30,25,60)
                         ctx.rotate((0 - spin)*Math.PI / 180)
                         ctx.translate(-canvas.width/2, -canvas.height/2)
@@ -362,9 +452,13 @@ angular.module('gameinstance')
     })
 .component('gamecanvas', {
     bindings : {
-        img : '=' 
+        teamoneimg : '=',
+        teamtwoimg: '=', 
+        socket: '=',
+        cache : '=',
+        initcache : '='
     },
     controller : 'gamecanvasCtrl',
-    templateUrl : '/templates/gamecanvas.html'
+    templateUrl : './templates/gamecanvas.html'
 
 })
