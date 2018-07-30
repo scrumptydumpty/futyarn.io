@@ -1,13 +1,8 @@
 angular.module('gameinstance')
 .controller('gamecanvasCtrl', function () 
 {
-    this.mouse = {
-        x : 0,
-        y: 0
-    }
     this.initTime = Date.now()
     this.img = this.teamoneimg
-    this.isLoading = true;
     this.canvas;
     this.opponents;
     this.speed = 0.294
@@ -37,7 +32,7 @@ angular.module('gameinstance')
         down : 0,
         spacePressed: false,
         rotation: 0,
-        id : 'unassigned',
+        id : 'unassigned',w
         index: -1
     }
 
@@ -77,33 +72,25 @@ angular.module('gameinstance')
         
     }
 
-    this.mouseoverHandler = function (e)
-    {
-        // console.log($event)
-        console.log(e)
-        if (this.isLoading){
-            this.mouse.x = e.originalEvent.layerX
-            this.mouse.y = e.originalEvent.layerY
-        }
+    this.mouseoverHandler = function (e){
+        console.log('X. ' + e.originalEvent.layerX)
+        console.log('Y. ' + e.originalEvent.layerY)
     }
 
     var context = this
 
-    this.spin = function () 
-    {
+    this.spin = function () {
         return context.rotation[context.playerVector.right][context.playerVector.down]
     }
 
-    this.resetBall = function () 
-    {
+    this.resetBall = function () {
         this.tempBallVector.currentX = 600
         this.tempBallVector.currentY = 325
         this.tempBallVector.right = 0
         this.tempBallVector.down = 0
     }
 
-    this.shouldRender = function () 
-    {
+    this.shouldRender = function () {
         console.log(this.cache.shouldStart)
         return this.cache.shouldStart
 
@@ -126,7 +113,6 @@ angular.module('gameinstance')
     // attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
     // controller is the directive's required controller instance(s) or its own controller (if any). The exact value depends on the directive's require property.
     // transcludeFn is a transclude linking function pre-bound to the correct transclusion scope.
-                    
                     var ctrl = scope.$ctrl
     //el[0] === the canvas object we drop the directive on
                     var canvas = element[0]
@@ -138,25 +124,13 @@ angular.module('gameinstance')
                     var shouldStart = false;
                     var lastTime = Date.now();
                     var thisTime = Date.now();
-                    var framecount = 0;
-
-                    const colorArray = [
-                        '#35AFD8',
-                        '#327ECE',
-                        '#39C1BF',
-                        '#35D8A7',
-                        '#32CE74'
-                    ];
+                    var framecount = 0
 //main draw loop (all draw fucntions live in here)                    
                     function gameLoop()
                     {
                         thisTime = Date.now();
                         var cache = ctrl.cache
-                        if (!ctrl.isLoading){
-                            window.requestAnimationFrame(gameLoop);
-                        } else {
-                            window.requestAnimationFrame(loadingLoop);
-                        }
+                        window.requestAnimationFrame(gameLoop);
                         ctx.clearRect(0,0, canvas.width, canvas.height)
                         ctx.fillStyle = "LightGreen"
                         ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -183,70 +157,6 @@ angular.module('gameinstance')
                         lastTime = Date.now()
                         // console.log(ctrl.initcache)
                     }
-
-
-                    var Particle = function(x, y, radius, color) {
-                        this.x = x;
-                        this.y = y;
-                        this.radius = radius;
-                        this.color = color;
-                        this.radians = Math.random() * Math.PI * 2;
-                        this.angularVelocity = 0.05;
-                        this.distanceFromCenter = Math.floor(Math.random() * (120 - 50 + 1) + 50);
-                        this.lastMouse = {x: this.x, y: this.y};
-
-                        this.draw = function(lastPoint) {
-                            ctx.beginPath();
-                            ctx.strokeStyle = this.color;
-                            ctx.lineWidth = this.radius;
-                            ctx.moveTo(lastPoint.x, lastPoint.y);
-                            ctx.lineTo(this.x, this.y);
-                            ctx.stroke();
-                            ctx.closePath();
-                        };
-                
-                        this.update = function() {
-                            const lastPoint = {x: this.x, y:this.y};
-                            this.radians += this.angularVelocity;
-                            this.lastMouse.x += (ctrl.mouse.x - this.lastMouse.x) * 0.05;
-                            this.lastMouse.y += (ctrl.mouse.y - this.lastMouse.y) * 0.05;
-                            this.x = this.lastMouse.x + Math.cos(this.radians) * this.distanceFromCenter;
-                            this.y = this.lastMouse.y + Math.sin(this.radians) * this.distanceFromCenter;
-                            this.draw(lastPoint);
-                        };
-                    }
-
-                    const particles = [];
-                    const init = function() {
-                        for (let i = 0; i < 50; i++) {
-                            const radius = (Math.random() * 2) + 2.5;
-                            particles.push(new Particle(canvas.width/2, canvas.height/2, radius, randomColor(colorArray)));
-                        }  
-                    }
-
-                    const randomColor = function (colors) {
-                         return colors[Math.floor(Math.random() * colors.length)];
-                    }
-
-
-                    var loadingLoop = function ()
-                    {
-                        if (ctrl.isLoading){
-                            window.requestAnimationFrame(loadingLoop)
-                        } else {
-                            window.requestAnimationFrame(gameLoop)
-                        }
-                        ctx.fillStyle = 'rgba(255, 255, 255, 0.09)';
-                        ctx.fillRect(0,0,canvas.width, canvas.height);
-                        particles.forEach((particle) => 
-                        {
-                            particle.update();
-                        })
-
-                    }
-
-
-
                     var drawTestCat = function ()
                     {
                         console.log(otherPlayers.length)
@@ -473,7 +383,6 @@ angular.module('gameinstance')
                     })
 
                     ctrl.socket.on('initGame', ()=>{
-                        ctrl.isLoading = false;
                         var index = ctrl.playerVector.index;
                         otherPlayers = []
                         for (var i = 0; i < 4; i++){
@@ -487,9 +396,7 @@ angular.module('gameinstance')
 
                     //call the main draw loop
                     // setInterval( gameLoop, 15)
-                            init();
                     gameLoop()
-
                 }
             
         }
