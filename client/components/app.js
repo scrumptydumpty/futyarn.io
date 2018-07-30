@@ -1,5 +1,5 @@
 angular.module('app')
-    .controller('appCtrl', function (auth, $http){
+    .controller('appCtrl', function (auth, $http, $scope){
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
@@ -39,6 +39,16 @@ angular.module('app')
             this.showLeaderboard = !this.showLeaderboard;
         };
 
+        this.toggleLoaded = () => {
+            console.log($scope)
+            this.loaded = !this.loaded;
+            console.log(this.loaded)
+            console.log(this)
+            $scope.$digest()
+        }
+
+        this.toggleLoaded = this.toggleLoaded.bind(this)
+
         this.leaderboardInfo;
         this.submitGetRequest = false;
         this.handleLeaderboard = () => {
@@ -71,8 +81,13 @@ angular.module('app')
         
         this.notLoggedIn = false;
         this.loadPage = false;
+        this.loaded = false;
+
+
+
         this.handleJoinGame = () => {
             console.log('inside join game function');
+            this.socket = io.connect('http://localhost:1337')   
             $http({
                 method: 'GET',
                 url: 'api/joingame'
@@ -80,7 +95,7 @@ angular.module('app')
                 console.log(response);
                 if (response.data) {
                     this.loadPage = true;
-                    console.log('you are inside the first if statement')
+                    // console.log('you are inside the first if statement')
                 } else {
                     this.notLoggedIn = true;
                 }

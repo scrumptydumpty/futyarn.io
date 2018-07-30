@@ -1,10 +1,7 @@
 <div >
     <img ng-src="assets/images/blackCatUp.gif" id="cat"/> 
-
-<canvas id="maincanvas" height="650" width="1200" ng-mousemove="$ctrl.mouseoverHandler($event)" anim></canvas>
-
+<canvas id="maincanvas" height="650" width="1200" anim></canvas>
 <canvas id='playercanvas' height ="100" width ="100" move></canvas>
-
 <opponentcat ident="'oppCat0'"  teamoneimg="$ctrl.teamoneimg" 
 rotation="$ctrl.playerRotations[0]" playervector="$ctrl.cache.players[0]"/>
 <opponentcat ident="'oppCat1'"  teamoneimg="$ctrl.teamoneimg" 
