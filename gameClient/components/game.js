@@ -55,7 +55,7 @@ angular.module('gameinstance')
 
 	this.initcache =[]
 
- 	this.socket = io.connect('http://localhost:1337')
+ 	this.socket = io.connect('http://18.220.53.1:1337')
 
  	this.socket.on('initGame', (msg)=>{
  		// alert('gameBeginning')
