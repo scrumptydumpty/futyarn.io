@@ -197,6 +197,7 @@ angular.module('gameinstance')
                         // console.log(ballCenterDelta)
                         return (ballCenterDelta < 11)
                     }
+
                     var isCatBodyCollision = function (){
                          var currentCenterX = ctrl.playerVector.currentX + 50
                         var currentCenterY = ctrl.playerVector.currentY + 50
@@ -211,14 +212,14 @@ angular.module('gameinstance')
                     
                     var getKickDirection = function (){
                        var map = {
-                           0   : [0,-.506],
-                           45  : [.506,-.506],
-                           90  : [.506,0],
-                           135 : [.506,.506],
-                           180 : [0,.506],
-                           225 : [-.506,.506],
-                           270 : [-.506,0],
-                           315 : [-.506,-.506]
+                           0   : [0,-.502],
+                           45  : [.502,-.502],
+                           90  : [.502,0],
+                           135 : [.502,.502],
+                           180 : [0,.502],
+                           225 : [-.502,.502],
+                           270 : [-.502,0],
+                           315 : [-.502,-.502]
                        }
                         var arr = map[ctrl.spin()]
                         const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000
@@ -295,8 +296,8 @@ angular.module('gameinstance')
                                 console.log(ctrl.tempBallVector)
                             }
                         } else if (isCatBodyCollision()) {
-                            ball.dx -= (2 * (ball.dx)) 
-                            ball.dy -= (2 * (ball.dy)) 
+                            ball.dx += (1.1 * (ctrl.playerVector.right) - ball.dx) 
+                            ball.dy += (1.1 *(ctrl.playerVector.down) - ball.dy)
                         }
                     }
 
@@ -364,17 +365,13 @@ angular.module('gameinstance')
                     angular.element(window).on('keyup', keyupHandler)
 
                     ctrl.socket.on('cache', (msg) => {
-                        // ctrl.playerVector.currentX ++
-                        // console.log('I got some spunk')
+   
                         ctrl.cache = msg
                         ctrl.tempBallVector = msg.ballLoc
                         msg.players.forEach((player, index)=>{
                             ctrl.playerRotations[index] = msg.players[index].rotation
                         })
-                        // console.log(msg)
-                        // console.log(ctrl.playerRotations)
                         ctrl.socket.emit('uploadplayervector', ctrl.playerVector)
-                        // ctrl.socket.emit('howdy', ctrl.playerVector)
                     })
 
                     ctrl.socket.on('you', (msg) => {
@@ -397,7 +394,7 @@ angular.module('gameinstance')
                     
                     })
 
-//call the main draw loop
+                    //call the main draw loop
                     // setInterval( gameLoop, 15)
                     gameLoop()
                 }
@@ -424,24 +421,24 @@ angular.module('gameinstance')
             
                 
    
-                
-                function gameLoop(){
-                        window.requestAnimationFrame(gameLoop);
-                        ctx.clearRect(0,0,canvas.height, canvas.width)
-                        var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
-                        ctrl.rotation[0][0] = spin
-                        ctrl.playerVector.rotation = spin
-                        ctx.translate(canvas.width/2, canvas.height/2)
-                        ctx.rotate(spin*Math.PI / 180)
+//refactor to not loop?                
+                function gameLoop()
+                {
+                    window.requestAnimationFrame(gameLoop);
+                    ctx.clearRect(0,0,canvas.height, canvas.width)
+                    var spin = ctrl.rotation[ctrl.playerVector.right][ctrl.playerVector.down]
+                    ctrl.rotation[0][0] = spin
+                    ctrl.playerVector.rotation = spin
+                    ctx.translate(canvas.width/2, canvas.height/2)
+                    ctx.rotate(spin*Math.PI / 180)
+                    if (ctrl.playerVector.index <= 1 ) {
                         ctx.drawImage(ctrl.teamoneimg,0,0,25,60,-14,-20,25,60)
-                        // ctx.drawImage(this.catImage,0,0,25,60,-12,-30,25,60)
-                        ctx.rotate((0 - spin)*Math.PI / 180)
-                        ctx.translate(-canvas.width/2, -canvas.height/2)
+                    } else {
+                        ctx.drawImage(ctrl.teamtwoimg,0,0,25,60,-14,-20,25,60)
                     }
-                
-                // canvas.on('mouseover', function(e){
-                //     console.log(e.target.value)
-                // })    
+                    ctx.rotate((0 - spin)*Math.PI / 180)
+                    ctx.translate(-canvas.width/2, -canvas.height/2)
+                }   
                 gameLoop()
                 angular.element(window).on('keydown')
                 angular.element(window).on('keyup')
