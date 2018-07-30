@@ -23,7 +23,7 @@ CREATE TABLE players (
     games_played     INTEGER NOT NULL,
     goals_made       INTEGER NOT NULL, 
     CHECK ((wins + losses) = games_played)
-)
+);
 
 -- DROP TABLE IF EXISTS games
 
@@ -31,34 +31,22 @@ CREATE TABLE games (
     game_id                SERIAL PRIMARY KEY,
     team_one_one           INTEGER REFERENCES players(user_id) NULL,
     team_one_two           INTEGER REFERENCES players(user_id) NULL,
-    team_one_three         INTEGER REFERENCES players(user_id) NULL,
-    team_one_four          INTEGER REFERENCES players(user_id) NULL,
-    team_one_five          INTEGER REFERENCES players(user_id) NULL,
     team_two_one           INTEGER REFERENCES players(user_id) NULL,
     team_two_two           INTEGER REFERENCES players(user_id) NULL,
-    team_two_three         INTEGER REFERENCES players(user_id) NULL,
-    team_two_four          INTEGER REFERENCES players(user_id) NULL,
-    team_two_five          INTEGER REFERENCES players(user_id) NULL,
     team_one_score         INTEGER NOT NULL,
-    team_two_score         INTEGER NOT NULL,
     team_one_one_score     INTEGER NOT NULL,
     team_one_two_score     INTEGER NOT NULL,
-    team_one_three_score   INTEGER NOT NULL,
-    team_one_four_score    INTEGER NOT NULL,
-    team_one_five_score    INTEGER NOT NULL,
+    team_two_score         INTEGER NOT NULL,
     team_two_one_score     INTEGER NOT NULL,
     team_two_two_score     INTEGER NOT NULL,
-    team_two_three_score   INTEGER NOT NULL,
-    team_two_four_score    INTEGER NOT NULL,
-    team_two_five_score    INTEGER NOT NULL,
     winning_team           VARCHAR(10) NOT NULL,
     losing_team            VARCHAR(10) NOT NULL,
     cat_of_the_game        INTEGER REFERENCES players(user_id)
-)
+);
 
 CREATE TABLE sessions ( 
     session_id             SERIAL PRIMARY KEY,
     session                VARCHAR(255) NOT NULL,
     user_id                INTEGER REFERENCES players(user_id) NULL,
     username               VARCHAR(255) NOT NULL
-)
+);
