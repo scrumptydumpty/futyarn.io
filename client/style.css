@@ -30,56 +30,6 @@ html {
     border-radius: 25px;
   }
   
-  /* .parallax::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateZ(-1px) scale(2);
-    background-size: 20px;
-    z-index: -1;
-    background-image: url('./images/soccerField.jpg');
-    background-size: 100%;
-    background-repeat: no-repeat;
-  } */
-
-  /* .content {
-    height: 200vh;
-    display: flex;
-    justify-content: center;
-    background-image: url('./images/angryCat.jpg');
-    background-repeat: no-repeat;
-    /* background-size: 100%; */
-    /* margin: 0;
-    background-size: 100%;
-    font-family: 'Graduate', cursive;
-
-  } */ 
-  
-  /* h3 {
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    font: 60px "Graduate", cursive;
-    color: #111;
-    text-align: center;
-    justify-content: center; 
-    margin: 0;
-    padding: 0;
-  }
-
-  p {
-    text-align: center;
-    justify-content: center; 
-    margin: 0;
-    padding: 20px;
-    padding-left: 80px;
-    padding-right: 80px;
-    font: 20px;
-    font-weight: 400;
-  } */
-
   .info {
     height: cover;
     margin:0;

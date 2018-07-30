@@ -1,5 +1,7 @@
 angular.module('app')
+
     .controller('appCtrl', function (auth, $http, $scope){
+
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
@@ -19,7 +21,8 @@ angular.module('app')
         this.toggleRules = () => {
             this.showRules = !this.showRules;
         };
-
+        
+        // This function makes the signup and login info disappear when someone is logged in
         this.toggle = () => {
             this.showLogOut = !this.showLogOut;
             this.toggleLoginForm();
@@ -51,13 +54,13 @@ angular.module('app')
 
         this.leaderboardInfo;
         this.submitGetRequest = false;
+        // This retrieves the top 10 players from the database
         this.handleLeaderboard = () => {
             if (!this.submitGetRequest) {
                 $http({
                     method: 'GET',
                     url: '/api/leaderboards'
                 }).then((response) => {
-                    console.log('response', response);
                     this.submitGetRequest = true;
                     this.leaderboardInfo = response.data;
                 }, (error) => {
@@ -65,15 +68,14 @@ angular.module('app')
                 });
             }
         };
-
+        
+        // This sends info to server that someone is logging out
         this.handleLogOut = () => {
-            console.log('inside handle log out function');
             $http({
                 method: 'GET',
                 url: '/api/logout'
             }).then((response) => {
                 console.log(response);
-                console.log('you logged out!');
             }, (error) => {
                 console.log(error);
             });
@@ -81,6 +83,7 @@ angular.module('app')
         
         this.notLoggedIn = false;
         this.loadPage = false;
+
         this.loaded = false;
 
 
@@ -88,6 +91,7 @@ angular.module('app')
         this.handleJoinGame = () => {
             console.log('inside join game function');
             this.socket = io.connect('http://localhost:1337')   
+
             $http({
                 method: 'GET',
                 url: 'api/joingame'
@@ -95,13 +99,12 @@ angular.module('app')
                 console.log(response);
                 if (response.data) {
                     this.loadPage = true;
-                    // console.log('you are inside the first if statement')
+
                 } else {
                     this.notLoggedIn = true;
                 }
             }, error => {
                 console.log(error);
-                // this.notLoggedIn = true;
             });
         };
     })
