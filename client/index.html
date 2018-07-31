@@ -2,19 +2,30 @@
 <html>
 <head>
   <title>futYarn.io</title>
- <script type="text/javascript" src="/angular/angular.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Graduate" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <script type="text/javascript" src="/angular/angular.js"></script>
+  <!-- <script type="text/javascript" src="/socket.io-client/dist/socket.io.js"></script> -->
+  <!-- <script src="http://localhost:1337/socket.io/socket.io.js"></script> -->
+  <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
 </head>
 <body> 
   <div  ng-app="app">
     <app />
   </div>
   <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="services/service.js"></script>
   <script type="text/javascript" src="components/app.js"></script>
-  <script type="text/javascript" src="components/gameInstance.js"></script>
-  <script type="text/javascript" src="components/joinGame.js"></script>
   <script type="text/javascript" src="components/logIn.js"></script>
-  <script type="text/javascript" src="components/rules.js"></script>
-  <script type="text/javascript" src="components/menu.js"></script>
   <script type="text/javascript" src="components/signUp.js"></script>
+  <script type="text/javascript" src="components/loading.js"></script>
+<!--     <img src="assets/images/BlackCatUp.gif" id="blackCatUp">
+  <script type="text/javascript" src="index.js"></script>
+ <script type="text/javascript">
+ </script>
+  <script type="text/javascript" src="components/game.js"></script>
+  <script type="text/javascript" src="components/gamecanvas.js"></script>
+  <script type="text/javascript" src="components/opponentCat.js"></script> -->
 </body>
 </html>

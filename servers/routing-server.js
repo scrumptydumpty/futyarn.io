@@ -1,16 +1,25 @@
-var express = require('express');
-var routes = require('./routes.js')
+const express = require('express');
+const bodyParser = require('body-parser');
+const routes = require('./routes.js');
 
+const app = express();
+app.use(express.static(__dirname + '/../client'));
+app.use(express.static(__dirname + '/../node_modules'));
+app.use('/api/joingame', express.static(__dirname + '/../gameClient'))
 
-var app = express()
+// not sure if cookie parser needed in this file
+// it is already used and required in routes.js
+// const cookieParser = require('cookie-parser');
+// app.use(cookieParser());
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/../client'))
-app.use(express.static(__dirname + '/../node_modules'))
+app.use('/', routes.router); // maybe '/*' insead of '/'
 
-app.use('/', routes.router) // maybe '/*' insead of '/'
+let port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`routing server listening on ${port}`);
+});
 
-
-app.listen(3000, () => {
-  console.log('routing server listening on port 3k')
-})
+module.exports.app = app;

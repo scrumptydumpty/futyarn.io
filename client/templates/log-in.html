@@ -1,8 +1,11 @@
 <div>
-<form ng-controller="logInCtrl">
-  <input type="text" ng-model="$ctrl.username" />
-  <input type="text" ng-model="$ctrl.password" />
-  <input type="submit" />
+<!-- <input type="button" class="submit" value="Login with Google!" ng-click="$ctrl.handleGoogleLogin()"/>
+<div>
+  OR
+</div> -->
+<form ng-submit="$ctrl.handleLogin(); $ctrl.toggle();">
+  <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
+  <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
+  <input type="submit" class="submit" value="Log In!"/>
 </form>
-<div>{{$ctrl.username}} {{$ctrl.password}} </div>
 </div>
