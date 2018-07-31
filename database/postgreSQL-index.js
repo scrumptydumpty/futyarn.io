@@ -157,7 +157,7 @@ const getUserInfo = (method, identifier, callback) =>
 };
 
 
-// FUNCTION NEEDED
+// FUNCTION FILL_ME_IN
 // updateUserInfo
 
 
@@ -190,13 +190,13 @@ const getLeaderboards = (callback) =>
 
 
 
-// FUNCTION NEEDED
+// FUNCTION FILL_ME_IN
 // postGameInfo
 // handlepost request from game server
 
 
 
-// FUNCTION NEEDED
+// FUNCTION FILL_ME_IN
 // getGameInfo
 // handle get request from client
 

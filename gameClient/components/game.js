@@ -55,7 +55,7 @@ angular.module('gameinstance')
 
 	this.initcache =[]
 
- 	this.socket = io.connect('http://localhost:1337')
+ 	this.socket = io.connect('https://futyarn-game.herokuapp.com:1337')
 
  	this.socket.on('initGame', (msg)=>{
  		// alert('gameBeginning')
