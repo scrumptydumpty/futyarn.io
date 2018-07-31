@@ -19,47 +19,41 @@ const cache = {
 		dx: 0,
 		dy: 0
 	},
-	players:[{
-       				currentX : -200,
-			        currentY : -200,
-			        rotation : 0,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 0
-        //left : 0 - this.right
-        //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        rotation : 0,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 1
-        //left : 0 - this.right
-        //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        rotation : 0,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 2
-        //left : 0 - this.right
-        //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        rotation : 0,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 3
-        //left : 0 - this.right
-        //up : 0 - this.down
-    			}],
+	players:[
+		{
+			currentX : -200,
+	        currentY : -200,
+	        rotation : 0,
+	        right : 0,
+	        down : 0,
+	        id : 'disconnected',
+	        index : 0
+		},{
+			currentX : -200,
+	        currentY : -200,
+	        rotation : 0,
+	        right : 0,
+	        down : 0,
+	        id : 'disconnected',
+	        index : 1
+		},{
+			currentX : -200,
+		    currentY : -200,
+		    rotation : 0,
+		    right : 0,
+		    down : 0,
+		    id : 'disconnected',
+		    index : 2
+		},{
+			currentX : -200,
+	        currentY : -200,
+	        rotation : 0,
+	        right : 0,
+	        down : 0,
+	        id : 'disconnected',
+	        index : 3
+    	}
+    ],
 	totalPlayers : 0,
 	shouldStart : false,
 	gameRunning : true,
@@ -117,9 +111,8 @@ io.on('connection', function(socket)
 	if (LoadBeginning === 0){
 		LoadBeginning = Date.now()
 	}
-	cache.totalPlayers ++ ; //unneccessary
-	countdown += leniency;
-	leniency = leniency/2;
+
+	cache.totalPlayers ++ ;
 	cache.shouldStart = determineStart()
 
 	var larry = setInterval(()=>{
@@ -132,14 +125,7 @@ io.on('connection', function(socket)
 	}, 200)
 
 	socket.emit('you', [socket.id, playerIndex])
-	playerIndex = findNextPlayerId(); // temp solution, need to handle joining leaving
-
-
-	// socket.on('howdy', (msg) =>
-	// {
-	// 	socket.emit('ping', cache)
-	// })
-	// console.log(cache.shouldStart)
+	playerIndex = findNextPlayerId(); 
 
 	socket.on('uploadplayervector', function(msg)
 		{
@@ -274,8 +260,8 @@ const catBodyCollisionDetect = function (playerVector, hitRadius)
 	const ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - catCenterX), 2) + Math.pow((ballCenterY - catCenterY),2))
 
 	if (ballCenterDelta < hitRadius) {
-		ball.dx -= (2 * (ball.dx))
-		ball.dy -= (2 * (ball.dy))
+		ball.dx += (1.1 * (playerVector.right) - ball.dx)
+		ball.dy += (1.1 * (playerVector.down)  - ball.dy)
 	}
 }
 
@@ -283,14 +269,14 @@ const generateKick = function (playerVector)
 {
 	const ball = cache.ballLoc
 	const map = {
-	   0   : [0,-.486],
-       45  : [.486,-.486],
-       90  : [.486,0],
-       135 : [.486,.486],
-       180 : [0,.486],
-       225 : [-.486,.486],
-       270 : [-.486,0],
-       315 : [-.486,-.486]
+	   0   : [0,-.502],
+       45  : [.502,-.502],
+       90  : [.502,0],
+       135 : [.502,.502],
+       180 : [0,.502],
+       225 : [-.502,.502],
+       270 : [-.502,0],
+       315 : [-.502,-.502]
 	}
 	const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000
 	const ydiff = (Math.floor(Math.random() * 300) - 150) / 1000

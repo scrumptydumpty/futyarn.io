@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path')
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -257,6 +258,7 @@ router.get('/api/joingame', (req, res, next) => {
             res.send(false);
         } else {
             // redirect?
+            res.sendfile(path.join(__dirname, 'gameClient' ))
             console.log('session is verified');
             res.send(true);
         }

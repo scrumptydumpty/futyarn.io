@@ -1,6 +1,7 @@
 angular.module('app')
-    .controller('appCtrl', function (auth, $http){
-        // These function toggle buttons and forms using ng-if in app.html file
+
+    .controller('appCtrl', function (auth, $http, $scope){
+
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
@@ -41,6 +42,16 @@ angular.module('app')
             this.showLeaderboard = !this.showLeaderboard;
         };
 
+        this.toggleLoaded = () => {
+            console.log($scope)
+            this.loaded = !this.loaded;
+            console.log(this.loaded)
+            console.log(this)
+            $scope.$digest()
+        }
+
+        this.toggleLoaded = this.toggleLoaded.bind(this)
+
         this.leaderboardInfo;
         this.submitGetRequest = false;
         // This retrieves the top 10 players from the database
@@ -73,8 +84,14 @@ angular.module('app')
         this.notLoggedIn = false;
         this.loadPage = false;
 
-        // This checks to see if user is logged in before allowing them to join the game
+        this.loaded = false;
+
+
+
         this.handleJoinGame = () => {
+            console.log('inside join game function');
+            this.socket = io.connect('http://localhost:1337')   
+
             $http({
                 method: 'GET',
                 url: 'api/joingame'
@@ -82,6 +99,7 @@ angular.module('app')
                 console.log(response);
                 if (response.data) {
                     this.loadPage = true;
+
                 } else {
                     this.notLoggedIn = true;
                 }

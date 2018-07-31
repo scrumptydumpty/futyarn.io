@@ -1,6 +1,8 @@
 angular.module('app')
     .controller('loading', function() {
-        // Retrieves canvas element from html file
+
+        //refactor in Angular directive
+
         const canvas = document.getElementById('load-page');
         // Sets width and height of canvas to take up entire screen
         canvas.width = window.innerWidth;
@@ -89,12 +91,12 @@ angular.module('app')
     
         }
 
-        let particles;
+        let particles= [];
         function init() {
-            particles = [];
-            for (let i = 0; i < 75; i++) {
-                // Randomizes radius of each particle between 1 and 2
-                const radius = (Math.random() * 2) + 1;
+
+            for (let i = 0; i < 50; i++) {
+                const radius = (Math.random() * 2) + 2.5;
+
                 particles.push(new Particle(canvas.width/2, canvas.height/2, radius, randomColor(colorArray)));
             }  
         }
@@ -114,9 +116,29 @@ angular.module('app')
         animate();
 
     })
+    .directive('gameLauncher', function()
+    {
+        return {
+            restrict : "A",
+
+            link : (scope, element, attrs, controller) =>
+            {
+                var ctrl = scope.$ctrl
+                console.log(ctrl.loaded)
+                ctrl.socket.on('initGame',() => {
+                    ctrl.toggleLoaded()
+                    console.log('triggered')
+                    console.log(ctrl.loaded)
+                    console.log(ctrl)
+                })
+            }
+        }
+    })
     .component('loading', {
         bindings : {
-
+            socket : '=',
+            toggleLoaded : '=',
+            loaded : '='
         },
         controller: 'loading',
         templateUrl: '/templates/loading.html'
