@@ -1,0 +1,139 @@
+// defined in gamecanvas.html
+const {WIDTH, HEIGHT, TICK, hitBoxMap} = require('./gamelogic');
+
+class Ball {
+
+    constructor() {
+        this.lastDrawn = Date.now();
+        this.x = 600;
+        this.y = 0;
+        this.dx = 0;
+        this.dy = .4;
+        this.lastUpdated = Date.now();
+      
+    }
+    reset() {
+        this.x = 600;
+        this.y = 0;
+        this.dx = 0;
+        this.dy = .4;
+        this.lastUpdated = Date.now();
+        this.lastDrawn = Date.now();
+    }
+
+    catHeadCollides(player) {
+        var currentCenterX = player.x + hitBoxMap[player.rotation][0];
+        var currentCenterY = player.y + hitBoxMap[player.rotation][1];
+        var ballCenterX = this.x + 5;
+        var ballCenterY = this.y + 5;
+        var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
+
+        if(ballCenterDelta < 11){
+            this.dx += (1.05 * (ctrl.playerVector.right) - this.dx);
+            this.dy += (1.05 * (ctrl.playerVector.down) - this.dy);
+            if (player.kicking) {
+
+            // very slight random offset while kicking to keep things interesting
+                const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000;
+                const ydiff = (Math.floor(Math.random() * 300) - 150) / 1000;
+
+                // new velocity based on player rotation
+                const dx = Math.cos(player.rotation * Math.PI / 180);
+                const dy = Math.sin(player.rotation * Math.PI / 180);
+
+                // pump up velocity, push ball out along kick direction
+                this.dx = dx+xdiff;
+                this.dy = dy+ydiff;
+
+                this.x += (3* this.dx);
+                this.y += (3* this.dy);
+            }
+        } 
+    }
+
+    catBodyCollides (player) {
+        var currentCenterX = player.x + 50;
+        var currentCenterY = player.y + 50;
+       
+        var ballCenterX = this.x + 5;
+        var ballCenterY = this.y + 5;
+
+        var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
+
+        if (ballCenterDelta < 12){
+            const facingRight = player.rotation > 90 && player.rotation < 270 ? 1 : 0;
+            const facingDown =  player.rotation < 360 && player.rotation > 180 ? 1 : 0;
+            this.dx += (1.1 * (facingRight) - this.dx);
+            this.dy += (1.1 * (facingDown) - this.dy);
+        }
+    }
+
+    isGoal(){
+        var x = this.x;
+        var y = this.y;
+        // returns goal
+        if (y > 250 && y < 400) {
+            if (x < 55) {
+                return '1';
+            } else if (x > (WIDTH - 55)) {
+                return '2';
+            }
+        }
+        return false;
+    }
+
+    handleWallBounce () {
+        var x = this.x;
+        var y = this.y;
+        //handle horizontal bounce
+        if (x < 55 || x > (WIDTH - 55)) {
+            this.x -= ((2 * this.dx));
+            this.dx -= (2 * (this.dx));
+        }
+        // returns vertical bounce
+        if (y < 0 || y > (HEIGHT - 10)) {
+            this.y -= ((2 * this.dy));
+            this.dy -= (2 * (this.dy));
+        }
+    }
+
+    move () {
+        this.x += this.dx  ;
+        this.y += this.dy  ;
+
+        //friction on y axis
+        if (Math.abs(this.dy) > 0.02) {
+            if (this.dy > 0) {
+                this.dy -= .0021;
+            } else {
+                this.dy += .0021;
+            }
+        } else {
+            this.dy = 0;
+        }
+        //friction on x axis
+        if (Math.abs(this.dx) > 0.02) {
+            if (this.dx > 0) {
+                this.dx -= .0021;
+            } else {
+                this.dx += .0021;
+            }
+        } else {
+            this.dx = 0;
+        }
+    }
+
+    draw(ctx){
+        const now = Date.now();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 7, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#8b0000';
+        ctx.stroke();
+        this.lastDrawn = now;
+    }
+}
+
+module.exports.Ball = Ball;

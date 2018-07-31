@@ -80,12 +80,12 @@ angular.module('gameinstance')
  		console.log('Game Beginning');
  	});
 
- 	this.socket.on('hi', (msg) =>  
- 	{
- 		console.log(this);
- 		this.userId = msg; 
+ 	// this.socket.on('hi', (msg) =>  
+ 	// {
+ 	// 	console.log(this);
+ 	// 	this.userId = msg; 
 
- 	});
+ 	// });
 
  	
 

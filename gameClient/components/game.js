@@ -4,7 +4,7 @@ angular.module('gameinstance')
         this.localCache = {
             score : {
                 teamOne : 0,
-        	teamTwo : 0
+        		teamTwo : 0
             },
             ballLoc: {
                 cx: 600,
@@ -12,43 +12,7 @@ angular.module('gameinstance')
                 dx: 0,
                 dy: 4.76
             },
-            players:[{
-       				currentX : -200,
-			        currentY : -200,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 0
-                //left : 0 - this.right
-                //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 1
-                //left : 0 - this.right
-                //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 2
-                //left : 0 - this.right
-                //up : 0 - this.down
-    			},{
-       				currentX : -200,
-			        currentY : -200,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : 3
-                //left : 0 - this.right
-                //up : 0 - this.down
-    			}]
+            players:{}
         };
 
         this.checkElements = false;
