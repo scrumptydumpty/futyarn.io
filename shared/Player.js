@@ -6,6 +6,7 @@ class Player {
         this.id = id;
         this.x = 200;
         this.y = 200;
+        this.canvas = null; // client side used
         this.rotation = 0;
         this.updated = false; //server side used
         this.queuedTransmission = false;

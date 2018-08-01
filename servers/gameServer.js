@@ -17,15 +17,19 @@ let serverTick; // interval that clicks every TICK ms (200 default);
 // swaps back and forth between 0 and 1, used to identify team 1 and 2
 let teamToggle = 0; 
 
-gameInstance.use(express.static(__dirname + '/../gameClient'));
+gameInstance.use(express.static(__dirname + '/../gameClient/dist'));
 gameInstance.use(express.static(__dirname + '/../node_modules'));
 
 const minify = (cache) => {
     const score = cache.score;
     // array list of players
-    const players = Object.keys(cache.players).map(key => cache.players[key]);
-    const minifiedPlayerData = players.map(({ rotation, id, x, y }) => { return { rotation, id, x, y }; });
-    return { score, minifiedPlayerData };
+    const playersArray = Object.keys(cache.players).map(key => cache.players[key]);
+    const players = playersArray.map(
+        ({ rotation, team, id, x, y }) => {
+            return { rotation, team, id, x, y };
+        }
+    );
+    return { score, players };
 };
 
 io.on('connection', function(socket)
@@ -45,7 +49,7 @@ io.on('connection', function(socket)
     cache.players[playerid] = newplayer;
 
     socket.emit('you', { team, playerid } );
-    console.log('connected a new player');
+    console.log('connected a new player', playerid);
     
 		
     if (alreadyStarted) {
@@ -82,7 +86,7 @@ io.on('connection', function(socket)
         //TODO: add a function to make sure ppl dont edit other folks locations
         let id = socket.id;
 
-        
+        console.log('got',id);
         if(cache.players[id] && !cache.players[id].updated){
             const {rotation} = msg;
             cache.players[id].rotation = rotation;
@@ -193,14 +197,13 @@ const startGame = function ()
 
     //establish server ticking
     serverTick = setInterval( () => {
+        
         moveThings();
         handleCollisions();
 
         // get only the required data to send to sync
         const data = minify(cache);
-        for (let addr of socketQueue) {
-            io.to(addr).emit('sync', data);
-        }
+        io.of('/').emit('sync', data);
 
         freePlayers(); // allow movement of players
     }, TICK);
