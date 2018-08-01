@@ -11,6 +11,8 @@ var port = 1337;
 // list of socket id's which are connected
 const socketQueue = [];
 
+const playerMovementQueue = {};
+
 let alreadyStarted = false;
 let serverTick; // interval that clicks every TICK ms (200 default);
 
@@ -29,7 +31,10 @@ const minify = (cache) => {
             return { rotation, team, id, x, y };
         }
     );
-    return { score, players };
+
+    const {x,y,dx,dy} = cache.ball;
+
+    return { score, players, ball:{x,y,dx,dy} };
 };
 
 io.on('connection', function(socket)
@@ -39,27 +44,27 @@ io.on('connection', function(socket)
         return;
     }
 
-    const playerid = socket.id;
+    const playerId = socket.id;
     const team = teamToggle;
     
     // toggle team for next person who joins
     teamToggle= (teamToggle++)%2;
 
-    const newplayer = new Player(team, playerid);
-    cache.players[playerid] = newplayer;
+    const newplayer = new Player(team, playerId);
+    cache.players[playerId] = newplayer;
 
-    socket.emit('you', { team, playerid } );
-    console.log('connected a new player', playerid);
+    socket.emit('you', { team, playerId });
+    console.log('connected a new player', playerId);
     
 		
     if (alreadyStarted) {
         setTimeout(()=>{
             const data = minify(cache);
-            io.to(playerid).emit('initGame', data);
-            socketQueue.push(playerid);
-        }, 1000);
+            io.to(playerId).emit('initGame', data);
+            socketQueue.push(playerId);
+        }, 2000);
     } else {
-        socketQueue.push(playerid);
+        socketQueue.push(playerId);
     }
 
     // console.log(cache)
@@ -81,19 +86,16 @@ io.on('connection', function(socket)
 
     
 
-    socket.on('uploadplayervector', function(msg)
-    {
+    socket.on('playermove', function(msg) {
         //TODO: add a function to make sure ppl dont edit other folks locations
         let id = socket.id;
 
-        console.log('got',id);
-        if(cache.players[id] && !cache.players[id].updated){
-            const {rotation} = msg;
+        console.log('move',Date.now());
+        if (cache.players[id] ) {
+            const { rotation } = msg;
             cache.players[id].rotation = rotation;
-            cache.players[id].move();
-            cache.players[id].updated = true;
+            playerMovementQueue[id] = true;
         }
-        
     });
 
     socket.on('disconnect', function()
@@ -123,7 +125,7 @@ http.listen(port, () =>
 
 
 const determineStart = function () 
-{	console.log(socketQueue.length);
+{	//console.log(socketQueue.length);
     return (socketQueue.length >= 1);
 };
 
@@ -148,8 +150,9 @@ const startGame = function ()
     const moveThings = ()=>{
   
         cache.ball.move();
-        for (let key in cache.players) {
+        for (let key in playerMovementQueue) {
             cache.players[key].move();
+            delete playerMovementQueue[key];
         }
     };
 

@@ -12,6 +12,14 @@ class Ball {
         this.lastUpdated = Date.now();
       
     }
+
+    setPos(x,y,dx,dy){
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
+    }
+    
     reset() {
         this.x = 600;
         this.y = 0;
@@ -28,9 +36,12 @@ class Ball {
         var ballCenterY = this.y + 5;
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
 
+        const facingRight = player.rotation > 90 && player.rotation < 270 ? 1 : 0;
+        const facingDown = player.rotation < 360 && player.rotation > 180 ? 1 : 0;
+
         if(ballCenterDelta < 11){
-            this.dx += (1.05 * (ctrl.playerVector.right) - this.dx);
-            this.dy += (1.05 * (ctrl.playerVector.down) - this.dy);
+            this.dx += 1.05 * facingRight - this.dx;
+            this.dy += 1.05 * facingDown - this.dy;
             if (player.kicking) {
 
             // very slight random offset while kicking to keep things interesting
@@ -45,8 +56,8 @@ class Ball {
                 this.dx = dx+xdiff;
                 this.dy = dy+ydiff;
 
-                this.x += (3* this.dx);
-                this.y += (3* this.dy);
+                this.x += (3* this.dx)*TICK;
+                this.y += (3 * this.dy) * TICK;
             }
         } 
     }
@@ -87,19 +98,19 @@ class Ball {
         var y = this.y;
         //handle horizontal bounce
         if (x < 55 || x > (WIDTH - 55)) {
-            this.x -= ((2 * this.dx));
+            this.x -= ((2 * this.dx)) * TICK;
             this.dx -= (2 * (this.dx));
         }
         // returns vertical bounce
         if (y < 0 || y > (HEIGHT - 10)) {
-            this.y -= ((2 * this.dy));
+            this.y -= ((2 * this.dy)) * TICK;
             this.dy -= (2 * (this.dy));
         }
     }
 
     move () {
-        this.x += this.dx  ;
-        this.y += this.dy  ;
+        this.x += this.dx * TICK  ;
+        this.y += this.dy * TICK  ;
 
         //friction on y axis
         if (Math.abs(this.dy) > 0.02) {
@@ -124,7 +135,7 @@ class Ball {
     }
 
     draw(ctx){
-        const now = Date.now();
+     
         ctx.beginPath();
         ctx.arc(this.x, this.y, 7, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'red';
@@ -132,7 +143,7 @@ class Ball {
         ctx.lineWidth = 1;
         ctx.strokeStyle = '#8b0000';
         ctx.stroke();
-        this.lastDrawn = now;
+       
     }
 }
 

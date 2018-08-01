@@ -23,8 +23,8 @@ angular.module('gameinstance')
 
  	this.socket.on('initGame', (msg)=>{
  		// alert('gameBeginning')
-            var data = msg;
-            console.log(data);
+            // var data = msg;
+            // console.log(data);
  		// for (var player in data.players){
  		// 	this.initcache.push(data.players[player])
  		// }
@@ -42,7 +42,7 @@ angular.module('gameinstance')
  		// setTimeout(george, 3000)
  		// console.log(data)
  		// console.log(this.initcache)
- 		console.log('Game Beginning');
+ 		//console.log('Game Beginning');
  	});
 
         this.catImageOne = new Image();

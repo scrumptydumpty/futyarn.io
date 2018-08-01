@@ -1,11 +1,18 @@
 const { Ball }  = require('../../shared/Ball');
 const { Player } = require('../../shared/Player');
+const { TICK } = require('../../shared/gamelogic');
 angular.module('gameinstance')
     .controller('gamecanvasCtrl', function () 
     {
-        this.img = this.teamoneimg;
+        this.img1 = new Image();
+        this.img1.src = '/images/BlackCatUp.gif';
+        this.img2 = new Image();
+        this.img2.src = '/images/orangeCatSpriteUp.gif';
+
         this.isLoading = true;
         this.canvas;
+
+        this.lastDraw;
 
         //map of keycodes to whether or not they're currently pressed                     	
         this.score = {
@@ -45,7 +52,7 @@ angular.module('gameinstance')
                 // transcludeFn is a transclude linking function pre-bound to the correct transclusion scope.
                     
                 var ctrl = scope.$ctrl;
-                console.log(ctrl);
+                //console.log(ctrl);
                 //el[0] === the canvas object we drop the directive on
                 var canvas = element[0];
                 //fetch 2d context for canvas to draw
@@ -64,7 +71,7 @@ angular.module('gameinstance')
                 //main draw loop (all draw fucntions live in here)                    
                 var gameLoop = function ()
                 {
-                    
+                    //console.log('rendering');
                     if (!ctrl.isLoading){
                         //window.requestAnimationFrame(gameLoop);
                     } else {
@@ -88,33 +95,21 @@ angular.module('gameinstance')
                     ctx.stroke();
                     ctrl.ball.draw(ctx);
                     drawPlayers();
-
                     ctx.fillStyle = 'white';
                     ctx.fillRect(0,250, 50, 150);
                     ctx.fillRect(1150,250,50,150);
-
-                    scope.$digest();
+                    ctrl.ball.move();
+                    //scope.$digest();
                     
                 };
 
                 var drawPlayers = function ()
-                {  
+                {   
                     if (shouldStart){
                         const keys = Object.keys(ctrl.players);
                         
-                        keys.forEach((key)=>{
-
-                            // console.log(playerCanvas[0])
-                            // console.log('key',key);
-                            const player = ctrl.players[key];
-                            let playerCanvas = player.canvas;
-                            if(player.id===ctrl.playerId){
-                                playerCanvas = ctrl.canvas;
-                            }
-                            ctx.drawImage(playerCanvas, player.x, player.y);
-                            // ctrl.cache.players[key].currentX += ctrl.cache.players[key].right * frameTimeDelta;
-                            // ctrl.cache.players[key].currentY += ctrl.cache.players[key].down * frameTimeDelta;
-                            
+                        keys.forEach(key=>{
+                            ctrl.players[key].draw(ctx);
                         });
                     }
 
@@ -123,23 +118,41 @@ angular.module('gameinstance')
                     // ctrl.player.currentY += (ctrl.player.down  * frameTimeDelta);
                 };
                 
-                    
                 //iterate through keys pressed, check for true
                 //if the key is pressed, change player vector based on keymap
                 //set depressed keys to zero, unless alternate key is also pressed                    
                 var alterPlayer = function (){
-                    console.log('altering player');
-                    for (var key in ctrl.keysPressed){
 
-                        if(ctrl.keysPressed[key]){
-                            console.log(ctrl.keysPressed);
-
-                        }
+                    const k = ctrl.keysPressed;
+                    const p = ctrl.players[ctrl.playerId];
+                    console.log('id', ctrl.playerId,'players',ctrl.players,'player', p);
+                    let r = p.rotation;
+                    if (k[65] && k[87]) {
+                        r = 3;
+                    } else if (k[87] && k[68]) {
+                        r = 1;
+                    } else if (k[68] && k[83]) {
+                        r = 7;
+                    } else if (k[83] && k[65]) {
+                        r = 5;
+                    } else if (k[87]) {
+                        r = 2;
+                    } else if (k[68]) {
+                        r = 0;
+                    } else if (k[83]) {
+                        r = 6;
+                    } else if (k[65]) {
+                        r = 4;
                     }
+                  
+                    p.handleRotation(r);
+                    p.transmit(ctrl.socket);
+                    
                 };
                 //route based on keydown to toggle key press map                    
                 var keyupHandler = function (e){
-                    if (!ctrl.keysPressed[e.keyCode]) return;
+                   
+                    if (ctrl.keysPressed[e.keyCode] === undefined) return;
                     if (e.keyCode === 32){
                         ctrl.player.spacePressed = false;
                     }
@@ -148,7 +161,7 @@ angular.module('gameinstance')
                 };
                     //route based on keyup to detoggle key press map
                 var keydownHandler = function(e){
-                    if (!ctrl.keysPressed[e.keyCode]) return;
+                    if (ctrl.keysPressed[e.keyCode] === undefined) return;
                     if (e.keyCode === 32){
                         ctrl.player.spacePressed = true;
                     }
@@ -178,8 +191,8 @@ angular.module('gameinstance')
           
                 ctrl.socket.on('you', (msg) => {
 
-                    const {playerid} = msg;
-                    ctrl.playerId = playerid;
+                    const {playerId} = msg;
+                    ctrl.playerId = playerId;
                     console.log(ctrl.playerId, 'you');
 
                 });
@@ -188,16 +201,25 @@ angular.module('gameinstance')
                     const {players, score} = data;
                     ctrl.isLoading = false;
                     ctrl.score = score;
-                   
+                    console.log('Game starting');
                     
 
                     shouldStart = true;
-                   
+                    
                     for (let player of players){
                         const {rotation, team, id, x, y} = player;
-                        ctrl.players[id] = new Player(team, id);
+                        ctrl.players[id] = new Player(team, id, true);
                         ctrl.players[id].setPos(x, y, rotation);
-                        ctrl.players[id].canvas = angular.element(document.querySelector(`#oppCat${id}`));
+
+                        ctrl.players[id].img = team === 1 ? ctrl.img1 : ctrl.img2;
+
+                        var playercanvas = document.createElement('CANVAS');
+                        playercanvas.id=id;
+                        playercanvas.height = 100;
+                        playercanvas.width = 100;
+                        // rotate 45 degrees clockwise
+                        ctrl.players[id].canvas = playercanvas;
+                      
                             
                     }
                     console.log(ctrl.players);
@@ -205,7 +227,7 @@ angular.module('gameinstance')
                 });
 
                 //call the main draw loop
-                setInterval( gameLoop, 1000);
+                setInterval( gameLoop, TICK);
               
                 
                    
