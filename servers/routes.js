@@ -17,40 +17,40 @@ var bcryptjs = require('bcryptjs');
 //     // checks if user is in db
 //         // if user found, done is called to proceed to the next step (redirect to the '/api/login/google/redirect' route)
 //         // if user not found, add user to db and run done to proceed
-// passport.use(
-//     new GoogleStrategy({
-//         // options for the google strategy
-//         clientID: keys.google.clientID,
-//         clientSecret: keys.google.clientSecret,
-//         callbackURL: '/api/login/google/redirect'
-//     }, (accessToken, refreshToken, profile, done) => {
-//         console.log('GoogleStrategy callback function fired');
-//         // console.log(profile);
-//         const username = profile.displayName;
-//         const password = '';
-//         const google_id = profile.id;
-//         db.authenticateUser(username, (err, foundUser) => {
-//             if (foundUser) {
-//                 console.log(`user ${username} already exists in database`);
-//                 done(foundUser);
-//             } else {
-//                 console.log('user will be created with google oauth credentials');
-//                 db.addNewUser(username, password, google_id, (err, newUser) => {
-//                     if (err) {
-//                         console.log('error with user signup via google oauth');
-//                         console.log(err);
-//                     } else {
-//                         console.log('user signup via google oauth completed');
-//                         // res.setStatus = 201;
-//                         // res.send('user successfully signed up via google oauth');
-//                         done(newUser);
-//                     }
-//                 });
-//             }
-//         });
-//         // done();
-//     })
-// );
+passport.use(
+    new GoogleStrategy({
+        // options for the google strategy
+        clientID: keys.google.clientID,
+        clientSecret: keys.google.clientSecret,
+        callbackURL: '/api/login/google/redirect'
+    }, (accessToken, refreshToken, profile, done) => {
+        console.log('GoogleStrategy callback function fired');
+        // console.log(profile);
+        const username = profile.displayName;
+        const password = '';
+        const google_id = profile.id;
+        db.authenticateUser(username, (err, foundUser) => {
+            if (foundUser) {
+                console.log(`user ${username} already exists in database`);
+                done(null, foundUser);
+            } else {
+                console.log('user will be created with google oauth credentials');
+                db.addNewUser(username, password, google_id, (err, newUser) => {
+                    if (err) {
+                        console.log('error with user signup via google oauth');
+                        done(err, null);
+                    } else {
+                        console.log('user signup via google oauth completed');
+                        // res.setStatus = 201;
+                        // res.send('user successfully signed up via google oauth');
+                        done(null, newUser);
+                    }
+                });
+            }
+        });
+        // done();
+    })
+);
 
 
 // passport middleware to handle local logins (via username and password)
@@ -107,8 +107,6 @@ router.use(session({
 }));
 router.use(passport.initialize());
 router.use(passport.session());
-
-
 
 // // middleware for checking if user logged in
 // // has not been implemented
@@ -184,21 +182,19 @@ router.post('/api/login',
 //     // (data returned is determined by items listed in scope)
 // // second route creates a session for the authenticated user and stores the session in db
 // // CURRENTLY HAS A CORS ISSUE ON REDIRECT
-// router.get('/api/login/google', passport.authenticate('google', {
-//     scope: ['profile']
-// }));
-// router.get('/api/login/google/redirect', passport.authenticate('google'/*, {
-// failureRedirect: '/api/login/google/nope'
-// }*/), (err, req, res) => {
-//     console.log('==================================', err);
-//     console.log('redirected to /api/login/google/redirect');
-//     // console.log(req);
-//     const { sessionID, user } = req;
-//     db.storeSession(sessionID, user.user_id, user.username, () => {});
-//     console.log('user sucessfully logged in via google auth');
-//     // res.send('user sucessfully logged in via google auth');
-//     res.redirect('/');
-// });
+router.get('/api/login/google', passport.authenticate('google', {
+    scope: ['profile'] // what we want to retrieve from google
+}));
+router.get('/api/login/google/redirect', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    console.log('==================================');
+    console.log('redirected to /api/login/google/redirect');
+    // console.log(req);
+    const { sessionID, user } = req;
+    db.storeSession(sessionID, user.user_id, user.username, () => {});
+    console.log('user sucessfully logged in via google auth');
+    // res.send('user sucessfully logged in via google auth');
+    res.redirect('/');
+});
 
 
 
