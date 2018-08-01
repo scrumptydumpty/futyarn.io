@@ -1,5 +1,5 @@
 // defined in gamecanvas.html
-const {WIDTH, HEIGHT, TICK, hitBoxMap} = require('./gamelogic');
+const {WIDTH, HEIGHT, TICK, hitBoxMap, SPEED} = require('./gamelogic');
 
 class Ball {
 
@@ -33,19 +33,20 @@ class Ball {
         var ballCenterY = this.y + 5;
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
 
-        const facingRight = player.rotation > 90 && player.rotation < 270 ? 1 : 0;
-        const facingDown = player.rotation < 360 && player.rotation > 180 ? 1 : 0;
+        const facingRight = player.rotation < 90 || player.rotation > 270 ? SPEED : -SPEED;
+        const facingDown = player.rotation < 360 && player.rotation > 180 ? SPEED : -SPEED;
 
         if(ballCenterDelta < 11){
-            console.log('head collides', player.id);
+           
             this.dx += 1.05 * facingRight - this.dx;
             this.dy += 1.05 * facingDown - this.dy;
+            
             if (player.kicking) {
-
-            // very slight random offset while kicking to keep things interesting
-                const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000;
-                const ydiff = (Math.floor(Math.random() * 300) - 150) / 1000;
-
+                
+                // very slight random offset while kicking to keep things interesting
+                const xdiff = (Math.floor(Math.random() * 300) - 150) / 500;
+                const ydiff = (Math.floor(Math.random() * 300) - 150) / 500;
+                
                 // new velocity based on player rotation
                 const dx = Math.cos(player.rotation * Math.PI / 180);
                 const dy = Math.sin(player.rotation * Math.PI / 180);
@@ -54,8 +55,8 @@ class Ball {
                 this.dx = dx+xdiff;
                 this.dy = dy+ydiff;
 
-                this.x += Math.floor( (3* this.dx) * TICK );
-                this.y += Math.floor( (3 * this.dy) * TICK );
+                this.x += Math.floor( (3* this.dx)  );
+                this.y += Math.floor( (3 * this.dy)  );
             }
         } 
     }
@@ -70,9 +71,9 @@ class Ball {
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
 
         if (ballCenterDelta < 12){
-            console.log('hit',player.id);
-            const facingRight = player.rotation > 90 && player.rotation < 270 ? 1 : 0;
-            const facingDown =  player.rotation < 360 && player.rotation > 180 ? 1 : 0;
+      
+            const facingRight = player.rotation < 90 || player.rotation > 270 ? SPEED : -SPEED;
+            const facingDown =  player.rotation < 360 && player.rotation > 180 ? SPEED : -SPEED;
             this.dx += (1.1 * (facingRight) - this.dx);
             this.dy += (1.1 * (facingDown) - this.dy);
         }
@@ -100,13 +101,13 @@ class Ball {
         if (x < 55 || x > (WIDTH - 55)) {
             this.x -= Math.floor( ((2 * this.dx)) * TICK );
             this.dx -= (2 * (this.dx));
-            console.log('bounce');
+          
         }
         // returns vertical bounce
         if (y < 0 || y > (HEIGHT - 10)) {
             this.y -= Math.floor( ((2 * this.dy)) * TICK );
             this.dy -= (2 * (this.dy));
-            console.log('bounce');
+         
         }
     }
 
