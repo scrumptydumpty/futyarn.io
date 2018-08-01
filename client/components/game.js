@@ -80,12 +80,12 @@ angular.module('gameinstance')
  		console.log('Game Beginning');
  	});
 
- 	this.socket.on('hi', (msg) =>  
- 	{
- 		console.log(this);
- 		this.userId = msg; 
+ 	// this.socket.on('hi', (msg) =>  
+ 	// {
+ 	// 	console.log(this);
+ 	// 	this.userId = msg; 
 
- 	});
+ 	// });
 
  	
 
@@ -107,10 +107,10 @@ angular.module('gameinstance')
  
         // this.socket = io('http://localhost:1337/');
         this.catImageOne = new Image();
-        this.catImageOne.src = 'assets/images/BlackCatUp.gif';
+        this.catImageOne.src = '/images/BlackCatUp.gif';
 
         this.catImageTwo = new Image();
-        this.catImageTwo.src = 'assets/images/orangeCatSpriteUp.gif';
+        this.catImageTwo.src = '/images/orangeCatSpriteUp.gif';
 
     
     })

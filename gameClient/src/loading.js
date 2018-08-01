@@ -1,3 +1,4 @@
+
 angular.module('gameinstance')
     .controller('gamecanvasCtrl', function () 
     {
@@ -30,17 +31,7 @@ angular.module('gameinstance')
         //right is a postive or negative number (left neg)
         //down is a positive or negative number (up neg)
         //holder for keypresses
-        this.playerVector = {
-            currentX : 200,
-            currentY : 200,
-            right : 0,
-            down : 0,
-            spacePressed: false,
-            rotation: 0,
-            id : 'unassigned',
-            index: -1
-        };
-
+        this.playerVector = null; 
         this.playerRotations = [0,0,0,0];
 
         this.goals = {
@@ -133,12 +124,12 @@ angular.module('gameinstance')
                 //fetch 2d context for canvas to draw
                 var ctx = canvas.getContext('2d');
                 //temp global object for player speed                
-                var speed = 5; 
-                var otherPlayers =[];
+               
+                var otherPlayers ={};
                 var shouldStart = false;
                 var lastTime = Date.now();
                 var thisTime = Date.now();
-                var framecount = 0;
+               
 
                 const colorArray = [
                     '#35AFD8',
@@ -179,7 +170,7 @@ angular.module('gameinstance')
                     ctx.fillRect(0,250, 50, 150);
                     ctx.fillRect(1150,250,50,150);
                     scope.$digest();
-                    ctrl.playerVector.updateTime = Date.now();
+                    
                     lastTime = Date.now();
                     // console.log(ctrl.initcache)
                 }
@@ -251,13 +242,16 @@ angular.module('gameinstance')
                 {
                     //console.log(otherPlayers.length)
                     var frameTimeDelta = thisTime - lastTime;
+                    //console.log(otherPlayers);
                     if (shouldStart){
-                        otherPlayers.forEach((playerCanvas, index)=>{
-                            if(index !== ctrl.playerVector.index){
+                        const keys = Object.keys(otherPlayers);
+                        keys.forEach((key)=>{
+                            if(key !== ctrl.playerVector.id){
                                 // console.log(playerCanvas[0])
-                                ctx.drawImage(playerCanvas[0], ctrl.cache.players[index].currentX, ctrl.cache.players[index].currentY);
-                                ctrl.cache.players[index].currentX += (ctrl.cache.players[index].right * frameTimeDelta);
-                                ctrl.cache.players[index].currentY += (ctrl.cache.players[index].down  * frameTimeDelta);
+                                const playerCanvas = otherPlayers[key];
+                                ctx.drawImage(playerCanvas[0], ctrl.cache.players[key].currentX, ctrl.cache.players[key].currentY);
+                                ctrl.cache.players[key].currentX += ctrl.cache.players[key].right * frameTimeDelta;
+                                ctrl.cache.players[key].currentY += ctrl.cache.players[key].down * frameTimeDelta;
                             }
                         });}
                     ctx.drawImage(ctrl.canvas, ctrl.playerVector.currentX, ctrl.playerVector.currentY);
@@ -420,17 +414,19 @@ angular.module('gameinstance')
                 //set depressed keys to zero, unless alternate key is also pressed                    
                 var alterPlayerVector = function (){
                     for (var key in ctrl.keysPressed){
+
                         if(ctrl.keysPressed[key]){
+
                             ctrl.playerVector[ctrl.keyMap[key][0]] = ctrl.keyMap[key][1]; 
+
                         } else {
+
                             if(ctrl.keysPressed[ctrl.keyMap[key][2]]){
-                                    
                             } else {
                                 ctrl.playerVector[ctrl.keyMap[key][0]] = 0;
                             }
                         }
                     }
-                    
                 };
                 //route based on keydown to toggle key press map                    
                 var keyupHandler = function (e){
@@ -455,44 +451,45 @@ angular.module('gameinstance')
                 angular.element(window).on('keyup', keyupHandler);
 
                 ctrl.socket.on('cache', (msg) => {
-   
                     ctrl.cache = msg;
                     ctrl.tempBallVector = msg.ballLoc;
-                    msg.players.forEach((player, index)=>{
-                        ctrl.playerRotations[index] = msg.players[index].rotation;
-                    });
-                    ctrl.socket.emit('uploadplayervector', ctrl.playerVector);
+                    console.log(msg);
+                    
                 });
 
                 ctrl.socket.on('you', (msg) => {
-                    var data = msg;
-                    ctrl.playerVector.id = data[0];
-                    ctrl.playerVector.index = data[1];
-                    //console.log(ctrl.playerVector);
-                    //console.log(msg[0]);
+                    ctrl.playerVector = msg;
+                    console.log('msg',msg);
+                    console.log('playervector', ctrl.playerVector);
+                    const myupdate = setInterval(() => {
+                        ctrl.socket.emit('uploadplayervector', pack(ctrl.playerVector) );
+                    }, 200);
+                    
                 });
 
-                ctrl.socket.on('initGame', ()=>{
+                ctrl.socket.on('initGame', (cache)=>{
+                    const {players} = cache;
                     ctrl.isLoading = false;
-                    var index = ctrl.playerVector.index;
-                    otherPlayers = [];
-                    for (var i = 0; i < 4; i++){
-                        console.log(angular.element(document.querySelector(`#oppCat${i}`)));
-                        otherPlayers.push(angular.element(document.querySelector(`#oppCat${i}`)));
+                    otherPlayers = {};
+                    const keys = Object.keys(players);
+                    for (let key of keys){
+                        otherPlayers[key] = angular.element(document.querySelector(`#oppCat${key}`));
                     }
                     shouldStart = true;
-                    console.log(otherPlayers);
                     
                 });
 
                 //call the main draw loop
                 // setInterval( gameLoop, 15)
                 init();
-                gameLoop();
 
+                gameLoop();
+                
             }
+                
+        }
             
-        };
+        ;
     })
     .directive('move', function() 
     {
@@ -505,7 +502,7 @@ angular.module('gameinstance')
           
                 ctrl.canvas = element[0];
                 var canvas = element[0];
-                console.log(canvas);
+                //console.log(canvas);
                 var ctx = canvas.getContext('2d');
 
                 var pos = ctrl.speed;
