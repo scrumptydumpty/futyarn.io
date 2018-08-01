@@ -1,6 +1,6 @@
 
 module.exports = {
-    catSpeed : .2, // how many pixels per ms the cat can move
+    SPEED : .2, // how many pixels per ms objects should move
     TICK : 30, // ms per server tick
     WIDTH: 1200, // game canvas width
     HEIGHT: 650, // game canvas height

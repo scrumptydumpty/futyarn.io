@@ -1,4 +1,4 @@
-const { TICK, catSpeed, WIDTH, HEIGHT} = require('./gamelogic');
+const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
     constructor(team,id){
@@ -9,7 +9,9 @@ class Player {
         this.canvas = null; // client side used
         this.img = null; //client side used
         this.rotation = 0; //degrees
+        this.kicking = false;
         this.canmove = true; 
+        this.animationFrame = 0;
         this.queuedTransmission = false;
         this.lastTransmission = Date.now();
 
@@ -26,14 +28,11 @@ class Player {
         const dx = Math.cos(this.rotation * Math.PI / 180) ;
         const dy = Math.sin(this.rotation * Math.PI / 180) ;
       
-        this.x += dx * catSpeed * TICK;
-        this.y -= dy * catSpeed * TICK;
+        this.x += dx * SPEED * TICK;
+        this.y -= dy * SPEED * TICK;
         this.x = Math.floor(this.x);
         this.y = Math.floor(this.y);
-        if(this.canvas){
-            this.canvas.getContext('2d').rotate(this.rotation * Math.PI / 180);
-            this.canvas.getContext('2d').save();
-        }
+        
     }
  
     handleCollisions(){
@@ -54,6 +53,8 @@ class Player {
         if(this.y > (HEIGHT - 80)) {
             this.y = HEIGHT-80;
         }
+
+        this.kicking = false;
     }
 
     // transmits the most recent movement as soon as possible
@@ -64,7 +65,7 @@ class Player {
         if (now-this.lastTransmission > TICK){
             this.queuedTransmission = false;
             this.move();
-            socket.emit('playermove', {rotation: this.rotation});
+            socket.emit('playermove', {rotation: this.rotation, kicking:this.kicking});
         }
         else{
         // queue a transmission asap
@@ -81,23 +82,26 @@ class Player {
     handleRotation(newRotation) {
         if(newRotation!==this.rotation){
             this.rotation = newRotation;
-            const playerctx = this.canvas.getContext('2d');
-            playerctx.resetTransform();
-            playerctx.clearRect(0, 0, this.canvas.height, this.canvas.width);
-            playerctx.fillStyle = 'red';
-            playerctx.fillRect(0,0,this.canvas.height,this.canvas.width);
-            playerctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-            playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
-            
-            
-            
-            playerctx.drawImage(this.img, 2, 0, 25, 100, 0, 0, 25, 100);
         }
  
     }
 
+    animate(){
+        this.animationFrame++;
+        if(this.animationFrame>16){
+            this.animationFrame = 0;
+        }
+    }
+
     draw(ctx) { //sx, sy, sWidth, sHeight, dx, dy,
-        
+        const playerctx = this.canvas.getContext('2d');
+        playerctx.resetTransform();
+        playerctx.clearRect(0, 0, this.canvas.height, this.canvas.width);
+        //playerctx.fillStyle = 'red';
+        //playerctx.fillRect(0,0,this.canvas.height,this.canvas.width);
+        playerctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
+        playerctx.drawImage(this.img, 1, 0, 25, 60, -14, -20, 25, 60);
         ctx.drawImage(this.canvas, this.x, this.y);
     }
 }

@@ -79,8 +79,6 @@ angular.module('gameinstance')
                         b.catHeadCollides(player);
                     }
 
-                    // check for wall bounce on ball last, to prevent boundry errors
-                    b.handleWallBounce();
 
                     // check for goals
                     const teamScored = b.isGoal(); // false, 1, 2
@@ -88,6 +86,9 @@ angular.module('gameinstance')
                         ctrl.score[teamScored]++;
                         b.reset();
                     }
+
+                    // check for wall bounce on ball last, to prevent boundry errors
+                    b.handleWallBounce();
 
                     // check for player out of bounds issues
                     for (let player of players) {
@@ -100,15 +101,9 @@ angular.module('gameinstance')
 
                 //main draw loop (all draw fucntions live in here)    
 
-                var gameLoop = function ()
+                var animationLoop = function ()
                 {
-                    //console.log('rendering');
-                    if (!ctrl.isLoading){
-                        //window.requestAnimationFrame(gameLoop);
-                    } else {
-                        
-                        // window.requestAnimationFrame(loadingLoop);
-                    }
+                   
                     //console.log('rendering2');
                     ctx.clearRect(0,0, canvas.width, canvas.height);
                     ctx.fillStyle = 'LightGreen';
@@ -124,30 +119,34 @@ angular.module('gameinstance')
                     ctx.lineWidth = 4;
                     ctx.strokeStyle = 'white';
                     ctx.stroke();
-                    ctrl.ball.draw(ctx);
-                    drawPlayers();
+                    
                     ctx.fillStyle = 'white';
                     ctx.fillRect(0,250, 50, 150);
                     ctx.fillRect(1150,250,50,150);
+                    //scope.$digest();
+                    ctrl.ball.draw(ctx);
+                    drawPlayers();
+                };
+
+                const gameLoop = function(){
+                    const keyPressed = Object.keys(ctrl.keysPressed).reduce((m,i)=>m || ctrl.keysPressed[i] , false);
+                    if (keyPressed){
+                        alterPlayer();
+                        ctrl.players[ctrl.playerId].transmit(ctrl.socket);
+                    }
                     ctrl.ball.move();
                     handleCollisions();
-                    //scope.$digest();
-                    
                 };
 
                 var drawPlayers = function ()
                 {   
                     if (shouldStart){
                         const keys = Object.keys(ctrl.players);
-                        
                         keys.forEach(key=>{
                             ctrl.players[key].draw(ctx);
                         });
                     }
 
-                    //ctx.drawImage(ctrl.canvas, ctrl.player.x, ctrl.player.y);
-                    // ctrl.player.currentX += (ctrl.player.right * frameTimeDelta);
-                    // ctrl.player.currentY += (ctrl.player.down  * frameTimeDelta);
                 };
                 
                 //iterate through keys pressed, check for true
@@ -159,6 +158,7 @@ angular.module('gameinstance')
                     const p = ctrl.players[ctrl.playerId];
                    
                     let r = p.rotation;
+                    
                     if (k[65] && k[87]) {
                         r = 135;
                     } else if (k[87] && k[68]) {
@@ -176,29 +176,30 @@ angular.module('gameinstance')
                     } else if (k[65]) {
                         r = 180;
                     }
-                  
+
+                    if(k[32]){
+                        p.kicking = true;
+                    } else {
+                        p.kicking = false;
+                    }
+                    console.log(r);
                     p.handleRotation(r);
-                    p.transmit(ctrl.socket);
                     
                 };
                 //route based on keydown to toggle key press map                    
                 var keyupHandler = function (e){
                    
                     if (ctrl.keysPressed[e.keyCode] === undefined) return;
-                    if (e.keyCode === 32){
-                        ctrl.player.spacePressed = false;
-                    }
+                    
                     ctrl.keysPressed[e.keyCode] = false;
-                    alterPlayer();
+                   
                 };
                     //route based on keyup to detoggle key press map
                 var keydownHandler = function(e){
                     if (ctrl.keysPressed[e.keyCode] === undefined) return;
-                    if (e.keyCode === 32){
-                        ctrl.player.spacePressed = true;
-                    }
+                    
                     ctrl.keysPressed[e.keyCode] = true ;
-                    alterPlayer();
+                    
                 };
                     //add global event listeners that rout to the kepress routers
                 angular.element(window).on('keydown', keydownHandler);
@@ -223,7 +224,6 @@ angular.module('gameinstance')
 
           
                 ctrl.socket.on('you', (msg) => {
-
                     const {playerId} = msg;
                     ctrl.playerId = playerId;
                     console.log(ctrl.playerId, 'you');
@@ -259,8 +259,9 @@ angular.module('gameinstance')
                 
                 });
 
-                //call the main draw loop
+                //call the main game loop
                 setInterval( gameLoop, TICK);
+                setInterval( animationLoop, 50);
               
                 
                    

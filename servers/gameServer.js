@@ -27,8 +27,8 @@ const minify = (cache) => {
     // array list of players
     const playersArray = Object.keys(cache.players).map(key => cache.players[key]);
     const players = playersArray.map(
-        ({ rotation, team, id, x, y }) => {
-            return { rotation, team, id, x, y };
+        ({ rotation, team, id, x, y, kicking }) => {
+            return { rotation, team, id, x, y, kicking };
         }
     );
 
@@ -92,8 +92,9 @@ io.on('connection', function(socket)
 
        
         if (cache.players[id] ) {
-            const { rotation } = msg;
+            const { rotation, kicking } = msg;
             cache.players[id].rotation = rotation;
+            cache.players[id].kicking = kicking;
             playerMovementQueue[id] = true;
         }
     });
@@ -175,15 +176,15 @@ const startGame = function ()
             b.catHeadCollides( player );
         }
 
-        // check for wall bounce on ball last, to prevent boundry errors
-        b.handleWallBounce();
-
         // check for goals
         const teamScored = b.isGoal(); // false, 1, 2
         if (teamScored) {
             cache.score[teamScored]++;
             b.reset();
         }
+        // check for wall bounce on ball last, to prevent boundry errors
+        b.handleWallBounce();
+
 
         // check for player out of bounds issues
         for (let player of players) {
