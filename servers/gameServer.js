@@ -67,7 +67,7 @@ io.on('connection', function(socket)
         socketQueue.push(playerId);
     }
 
-    // console.log(cache)
+    // console.log(cache) 
     console.log('new client connected');
    
     
@@ -90,7 +90,7 @@ io.on('connection', function(socket)
         //TODO: add a function to make sure ppl dont edit other folks locations
         let id = socket.id;
 
-        console.log('move',Date.now());
+       
         if (cache.players[id] ) {
             const { rotation } = msg;
             cache.players[id].rotation = rotation;
@@ -151,7 +151,9 @@ const startGame = function ()
   
         cache.ball.move();
         for (let key in playerMovementQueue) {
-            cache.players[key].move();
+            if(cache.players[key]){
+                cache.players[key].move();
+            }
             delete playerMovementQueue[key];
         }
     };

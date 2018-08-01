@@ -61,14 +61,45 @@ angular.module('gameinstance')
                
                 var shouldStart = false;
 
-                const colorArray = [
-                    '#35AFD8',
-                    '#327ECE',
-                    '#39C1BF',
-                    '#35D8A7',
-                    '#32CE74'
-                ];
-                //main draw loop (all draw fucntions live in here)                    
+
+                const handleCollisions = () => {
+                    // check for ball collisions
+
+                    const b = ctrl.ball;
+                    // check for head collisions
+                    // array of players
+                    const players = Object.keys(ctrl.players).map(key => ctrl.players[key]);
+
+                    for (let player of players) {
+                        b.catHeadCollides(player);
+                    }
+
+                    // check for body collisions
+                    for (let player of players) {
+                        b.catHeadCollides(player);
+                    }
+
+                    // check for wall bounce on ball last, to prevent boundry errors
+                    b.handleWallBounce();
+
+                    // check for goals
+                    const teamScored = b.isGoal(); // false, 1, 2
+                    if (teamScored) {
+                        ctrl.score[teamScored]++;
+                        b.reset();
+                    }
+
+                    // check for player out of bounds issues
+                    for (let player of players) {
+                        player.handleCollisions();
+                    }
+
+                };
+
+
+
+                //main draw loop (all draw fucntions live in here)    
+
                 var gameLoop = function ()
                 {
                     //console.log('rendering');
@@ -99,6 +130,7 @@ angular.module('gameinstance')
                     ctx.fillRect(0,250, 50, 150);
                     ctx.fillRect(1150,250,50,150);
                     ctrl.ball.move();
+                    handleCollisions();
                     //scope.$digest();
                     
                 };
@@ -125,24 +157,24 @@ angular.module('gameinstance')
 
                     const k = ctrl.keysPressed;
                     const p = ctrl.players[ctrl.playerId];
-                    console.log('id', ctrl.playerId,'players',ctrl.players,'player', p);
+                   
                     let r = p.rotation;
                     if (k[65] && k[87]) {
-                        r = 3;
+                        r = 135;
                     } else if (k[87] && k[68]) {
-                        r = 1;
+                        r = 45;
                     } else if (k[68] && k[83]) {
-                        r = 7;
+                        r = 315;
                     } else if (k[83] && k[65]) {
-                        r = 5;
+                        r = 225;
                     } else if (k[87]) {
-                        r = 2;
+                        r = 90;
                     } else if (k[68]) {
                         r = 0;
                     } else if (k[83]) {
-                        r = 6;
+                        r = 270;
                     } else if (k[65]) {
-                        r = 4;
+                        r = 180;
                     }
                   
                     p.handleRotation(r);
@@ -182,9 +214,10 @@ angular.module('gameinstance')
                         const { rotation, id, x, y } = player;
 
                         ctrl.players[id].setPos(x, y, rotation);
-                                
-                            
                     }
+
+                    const {x,y,dx,dy} = data.ball;
+                    ctrl.ball.setPos(x,y,dx,dy);
                     
                 });
 

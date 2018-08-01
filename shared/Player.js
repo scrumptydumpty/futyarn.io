@@ -1,4 +1,4 @@
-const { TICK, catSpeed} = require('./gamelogic');
+const { TICK, catSpeed, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
     constructor(team,id){
@@ -8,7 +8,7 @@ class Player {
         this.y = 200;
         this.canvas = null; // client side used
         this.img = null; //client side used
-        this.rotation = 0;
+        this.rotation = 0; //degrees
         this.canmove = true; 
         this.queuedTransmission = false;
         this.lastTransmission = Date.now();
@@ -22,25 +22,38 @@ class Player {
     }
 
     move(){
-        //rotation 0-7 correspond to a requested movement of 0deg, 45deg, 90deg, etc
-        const dx = Math.cos(this.rotation*45*Math.PI/180) ;
-        const dy = Math.sin(this.rotation*45 * Math.PI / 180) ;
+        //rotation  correspond to a requested movement of 0deg, 45deg, 90deg, etc
+        const dx = Math.cos(this.rotation * Math.PI / 180) ;
+        const dy = Math.sin(this.rotation * Math.PI / 180) ;
+      
         this.x += dx * catSpeed * TICK;
         this.y -= dy * catSpeed * TICK;
         this.x = Math.floor(this.x);
         this.y = Math.floor(this.y);
         if(this.canvas){
-            console.log('rotating', this.rotation * 45);
-            this.canvas.getContext('2d').rotate(this.rotation * 45 * Math.PI / 180);
+            this.canvas.getContext('2d').rotate(this.rotation * Math.PI / 180);
             this.canvas.getContext('2d').save();
         }
     }
  
     handleCollisions(){
-        const top = 0;
-        const bottom = 0;
-        const left = 0;
-        const right = 0;
+
+        // left
+        if (this.x < 10){
+            this.x = 10;
+        }
+        // right
+        if(this.x > (WIDTH - 80)) {
+            this.x = WIDTH-80;
+        }
+        // top
+        if (this.y < 0){
+            this.y = 0;
+        }
+        // bottom
+        if(this.y > (HEIGHT - 80)) {
+            this.y = HEIGHT-80;
+        }
     }
 
     // transmits the most recent movement as soon as possible
@@ -49,7 +62,6 @@ class Player {
 
         const now = Date.now();
         if (now-this.lastTransmission > TICK){
-            console.log('sending',this.x,this.y);
             this.queuedTransmission = false;
             this.move();
             socket.emit('playermove', {rotation: this.rotation});
@@ -72,9 +84,13 @@ class Player {
             const playerctx = this.canvas.getContext('2d');
             playerctx.resetTransform();
             playerctx.clearRect(0, 0, this.canvas.height, this.canvas.width);
+            playerctx.fillStyle = 'red';
+            playerctx.fillRect(0,0,this.canvas.height,this.canvas.width);
             playerctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-           
-            playerctx.rotate(( (90-this.rotation*45  )* Math.PI) / 180);
+            playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
+            
+            
+            
             playerctx.drawImage(this.img, 2, 0, 25, 100, 0, 0, 25, 100);
         }
  

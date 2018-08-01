@@ -4,13 +4,11 @@ const {WIDTH, HEIGHT, TICK, hitBoxMap} = require('./gamelogic');
 class Ball {
 
     constructor() {
-        this.lastDrawn = Date.now();
+      
         this.x = 600;
         this.y = 0;
         this.dx = 0;
         this.dy = .4;
-        this.lastUpdated = Date.now();
-      
     }
 
     setPos(x,y,dx,dy){
@@ -19,14 +17,13 @@ class Ball {
         this.dx = dx;
         this.dy = dy;
     }
-    
+
     reset() {
         this.x = 600;
         this.y = 0;
         this.dx = 0;
         this.dy = .4;
-        this.lastUpdated = Date.now();
-        this.lastDrawn = Date.now();
+        
     }
 
     catHeadCollides(player) {
@@ -40,6 +37,7 @@ class Ball {
         const facingDown = player.rotation < 360 && player.rotation > 180 ? 1 : 0;
 
         if(ballCenterDelta < 11){
+            console.log('head collides', player.id);
             this.dx += 1.05 * facingRight - this.dx;
             this.dy += 1.05 * facingDown - this.dy;
             if (player.kicking) {
@@ -56,8 +54,8 @@ class Ball {
                 this.dx = dx+xdiff;
                 this.dy = dy+ydiff;
 
-                this.x += (3* this.dx)*TICK;
-                this.y += (3 * this.dy) * TICK;
+                this.x += Math.floor( (3* this.dx) * TICK );
+                this.y += Math.floor( (3 * this.dy) * TICK );
             }
         } 
     }
@@ -72,6 +70,7 @@ class Ball {
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
 
         if (ballCenterDelta < 12){
+            console.log('hit',player.id);
             const facingRight = player.rotation > 90 && player.rotation < 270 ? 1 : 0;
             const facingDown =  player.rotation < 360 && player.rotation > 180 ? 1 : 0;
             this.dx += (1.1 * (facingRight) - this.dx);
@@ -96,15 +95,18 @@ class Ball {
     handleWallBounce () {
         var x = this.x;
         var y = this.y;
+        
         //handle horizontal bounce
         if (x < 55 || x > (WIDTH - 55)) {
-            this.x -= ((2 * this.dx)) * TICK;
+            this.x -= Math.floor( ((2 * this.dx)) * TICK );
             this.dx -= (2 * (this.dx));
+            console.log('bounce');
         }
         // returns vertical bounce
         if (y < 0 || y > (HEIGHT - 10)) {
-            this.y -= ((2 * this.dy)) * TICK;
+            this.y -= Math.floor( ((2 * this.dy)) * TICK );
             this.dy -= (2 * (this.dy));
+            console.log('bounce');
         }
     }
 
@@ -135,7 +137,7 @@ class Ball {
     }
 
     draw(ctx){
-     
+
         ctx.beginPath();
         ctx.arc(this.x, this.y, 7, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'red';
