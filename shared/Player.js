@@ -86,14 +86,12 @@ class Player {
  
     }
 
-    animate(){
+    draw(ctx) { //sx, sy, sWidth, sHeight, dx, dy,
         this.animationFrame++;
-        if(this.animationFrame>16){
+        if (this.animationFrame > 16) {
             this.animationFrame = 0;
         }
-    }
 
-    draw(ctx) { //sx, sy, sWidth, sHeight, dx, dy,
         const playerctx = this.canvas.getContext('2d');
         playerctx.resetTransform();
         playerctx.clearRect(0, 0, this.canvas.height, this.canvas.width);
@@ -101,7 +99,7 @@ class Player {
         //playerctx.fillRect(0,0,this.canvas.height,this.canvas.width);
         playerctx.translate(this.canvas.width / 2, this.canvas.height / 2);
         playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
-        playerctx.drawImage(this.img, 1, 0, 25, 60, -14, -20, 25, 60);
+        playerctx.drawImage(this.img, 2+(this.animationFrame*29), 0, 25, 60, -14, -20, 25, 60);
         ctx.drawImage(this.canvas, this.x, this.y);
     }
 }
