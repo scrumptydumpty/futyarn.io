@@ -15,16 +15,13 @@ module.exports = {
         270: [40, 55],
         315: [44, 48],
     },
-    cache: {
-        score: {
-            1: 0,
-            2: 0
-        },
-        ball : null,
-        players:{},
-        totalPlayers: 0,
-        shouldStart: false,
-        gameRunning: true
+
+    status:{
+        waitingForPlayers:0,
+        active:1,
+        gameWon:2,
+        abandoned:3
     }
+    
 
 };

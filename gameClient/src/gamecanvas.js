@@ -10,6 +10,8 @@ angular.module('gameinstance')
         this.img2.src = '/images/orangeCatSpriteUp.gif';
 
         this.isLoading = true;
+        this.gameLoop = null;
+        this.animationLoop = null;
         this.canvas;
 
         this.lastDraw;
@@ -129,8 +131,9 @@ angular.module('gameinstance')
                 };
 
                 const gameLoop = function(){
+                   
                     const keyPressed = Object.keys(ctrl.keysPressed).reduce((m,i)=>m || ctrl.keysPressed[i] , false);
-                    if (keyPressed){
+                    if (ctrl.playerId && keyPressed){
                         alterPlayer();
                         ctrl.players[ctrl.playerId].transmit(ctrl.socket);
                     }
@@ -140,12 +143,18 @@ angular.module('gameinstance')
 
                 var drawPlayers = function ()
                 {   
-                    if (shouldStart){
-                        const keys = Object.keys(ctrl.players);
-                        keys.forEach(key=>{
-                            ctrl.players[key].draw(ctx);
-                        });
+                    try{
+                        if (shouldStart) {
+                            const keys = Object.keys(ctrl.players);
+                            keys.forEach(key => {
+                                ctrl.players[key].draw(ctx);
+                            });
+                        }
                     }
+                    catch(err){
+                        console.log(err);
+                    }
+                    
 
                 };
                 
@@ -155,8 +164,9 @@ angular.module('gameinstance')
                 var alterPlayer = function (){
 
                     const k = ctrl.keysPressed;
+
                     const p = ctrl.players[ctrl.playerId];
-                   
+                    if(!p){return;}
                     let r = p.rotation;
                     
                     if (k[65] && k[87]) {
@@ -182,7 +192,6 @@ angular.module('gameinstance')
                     } else {
                         p.kicking = false;
                     }
-                    console.log(r);
                     p.handleRotation(r);
                     
                 };
@@ -205,6 +214,13 @@ angular.module('gameinstance')
                 angular.element(window).on('keydown', keydownHandler);
                 angular.element(window).on('keyup', keyupHandler);
                     
+                ctrl.socket.on('removePlayer', data=>{
+                    const {id} = data;
+                    delete ctrl.players[id];
+
+                });
+
+
                 ctrl.socket.on('sync', (data) => {
                    
                     const { players, score } = data;
@@ -212,9 +228,13 @@ angular.module('gameinstance')
                     
                     for (let player of players) {
                         
-                        const { rotation, id, x, y } = player;
-
-                        ctrl.players[id].setPos(x, y, rotation);
+                        const { rotation, team, id, x, y } = player;
+                        if(!ctrl.players[id]){
+                            ctrl.players[id] = new Player(team, id);
+                        } else {
+                            ctrl.players[id].setPos(x, y, rotation);
+                        }
+                        
                     }
 
                     const {x,y,dx,dy} = data.ball;
@@ -236,12 +256,11 @@ angular.module('gameinstance')
                     ctrl.score = score;
                     console.log('Game starting');
                     
-
                     shouldStart = true;
                     
                     for (let player of players){
                         const {rotation, team, id, x, y} = player;
-                        ctrl.players[id] = new Player(team, id, true);
+                        ctrl.players[id] = new Player(team, id);
                         ctrl.players[id].setPos(x, y, rotation);
 
                         ctrl.players[id].img = team === 1 ? ctrl.img1 : ctrl.img2;
@@ -252,16 +271,24 @@ angular.module('gameinstance')
                         playercanvas.width = 100;
                         // rotate 45 degrees clockwise
                         ctrl.players[id].canvas = playercanvas;
-                      
+                        
                             
-                    }
-                    console.log(ctrl.players);
+                    } 
+                    console.log('players',ctrl.players);
                 
                 });
 
                 //call the main game loop
-                setInterval( gameLoop, TICK);
-                setInterval( animationLoop, 50);
+                const waitForStart = setInterval(()=>{
+
+                    if(!ctrl.isLoading){
+                        clearInterval(waitForStart);
+                        ctrl.gameLoop = setInterval(gameLoop, TICK);
+                        ctrl.animationLoop = setInterval(animationLoop, 50);
+                    }
+
+                },500);
+                
               
                 
                    

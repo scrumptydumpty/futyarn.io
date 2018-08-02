@@ -10,7 +10,7 @@ class Player {
         this.img = null; //client side used
         this.rotation = 0; //degrees
         this.kicking = false;
-        this.canmove = true; 
+        this.canmove = false; // used on server to prevent spam. locked down every TICK
         this.animationFrame = 0;
         this.queuedTransmission = false;
         this.lastTransmission = Date.now();
@@ -38,16 +38,16 @@ class Player {
     handleCollisions(){
 
         // left
-        if (this.x < 10){
-            this.x = 10;
+        if (this.x < 0){
+            this.x = 0;
         }
         // right
         if(this.x > (WIDTH - 80)) {
             this.x = WIDTH-80;
         }
         // top
-        if (this.y < 0){
-            this.y = 0;
+        if (this.y < -10){
+            this.y = -10;
         }
         // bottom
         if(this.y > (HEIGHT - 80)) {
