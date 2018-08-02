@@ -5,6 +5,7 @@ const io = require('socket.io')(http);
 const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
+const { hashUserConnectionDict } = require('./routes');
 
 var port = 1337;
 

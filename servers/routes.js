@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path')
+const path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -8,6 +8,8 @@ const db = require('../database/postgreSQL-index');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 var bcryptjs = require('bcryptjs');
+
+const hashUserConnectionDict = {};
 
 
 
@@ -55,7 +57,7 @@ passport.use(
 
 // passport middleware to handle local logins (via username and password)
 // looks in database for user
-    // if found, runs the done callback
+// if found, runs the done callback
 passport.use(new LocalStrategy(
     (username, password, done) => {
         db.authenticateUser(username, (err, foundUser) => {
@@ -131,8 +133,8 @@ router.use(passport.session());
 
 // route adds user to the db
 // first checks if user is already in db
-    // if yes, send back 409 status
-    // if no, adds user to db
+// if yes, send back 409 status
+// if no, adds user to db
 router.post('/api/signup', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -254,7 +256,7 @@ router.get('/api/joingame', (req, res, next) => {
             res.send(false);
         } else {
             // redirect?
-            res.sendfile(path.join(__dirname, 'gameClient' ))
+            res.sendfile(path.join(__dirname, 'gameClient' ));
             console.log('session is verified');
             res.send(true);
         }
@@ -274,3 +276,4 @@ router.post('/api/gameresults', (req, res, next) => {
 
 
 module.exports.router = router;
+module.exports.hashUserConnectionDict = hashUserConnectionDict;
