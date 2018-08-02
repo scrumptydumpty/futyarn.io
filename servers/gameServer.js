@@ -203,12 +203,11 @@ const checkForDisconnects = () => {
         const id = disconnectedPlayers.pop();
         
         console.log('disconnecting', id);
-        console.log('orig',activePlayers);
         activePlayers.splice(activePlayers.indexOf(id), 1 );
-        console.log('after', activePlayers);
         delete playerMovementQueue[id];
         delete players[id];
-        io.emit('removePlayer', id);
+        
+        io.to('/').emit('removePlayer', id);
     }
 };
 

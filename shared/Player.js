@@ -1,14 +1,14 @@
 const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
-    constructor(team,id){
+    constructor(team,id , x = 200,y = 200,rotation = 0){
         this.team = team;
         this.id = id;
-        this.x = 200;
-        this.y = 200;
+        this.x = x;
+        this.y = y;
         this.canvas = null; // client side used
         this.img = null; //client side used
-        this.rotation = 0; //degrees
+        this.rotation = rotation; //degrees
         this.kicking = false;
         this.canmove = false; // used on server to prevent spam. locked down every TICK
         this.animationFrame = 0;
@@ -21,6 +21,16 @@ class Player {
         this.x = x;
         this.y = y;
         this.rotation = rotation;
+    }
+
+    generateCanvas(img){
+        this.img = img;
+        var playercanvas = document.createElement('CANVAS');
+        playercanvas.id = this.id;
+        playercanvas.height = 100;
+        playercanvas.width = 100;
+        // rotate 45 degrees clockwise
+        this.canvas = playercanvas;
     }
 
     move(){
