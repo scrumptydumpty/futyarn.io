@@ -1,11 +1,12 @@
 angular
   .module("app")
-  .controller("logInCtrl", function(auth, $http) {
+  .controller("logInCtrl", function(auth, $http, $window) {
     this.username = "";
     this.password = "";
     // Passes username and password from text fields into service function in services file
     this.handleLogin = () => {
       auth.login(this.username, this.password);
+      $window.location.reload();
     };
 
     // This is code that can be uncommented for a google auth button
@@ -35,7 +36,8 @@ angular
     bindings: {
       // Passing down toggle function from app.js and app.html file
       // This is angular js's version of "props"
-      toggle: "<"
+      toggle: "<",
+      verifyLogin: "<"
     },
     controller: "logInCtrl",
     templateUrl: "/templates/log-in.html"
