@@ -82,11 +82,10 @@
 </div>
 <div ng-if="$ctrl.loadPage">
     <div ng-hide="$ctrl.loaded">
-      <loading socket="$ctrl.socket" toggle-loaded="$ctrl.toggleLoaded" loaded="$ctrl.loaded"/>
+      <loading socket="$ctrl.socket" toggle-loaded="$ctrl.toggleLoaded" random-hash="$ctrl.randomHash" loaded="$ctrl.loaded"/>
     </div>
-    <div ng-show="$ctrl.loaded">
-      <!-- <gamecanvas teamoneimg="$ctrl.catImageOne" teamtwoimg=
-      "$ctrl.catImageTwo" socket="$ctrl.socket" cache="$ctrl.localCache" initcache="$ctrl.initcache" /> -->
+    <div  ng-show="$ctrl.loaded">
+      <gamecanvas socket="$ctrl.socket"/>
     </div>
     <!-- <game ng-hide="$ctrl.notloaded" socket= "$ctrl.socket"/>  -->
 </div>

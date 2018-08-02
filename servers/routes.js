@@ -248,19 +248,20 @@ router.get('/api/userinfo', (req, res) => {
 // contact game server to join a new game
 router.get('/api/joingame', (req, res, next) => {
     //const {user} = req.user;
-    console.log(req);
-        if ( !user ) {
-            // if no session is found
-            console.log('user not logged in');
-            res.send(false);
-        } else {
-            // redirect?
-            console.log(user,user.username)
-            const randomHash = user.username+'__'+Math.floor(Math.random()*1000000000);
-            hashUserConnectionDict[randomHash] = user.username;
+    //console.log(req);
+     //   if ( !user ) {
+     //       // if no session is found
+      //      console.log('user not logged in');
+     //       res.send(false);
+     //   } else {
+     //       // redirect?
+            //console.log(user,user.username)
+            const username = 'a'
+            const randomHash = username+'__'+Math.floor(Math.random()*1000000000);
+            hashUserConnectionDict[randomHash] = username;
             res.send({randomHash});
             
-        }
+     //   }
 });
 
 // receive game results from game server and post to db

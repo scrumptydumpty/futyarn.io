@@ -4,9 +4,9 @@ const routes = require('./routes.js');
 require('./gameServer.js');
 
 const app = express();
-app.use(express.static(__dirname + '/../client'));
+app.use(express.static(__dirname + '/../client/dist'));
 app.use(express.static(__dirname + '/../node_modules'));
-app.use('/api/joingame', express.static(__dirname + '/../gameClient'));
+
 
 // not sure if cookie parser needed in this file
 // it is already used and required in routes.js

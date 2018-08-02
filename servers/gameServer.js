@@ -28,9 +28,6 @@ let serverTick; // interval that clicks every TICK ms (200 default);
 let logTick;// interval for console logs
 let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team 1 and 2
 
-gameInstance.use(express.static(__dirname + '/../gameClient/dist'));
-gameInstance.use(express.static(__dirname + '/../node_modules'));
-
 const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');

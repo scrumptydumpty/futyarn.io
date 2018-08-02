@@ -1,5 +1,4 @@
 angular.module('app')
-
     .controller('appCtrl', function (auth, $http, $scope){
 
         this.showLoginForm = false;
@@ -9,6 +8,8 @@ angular.module('app')
         this.showLoginButton = true;
         this.showSignUpButton = true;
         this.showLeaderboard = false;
+
+        this.socket = io.connect("http://localhost:1337");
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -86,12 +87,13 @@ angular.module('app')
 
         this.loaded = false;
 
-
+        this.randomHash = null;
+        const self = this;
 
         this.handleJoinGame = () => {
             console.log('inside join game function');
             
-
+            
             $http({
                 method: 'GET',
                 url: 'api/joingame'
@@ -100,12 +102,9 @@ angular.module('app')
                 if (response.data) {
                     const {randomHash} = response.data;
                     console.log(randomHash);
-
-
-                    localStorage.setItem("randomHashFutYarn", randomHash);
+                    self.randomHash = randomHash;
                     // Retrieve
                     this.loadPage = true;
-
                 } else {
                     this.notLoggedIn = true;
                 }
