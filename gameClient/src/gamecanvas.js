@@ -14,6 +14,8 @@ angular.module('gameinstance')
         this.animationLoop = null;
         this.canvas;
 
+        
+
         this.lastDraw;
 
         //map of keycodes to whether or not they're currently pressed                     	
@@ -93,9 +95,9 @@ angular.module('gameinstance')
                     b.handleWallBounce();
 
                     // check for player out of bounds issues
-                    for (let player of players) {
-                        player.handleCollisions();
-                    }
+                    ctrl.players[ctrl.playerId].handleCollisions();
+                    
+                   
 
                 };
 
@@ -216,29 +218,39 @@ angular.module('gameinstance')
                     
                 ctrl.socket.on('removePlayer', data=>{
                     const {id} = data;
+                    console.log('deleting',id);
                     delete ctrl.players[id];
 
                 });
 
 
                 ctrl.socket.on('sync', (data) => {
-                   
+                    const currplayers = [];
                     const { players, score } = data;
                     ctrl.score = score;
                     
                     for (let player of players) {
-                        
                         const { rotation, team, id, x, y } = player;
                         if(!ctrl.players[id]){
                             ctrl.players[id] = new Player(team, id);
-                        } else {
-                            ctrl.players[id].setPos(x, y, rotation);
-                        }
+                            const img = team === 1 ? ctrl.img1 : ctrl.img2;
+                            ctrl.players[id].generateCanvas(img);
+                        } 
+                        
+                        ctrl.players[id].setPos(x, y, rotation);
+                        currplayers.push(id);
                         
                     }
 
                     const {x,y,dx,dy} = data.ball;
                     ctrl.ball.setPos(x,y,dx,dy);
+                    //remove players which no longer exist
+                    Object.keys(ctrl.players).forEach(key=>{
+                        if(!currplayers.includes(key)){
+                            delete ctrl.players[key];
+                        }
+                    });
+
                     
                 });
 
