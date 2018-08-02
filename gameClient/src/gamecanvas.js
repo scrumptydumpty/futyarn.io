@@ -15,7 +15,8 @@ angular.module('gameinstance')
         this.canvas;
 
         
-
+        this.randomHash = localStorage.getItem("randomHashFutYarn") || null;
+        
         this.lastDraw;
 
         //map of keycodes to whether or not they're currently pressed                     	
@@ -222,8 +223,8 @@ angular.module('gameinstance')
                     delete ctrl.players[id];
 
                 });
-
-
+                console.log('randomhash',ctrl.randomHash);
+                
                 ctrl.socket.on('sync', (data) => {
                     const currplayers = [];
                     const { players, score } = data;

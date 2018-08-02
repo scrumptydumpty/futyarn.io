@@ -4,7 +4,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const keys = require('../config.js');
-//const db = require('../database/postgreSQL-index');
+const db = require('../database/postgreSQL-index');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 var bcryptjs = require('bcryptjs');
@@ -247,20 +247,20 @@ router.get('/api/userinfo', (req, res) => {
 
 // contact game server to join a new game
 router.get('/api/joingame', (req, res, next) => {
-    const { sessionID } = req;
-    // verify if there is a session stored in sessions table
-    db.verifySession(sessionID, (err, data) => {
-        if (!data) {
+    //const {user} = req.user;
+    console.log(req);
+        if ( !user ) {
             // if no session is found
-            console.log('session does not exist');
+            console.log('user not logged in');
             res.send(false);
         } else {
             // redirect?
-            res.sendfile(path.join(__dirname, 'gameClient' ));
-            console.log('session is verified');
-            res.send(true);
+            console.log(user,user.username)
+            const randomHash = user.username+'__'+Math.floor(Math.random()*1000000000);
+            hashUserConnectionDict[randomHash] = user.username;
+            res.send({randomHash});
+            
         }
-    });
 });
 
 // receive game results from game server and post to db

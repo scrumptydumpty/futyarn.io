@@ -43,14 +43,14 @@ angular.module('app')
         };
 
         this.toggleLoaded = () => {
-            console.log($scope)
+            console.log($scope);
             this.loaded = !this.loaded;
-            console.log(this.loaded)
-            console.log(this)
-            $scope.$digest()
-        }
+            console.log(this.loaded);
+            console.log(this);
+            $scope.$digest();
+        };
 
-        this.toggleLoaded = this.toggleLoaded.bind(this)
+        this.toggleLoaded = this.toggleLoaded.bind(this);
 
         this.leaderboardInfo;
         this.submitGetRequest = false;
@@ -90,7 +90,7 @@ angular.module('app')
 
         this.handleJoinGame = () => {
             console.log('inside join game function');
-            this.socket = io.connect('http://localhost:1337')   
+            
 
             $http({
                 method: 'GET',
@@ -98,6 +98,12 @@ angular.module('app')
             }).then((response) => {
                 console.log(response);
                 if (response.data) {
+                    const {randomHash} = response.data;
+                    console.log(randomHash);
+
+
+                    localStorage.setItem("randomHashFutYarn", randomHash);
+                    // Retrieve
                     this.loadPage = true;
 
                 } else {

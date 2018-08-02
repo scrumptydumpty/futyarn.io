@@ -52,7 +52,7 @@ io.on('connection', function(socket)
     const playerId = socket.id;
     audienceQueue.push(playerId);
 
-    
+
     
 
     socket.on('playermove', function(msg) {
@@ -77,7 +77,6 @@ io.on('connection', function(socket)
     socket.on('disconnect', function()
     {   
         disconnectedPlayers.push(socket.id);
-        
     });
 
 });
