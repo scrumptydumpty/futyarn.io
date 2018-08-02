@@ -6,7 +6,7 @@ const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
 const { hashUserConnectionDict } = require('./routes.js');
-
+hashUserConnectionDict['a'] = 'a';
 var port = 1337;
 
 // GAME STATE LIVES HERE
@@ -47,10 +47,23 @@ const minify = () => {
 
 io.on('connection', function(socket)
 {
-    
 
-    const playerId = socket.id;
-    audienceQueue.push(playerId);
+    socket.on("credentials",(msg)=>{
+
+        const {randomHash} = msg;
+        if(hashUserConnectionDict[randomHash]){
+            socket.emit("credentialsVerified");
+            socket.username = hashUserConnectionDict[randomHash];
+            // delete hashUserConnectionDict[randomHash];
+
+            const playerId = socket.id;
+            audienceQueue.push(playerId);
+
+            console.log('user ',socket.username,'connected')
+        }
+
+
+    });
 
 
     
@@ -250,10 +263,7 @@ const gameLoop = () => setInterval(() => {
 
 const serverLog = ()=>setInterval(()=>{
     const now = Date.now();
-    console.log(now, 'Server Status', gameStatus);
-    console.log(now, 'Connected Players', activePlayers.length);
-    console.log(now, 'Queued Players', audienceQueue.length);
-    console.log(now,'Score',score);
+    console.log(now, 'Server Status', gameStatus, 'Players', activePlayers.length, 'Audience', audienceQueue.length);
 }, 5000);
 
 

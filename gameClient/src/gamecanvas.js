@@ -1,6 +1,7 @@
 const { Ball }  = require('../../shared/Ball');
 const { Player } = require('../../shared/Player');
 const { TICK } = require('../../shared/gamelogic');
+
 angular.module('gameinstance')
     .controller('gamecanvasCtrl', function () 
     {
@@ -13,11 +14,14 @@ angular.module('gameinstance')
         this.gameLoop = null;
         this.animationLoop = null;
         this.canvas;
-
-        
+        this.userIsNotLoggedIn = true;
+       
         this.randomHash = localStorage.getItem("randomHashFutYarn") || null;
-        
+        this.randomHash = 'a';
         this.lastDraw;
+        if(this.randomHash){
+            this.userIsNotLoggedIn = false;
+        }
 
         //map of keycodes to whether or not they're currently pressed                     	
         this.score = {
@@ -63,8 +67,20 @@ angular.module('gameinstance')
                 //fetch 2d context for canvas to draw
                 var ctx = canvas.getContext('2d');
                 //temp global object for player speed
+
+                
                
                 var shouldStart = false;
+                
+                var shouldSendCredentials = setInterval(()=>{ 
+                    console.log('submitting random hash')
+                    ctrl.socket.emit('credentials',{randomHash:ctrl.randomHash});
+                },500);
+
+                ctrl.socket.on('credentialsVerified',()=>{
+                    clearInterval(shouldSendCredentials);
+                    console.log('verified credentials!');
+                });
 
 
                 const handleCollisions = () => {
@@ -224,7 +240,7 @@ angular.module('gameinstance')
 
                 });
                 console.log('randomhash',ctrl.randomHash);
-                
+
                 ctrl.socket.on('sync', (data) => {
                     const currplayers = [];
                     const { players, score } = data;
