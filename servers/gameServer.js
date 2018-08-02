@@ -237,7 +237,7 @@ const gameLoop = () => setInterval(() => {
         freePlayers();
 
     } else if (gameStatus === status.waitingForPlayers){
-        if(activePlayers.length>minnumplayers){
+        if(activePlayers.length>=minnumplayers){
             startGame();
         }
     }
