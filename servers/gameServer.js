@@ -5,7 +5,7 @@ const io = require('socket.io')(http);
 const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
-const { hashUserConnectionDict } = require('./routes');
+const { hashUserConnectionDict } = require('./routes.js');
 
 var port = 1337;
 
@@ -51,6 +51,8 @@ io.on('connection', function(socket)
 
     const playerId = socket.id;
     audienceQueue.push(playerId);
+
+    
     
 
     socket.on('playermove', function(msg) {
