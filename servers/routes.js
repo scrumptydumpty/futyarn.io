@@ -190,9 +190,10 @@ router.get('/api/login/google/redirect', passport.authenticate('google', { failu
     console.log('redirected to /api/login/google/redirect');
     // console.log(req);
     const { sessionID, user } = req;
+    console.log('this req: ', sessionID, user);
     db.storeSession(sessionID, user.user_id, user.username, () => {});
-    console.log('user sucessfully logged in via google auth');
     // res.send('user sucessfully logged in via google auth');
+    console.log('user successfully logged in w google');
     res.redirect('/');
 });
 
@@ -210,7 +211,15 @@ router.get('/api/logout', (req, res) => {
     res.redirect('/');
 });    
 
-
+router.get('/api/verify', (req, res) => {
+    if (req.user) {
+        console.log('user is verified');
+        res.send({ id: req.user.id, username: req.user.username });
+    } else {
+        console.log('user is not verified');
+        res.send(false);
+    }
+});
 
 // get user leaderboard info (stats from top 10 users) from DB
 router.get('/api/leaderboards', (req, res) => {
@@ -235,7 +244,7 @@ router.get('/api/userinfo', (req, res) => {
             console.log('error getting userinfo');
         } else {
             console.log('user info received');
-            // console.log(foundUser);
+            console.log(foundUser);
             res.setStatus = 200;
             res.send(foundUser);
         }

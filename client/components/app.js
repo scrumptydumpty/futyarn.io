@@ -1,6 +1,6 @@
 angular.module('app')
 
-    .controller('appCtrl', function (auth, $http, $scope){
+    .controller('appCtrl', function (auth, $http, $scope, $window){
 
         this.showLoginForm = false;
         this.showSignUpForm = false;
@@ -9,6 +9,11 @@ angular.module('app')
         this.showLoginButton = true;
         this.showSignUpButton = true;
         this.showLeaderboard = false;
+        this.user = null;
+
+        this.$onInit = function () {
+            this.verifyLogin();
+        };
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -43,12 +48,12 @@ angular.module('app')
         };
 
         this.toggleLoaded = () => {
-            console.log($scope)
+            console.log($scope);
             this.loaded = !this.loaded;
-            console.log(this.loaded)
-            console.log(this)
-            $scope.$digest()
-        }
+            console.log(this.loaded);
+            console.log(this);
+            $scope.$digest();
+        };
 
         this.toggleLoaded = this.toggleLoaded.bind(this)
 
@@ -68,6 +73,22 @@ angular.module('app')
                 });
             }
         };
+
+        this.verifyLogin = () => {
+            $http({
+                method: 'GET',
+                url: '/api/verify'
+            })
+                .then(response => {
+                    if (response.data) {
+                        this.user = response.data;
+                        this.toggle();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        };
         
         // This sends info to server that someone is logging out
         this.handleLogOut = () => {
@@ -76,6 +97,7 @@ angular.module('app')
                 url: '/api/logout'
             }).then((response) => {
                 console.log(response);
+                $window.location.reload();
             }, (error) => {
                 console.log(error);
             });

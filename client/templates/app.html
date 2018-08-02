@@ -52,23 +52,23 @@
             </div>
           </div>
         <div>
-           <div ng-if="$ctrl.showLoginButton">  
+           <div ng-if="!$ctrl.user">  
              <input class="btn" type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
                <div ng-if="$ctrl.showLoginForm">
                  <log-in toggle="$ctrl.toggle"/>
                </div>
            </div>
-           <div ng-if="$ctrl.showLogOut">
-             <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle(); $ctrl.handleLogOut();"/>
+           <div ng-if="$ctrl.user">
+             <input class="btn" type="button" value="Logout" ng-click="$ctrl.handleLogOut();"/>
            </div>
         </div>
-        <div ng-if="$ctrl.showSignUpButton"> 
-          <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
+          <div ng-if="!$ctrl.user"> 
+            <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
              <div ng-if="$ctrl.showSignUpForm">
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
              </div>
         </div>
-        <div> 
+        <div ng-if="$ctrl.user"> 
         <form action="http://localhost:1337">
           <input class="btn" type="submit" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
         </form>
