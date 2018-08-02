@@ -1,14 +1,6 @@
 <div id="gcbox">
+  <div ng-if="$ctrl.userIsNotLoggedIn">redirect if user does not have a random hash to the login screen!</div>
+  <div ng-if="!$ctrl.userIsNotLoggedIn">
 <canvas id="maincanvas" height="650" width="1200" ng-mousemove="$ctrl.mouseoverHandler($event)" anim></canvas>
-<!-- 
-<canvas id='playercanvas' height ="100" width ="100" move></canvas> -->
-<!-- 
-<opponentcat ident="'oppCat0'"  teamoneimg="$ctrl.teamoneimg" 
-rotation="$ctrl.playerRotations[0]" playervector="$ctrl.cache.players[0].canvas"/>
-<opponentcat ident="'oppCat1'"  teamoneimg="$ctrl.teamtwoimg" 
-rotation="$ctrl.playerRotations[1]" playervector="$ctrl.cache.players[1].canvas"/>
-<opponentcat ident="'oppCat2'"  teamoneimg="$ctrl.teamoneimg" 
-rotation="$ctrl.playerRotations[2]" playervector="$ctrl.cache.players[2].canvas"/> -->
-
-
+</div>
 </div>

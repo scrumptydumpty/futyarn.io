@@ -2,6 +2,7 @@ angular.module('app')
 
     .controller('appCtrl', function (auth, $http, $scope, $window){
 
+
         this.showLoginForm = false;
         this.showSignUpForm = false;
         this.showRules = false;
@@ -14,6 +15,8 @@ angular.module('app')
         this.$onInit = function () {
             this.verifyLogin();
         };
+
+        this.socket = io.connect('http://localhost:1337');
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -55,7 +58,7 @@ angular.module('app')
             $scope.$digest();
         };
 
-        this.toggleLoaded = this.toggleLoaded.bind(this)
+        this.toggleLoaded = this.toggleLoaded.bind(this);
 
         this.leaderboardInfo;
         this.submitGetRequest = false;
@@ -108,20 +111,24 @@ angular.module('app')
 
         this.loaded = false;
 
-
+        this.randomHash = null;
+        const self = this;
 
         this.handleJoinGame = () => {
             console.log('inside join game function');
-            this.socket = io.connect('http://localhost:1337')   
-
+            
+            
             $http({
                 method: 'GET',
                 url: 'api/joingame'
             }).then((response) => {
                 console.log(response);
                 if (response.data) {
+                    const {randomHash} = response.data;
+                    console.log(randomHash);
+                    self.randomHash = randomHash;
+                    // Retrieve
                     this.loadPage = true;
-
                 } else {
                     this.notLoggedIn = true;
                 }

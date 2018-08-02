@@ -2,8 +2,8 @@ const { Ball }  = require('../../shared/Ball');
 const { Player } = require('../../shared/Player');
 const { TICK } = require('../../shared/gamelogic');
 
-angular.module('gameinstance')
-    .controller('gamecanvasCtrl', function () 
+angular.module('app')
+    .controller('gamecanvasctrl', function () 
     {
         this.img1 = new Image();
         this.img1.src = '/images/BlackCatUp.gif';
@@ -14,14 +14,9 @@ angular.module('gameinstance')
         this.gameLoop = null;
         this.animationLoop = null;
         this.canvas;
-        this.userIsNotLoggedIn = true;
+        
        
-        this.randomHash = localStorage.getItem("randomHashFutYarn") || null;
-        this.randomHash = 'a';
         this.lastDraw;
-        if(this.randomHash){
-            this.userIsNotLoggedIn = false;
-        }
 
         //map of keycodes to whether or not they're currently pressed                     	
         this.score = {
@@ -71,16 +66,6 @@ angular.module('gameinstance')
                 
                
                 var shouldStart = false;
-                
-                var shouldSendCredentials = setInterval(()=>{ 
-                    console.log('submitting random hash')
-                    ctrl.socket.emit('credentials',{randomHash:ctrl.randomHash});
-                },500);
-
-                ctrl.socket.on('credentialsVerified',()=>{
-                    clearInterval(shouldSendCredentials);
-                    console.log('verified credentials!');
-                });
 
 
                 const handleCollisions = () => {
@@ -176,7 +161,7 @@ angular.module('gameinstance')
                     
 
                 };
-                
+                console.log('in the game canvaseasdfasfd')
                 //iterate through keys pressed, check for true
                 //if the key is pressed, change player vector based on keymap
                 //set depressed keys to zero, unless alternate key is also pressed                    
@@ -377,13 +362,9 @@ angular.module('gameinstance')
     })
     .component('gamecanvas', {
         bindings : {
-            teamoneimg : '=',
-            teamtwoimg: '=', 
-            socket: '=',
-            cache : '=',
-            initcache : '='
+           socket:'='
         },
-        controller : 'gamecanvasCtrl',
+        controller: 'gamecanvasctrl',
         templateUrl : './templates/gamecanvas.html'
 
     });

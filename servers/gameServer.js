@@ -5,7 +5,8 @@ const io = require('socket.io')(http);
 const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
-
+const { hashUserConnectionDict } = require('./routes.js');
+hashUserConnectionDict['a'] = 'a';
 var port = 1337;
 
 // GAME STATE LIVES HERE
@@ -27,9 +28,6 @@ let serverTick; // interval that clicks every TICK ms (200 default);
 let logTick;// interval for console logs
 let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team 1 and 2
 
-gameInstance.use(express.static(__dirname + '/../gameClient/dist'));
-gameInstance.use(express.static(__dirname + '/../node_modules'));
-
 const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');
@@ -46,10 +44,25 @@ const minify = () => {
 
 io.on('connection', function(socket)
 {
-    
 
-    const playerId = socket.id;
-    audienceQueue.push(playerId);
+    socket.on("credentials",(msg)=>{
+
+        const {randomHash} = msg;
+        if(hashUserConnectionDict[randomHash]){
+            socket.emit("credentialsVerified");
+            socket.username = hashUserConnectionDict[randomHash];
+            // delete hashUserConnectionDict[randomHash];
+
+            const playerId = socket.id;
+            audienceQueue.push(playerId);
+
+            console.log('user ',socket.username,'connected')
+        }
+
+
+    });
+
+
     
 
     socket.on('playermove', function(msg) {
@@ -74,7 +87,6 @@ io.on('connection', function(socket)
     socket.on('disconnect', function()
     {   
         disconnectedPlayers.push(socket.id);
-        
     });
 
 });
@@ -248,10 +260,7 @@ const gameLoop = () => setInterval(() => {
 
 const serverLog = ()=>setInterval(()=>{
     const now = Date.now();
-    console.log(now, 'Server Status', gameStatus);
-    console.log(now, 'Connected Players', activePlayers.length);
-    console.log(now, 'Queued Players', audienceQueue.length);
-    console.log(now,'Score',score);
+    console.log(now, 'Server Status', gameStatus, 'Players', activePlayers.length, 'Audience', audienceQueue.length);
 }, 5000);
 
 
