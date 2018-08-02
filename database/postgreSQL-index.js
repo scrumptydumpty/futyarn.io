@@ -158,7 +158,23 @@ const getUserInfo = (method, identifier, callback) =>
 
 
 // FUNCTION FILL_ME_IN
-// updateUserInfo
+const updateUserInfo = ({user, wins, losses}, callback) => {
+    let userUpdate = `
+    UPDATE player
+    SET wins = wins + ${wins}, losses = losses + ${losses} , games_played = games_played + 1
+    WHERE user_id = ${user}`;
+
+    pgClient.query(userUpdate, (err, results) => {
+        if (err) {
+            console.log('error: updateUserInfo failed');
+            console.log(err);
+            callback(err, null);
+        } else {
+            console.log('Updated User Info');
+            callback(null, results);
+        }
+    });
+};
 
 
 
@@ -211,5 +227,6 @@ module.exports = {
     addNewUser,
     authenticateUser,
     getUserInfo,
-    getLeaderboards
+    getLeaderboards,
+    updateUserInfo
 };
