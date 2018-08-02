@@ -27,6 +27,7 @@ class Ball {
     }
 
     catHeadCollides(player) {
+        if(!player) return;
         var currentCenterX = player.x + hitBoxMap[player.rotation][0];
         var currentCenterY = player.y + hitBoxMap[player.rotation][1];
         var ballCenterX = this.x + 5;
@@ -62,6 +63,7 @@ class Ball {
     }
 
     catBodyCollides (player) {
+        if (!player) return;
         var currentCenterX = player.x + 50;
         var currentCenterY = player.y + 50;
        
