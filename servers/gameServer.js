@@ -32,7 +32,7 @@ gameInstance.use(express.static(__dirname + '/../node_modules'));
 
 const minify = () => {
     // array list of players
-    
+    //console.log(activePlayers,'activeplayers');
     const miniPlayers = activePlayers.map(id=> players[id]).map(
         ({ rotation, team, id, x, y, kicking }) => {
             return { rotation, team, id, x, y, kicking };
@@ -46,29 +46,11 @@ const minify = () => {
 
 io.on('connection', function(socket)
 {
-    if (activePlayers.length >= maxnumplayers-1){
-        console.log('too many players');
-        return;
-    }
+    
 
     const playerId = socket.id;
-    const playerTeam = teamToggle;
+    audienceQueue.push(playerId);
     
-    // toggle team for next person who joins
-    teamToggle= (teamToggle++)%2;
-
-    const newplayer = new Player(playerTeam, playerId);
-    players[playerId] = newplayer;
-    activePlayers.push(playerId);
-    socket.emit('you', { playerId });
-    console.log('connected a new player', playerId);
-   
-   
-
-    if (gameStatus === status.active) {
-        console.log('sending active game data to user');
-        playersWhoNeedInitialData.push(playerId);
-    }
 
     socket.on('playermove', function(msg) {
         //TODO: add a function to make sure ppl dont edit other folks locations
@@ -96,6 +78,24 @@ io.on('connection', function(socket)
     });
 
 });
+
+const addPlayerFromQueue = (playerId)=>{
+    const playerTeam = teamToggle;
+
+    // toggle team for next person who joins
+    teamToggle = (teamToggle++) % 2;
+
+    const newplayer = new Player(playerTeam, playerId);
+    players[playerId] = newplayer;
+    activePlayers.push(playerId);
+    io.to(playerId).emit('you', { playerId });
+    console.log('added new player to game', playerId);
+
+    if (gameStatus === status.active) {
+        console.log('sending active game data to user');
+        playersWhoNeedInitialData.push(playerId);
+    }
+};
 
 
 const moveThings = () => {
@@ -178,8 +178,7 @@ const startGame = function ()
     }
     console.log('Started New Game');
     
-    //establish server ticking
-    serverTick = gameLoop();
+   
 };
 
 const checkForEnd = ()=>{
@@ -202,40 +201,53 @@ const checkForEnd = ()=>{
 const checkForDisconnects = () => {
     while(disconnectedPlayers.length>0){
         const id = disconnectedPlayers.pop();
+        
         console.log('disconnecting', id);
-        activePlayers.splice(activePlayers.indexOf(id, 1));
+        console.log('orig',activePlayers);
+        activePlayers.splice(activePlayers.indexOf(id), 1 );
+        console.log('after', activePlayers);
         delete playerMovementQueue[id];
         delete players[id];
         io.emit('removePlayer', id);
     }
 };
 
+const addWaitingPlayers = ()=>{
+    // just adds one for now if there's room
+    if (audienceQueue.length>0 && activePlayers.length<maxnumplayers){
+        const id = audienceQueue.pop();
+        addPlayerFromQueue(id);
+    }
+};
+ 
 const gameLoop = () => setInterval(() => {
-    lockPlayers();
-    moveThings();
-    handleCollisions();
-    checkForEnd();
+    checkForDisconnects();
+    if(gameStatus === status.active){
+        lockPlayers();
+        moveThings();
+        handleCollisions();
+        checkForEnd();
 
-    const data = minify();
-    io.of('/').emit('sync', data);
-    
-    while (playersWhoNeedInitialData.length > 0) {
-        const id = playersWhoNeedInitialData.pop();
-        io.to(id).emit('initGame', data);
+        const data = minify();
+        io.of('/').emit('sync', data);
+
+        while (playersWhoNeedInitialData.length > 0) {
+            const id = playersWhoNeedInitialData.pop();
+            io.to(id).emit('initGame', data);
+        }
+        freePlayers();
+
+    } else if (gameStatus === status.waitingForPlayers){
+        if(activePlayers.length>minnumplayers){
+            startGame();
+        }
     }
     
     
-    freePlayers();
-    checkForDisconnects();
+    addWaitingPlayers();
 
 }, TICK);
 
-const waitForPlayersToJoin = () => setInterval(() => {
-    if (activePlayers.length >= minnumplayers) {
-        clearInterval(serverTick);
-        startGame(); 
-    }
-}, 500);
 
 const serverLog = ()=>setInterval(()=>{
     const now = Date.now();
@@ -246,7 +258,7 @@ const serverLog = ()=>setInterval(()=>{
 }, 5000);
 
 
-serverTick = waitForPlayersToJoin();
+serverTick = gameLoop();
 logTick = serverLog();
 
 

@@ -93,9 +93,9 @@ angular.module('gameinstance')
                     b.handleWallBounce();
 
                     // check for player out of bounds issues
-                    for (let player of players) {
-                        player.handleCollisions();
-                    }
+                    ctrl.players[ctrl.playerId].handleCollisions();
+                    
+                   
 
                 };
 
@@ -227,13 +227,13 @@ angular.module('gameinstance')
                     ctrl.score = score;
                     
                     for (let player of players) {
-                        
                         const { rotation, team, id, x, y } = player;
                         if(!ctrl.players[id]){
                             ctrl.players[id] = new Player(team, id);
-                        } else {
-                            ctrl.players[id].setPos(x, y, rotation);
-                        }
+                        } 
+                        
+                        ctrl.players[id].setPos(x, y, rotation);
+                        
                         
                     }
 
