@@ -1,388 +1,273 @@
 const express = require('express');
 const gameInstance = express();
-const path = require('path');
 const http = require('http').createServer(gameInstance);
 const io = require('socket.io')(http);
-
+const { TICK, status } = require('../shared/gamelogic');
+const { Player } = require('../shared/Player');
+const { Ball } = require('../shared/Ball');
+const { hashUserConnectionDict } = require('./routes.js');
+hashUserConnectionDict['a'] = 'a';
 var port = 1337;
 
-const socketQueue = [];
+// GAME STATE LIVES HERE
+const score = {1:0, 2:0};
+let maxnumplayers = 4;
+let minnumplayers = 1;
+let winningGoalCount = 1;
+let ball = null;
+let players = {}; // player objects
+let gameStatus = status.waitingForPlayers;
+const activePlayers = [];
+const audienceQueue = [];
+const disconnectedPlayers = [];
+const playersWhoNeedInitialData = [];
+let playerMovementQueue = [];
 
-const cache = {
-    score : {
-        teamOne : 0,
-        teamTwo : 0
-    },
-    ballLoc : {
-        cx: 300,
-        cy: 300,
-        dx: 0,
-        dy: 0
-    },
-    players:[
-        {
-            currentX : -200,
-	        currentY : -200,
-	        rotation : 0,
-	        right : 0,
-	        down : 0,
-	        id : 'disconnected',
-	        index : 0
-        },{
-            currentX : -200,
-	        currentY : -200,
-	        rotation : 0,
-	        right : 0,
-	        down : 0,
-	        id : 'disconnected',
-	        index : 1
-        },{
-            currentX : -200,
-		    currentY : -200,
-		    rotation : 0,
-		    right : 0,
-		    down : 0,
-		    id : 'disconnected',
-		    index : 2
-        },{
-            currentX : -200,
-	        currentY : -200,
-	        rotation : 0,
-	        right : 0,
-	        down : 0,
-	        id : 'disconnected',
-	        index : 3
-    	}
-    ],
-    totalPlayers : 0,
-    shouldStart : false,
-    gameRunning : true,
-    officialServerTime : Date.now(),
-    gameStartTime : 0
+// server vars
+let serverTick; // interval that clicks every TICK ms (200 default);
+let logTick;// interval for console logs
+let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team 1 and 2
+
+const minify = () => {
+    // array list of players
+    //console.log(activePlayers,'activeplayers');
+    const miniPlayers = activePlayers.map(id=> players[id]).map(
+        ({ rotation, team, id, x, y, kicking }) => {
+            return { rotation, team, id, x, y, kicking };
+        }
+    );
+
+    const {x,y,dx,dy} = ball;
+
+    return { score, players:miniPlayers, ball:{x,y,dx,dy} };
 };
-
-let alreadyStarted = false;
-let LoadBeginning = 0;
-let countdown = 5000;
-let leniency = 500;
-let tony;
-let rate = 0;
-let playerIndex = 0;
-let lastTime = Date.now();
-let thisTime = Date.now();
-
-gameInstance.use(express.static(__dirname + '/../gameClient'));
-gameInstance.use(express.static(__dirname + '/../node_modules'));
-
-gameInstance.get('/', function(req, res){
-
-});
 
 io.on('connection', function(socket)
 {
-    playerIndex = findNextPlayerId();
-    cache.players[playerIndex] = {
-        currentX : 650,
-	    currentY : 300,
-	    rotation : 0,
-	    right : 0,
-	    down : 0,
-	    id : socket.id,
-	    index : playerIndex
-    };
-    console.log('connected a new player');
-    if (alreadyStarted){
-        var startWait = Date.now();
-        setTimeout(()=>{
-            io.to(socket.id).emit('initGame', cache);
-            socketQueue.push(socket.id);
-        }, 1000);
-    } else {
-        socketQueue.push(socket.id);
 
-    }
+    socket.on("credentials",(msg)=>{
 
-    // console.log(cache)
-    console.log('new client connected');
-    //build room in a timely fashioon
-    //keep track of when the first person joibned the room
-    //attempt to cap wait time until a game starts
-    //as time goes on, required game size to start should get smaller
-    if (LoadBeginning === 0){
-        LoadBeginning = Date.now();
-    }
+        const {randomHash} = msg;
+        if(hashUserConnectionDict[randomHash]){
+            socket.emit("credentialsVerified");
+            socket.username = hashUserConnectionDict[randomHash];
+            // delete hashUserConnectionDict[randomHash];
 
-    cache.totalPlayers ++ ;
-    cache.shouldStart = determineStart();
+            const playerId = socket.id;
+            audienceQueue.push(playerId);
 
-    var larry = setInterval(()=>{
-        if(determineStart() && !(alreadyStarted)){
-            cache.shouldStart = determineStart();
-            startGame();
-
-            clearInterval(larry);
+            console.log('user ',socket.username,'connected')
         }
-    }, 200);
 
-    socket.emit('you', [socket.id, playerIndex]);
-    playerIndex = findNextPlayerId(); 
 
-    socket.on('uploadplayervector', function(msg)
-    {
+    });
+
+
+    
+
+    socket.on('playermove', function(msg) {
         //TODO: add a function to make sure ppl dont edit other folks locations
-        cache.players[msg.index] = msg;
-        // console.log(cache)
+        let id = socket.id;
+        try{
+            if (players[id].canmove) {
 
+                players[id].canmove = false;
+
+                const { rotation, kicking } = msg;
+                players[id].rotation = rotation;
+                players[id].kicking = kicking;
+                playerMovementQueue.push(id);
+            }
+        }catch(err){
+            console.log(err);
+        }
+        
     });
 
     socket.on('disconnect', function()
-    {
-        console.log(socket.id);
-        socketQueue.splice(socketQueue.indexOf(socket.id, 1));
-        if (socketQueue.length < 1) {
-            clearInterval(tony);
-            alreadyStarted = false;
-            cache.shouldStart = false;
-        }
-        for (var i = 0; i < cache.players.length; i++){
-            if (cache.players[i].id === socket.id){
-                var index = i;
-                cache.players[i] = Object.assign({}, {
-       				currentX : -200,
-			        currentY : -200,
-			        rotation : 0,
-			        right : 0,
-			        down : 0,
-			        id : 'disconnected',
-			        index : index
-    			});
-
-    			console.log(cache.players[i]);
-            }
-        }
-        console.log(cache.players);
+    {   
+        disconnectedPlayers.push(socket.id);
     });
 
 });
 
+const addPlayerFromQueue = (playerId)=>{
+    const playerTeam = teamToggle;
+
+    // toggle team for next person who joins
+    teamToggle = (teamToggle++) % 2;
+
+    const newplayer = new Player(playerTeam, playerId);
+    players[playerId] = newplayer;
+    activePlayers.push(playerId);
+    io.to(playerId).emit('you', { playerId });
+    console.log('added new player to game', playerId);
+
+    if (gameStatus === status.active) {
+        console.log('sending active game data to user');
+        playersWhoNeedInitialData.push(playerId);
+    }
+};
 
 
+const moveThings = () => {
 
-http.listen(port, () => 
-{
-    console.log(`Game Instance Server running on port ${port}`);
-});
-
-const ballGoalCollisionDetect = function ()
-{
-    var ball = cache.ballLoc;
-    if (ball.cy > 250 && ball.cy < 400){
-        if (ball.cx <= 55){
-            cache.score.teamOne ++;
-            ball.cx = 600;
-            ball.cy = 325;
-            ball.dx = 0;
-            ball.dy = 0; 
-            //add invulnerability until ppl on the right sides
-            return true;
-        } else if (ball.cx >= 1145){
-            cache.score.teamTwo ++;
-            ball.cx = 600;
-            ball.cy = 325;
-            ball.dx = 0;
-            ball.dy = 0; 
-            //add invulnerability until ppl on the right sides
-            return true;
+    ball.move();
+    for (let id of playerMovementQueue) {
+        if (players[id]) {
+            players[id].move();
         }
-    }
-    return false;
-};
-
-const ballWallCollisionDetect = function () 
-{
-    var ball = cache.ballLoc;
-    if (ball.cy < 0 ){
-        ball.dy = 0 - ball.dy;
-        ball.cy = 0;
-    }
-    if (ball.cy > 640){
-        ball.dy = 0 - ball.dy;
-        ball.cy = 640;
-    }
-    if (ball.cx < 55){
-        ball.dx = 0 - ball.dx;
-        ball.cx = 55;
-    }
-    if (ball.cx > 1145){
-        ball.dx = 0 - ball.dx;
-        ball.cx = 1145;
+        playerMovementQueue = [];
     }
 };
 
-const catHeadBallCollisionDetect = function (playerVector, hitRadius)
-{
-    const ball = cache.ballLoc;
-    const hitBoxMap = {
-        0   : [50,45],
-        45  : [56,48],
-        90  : [60,55],
-        135 : [56,58],
-        180 : [50,62],
-        225 : [44,58],
-        270 : [40,55],
-        315 : [44,48],
-    };
-    const centerX = playerVector.currentX + hitBoxMap[playerVector.rotation][0];
-    const centerY = playerVector.currentY + hitBoxMap[playerVector.rotation][1];
-    const ballCenterX = ball.cx + 5;
-    const ballCenterY = ball.cy + 5;
+const handleCollisions = () => {
+    // check for ball collisions
 
-    const ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - centerX), 2) + Math.pow((ballCenterY - centerY),2));
-	
-    if (ballCenterDelta < hitRadius) {
-        ball.dx += (1.05 * (playerVector.right) - ball.dx);
-        ball.dy += (1.05 * (playerVector.down)  - ball.dy);
-
-        if(playerVector.spacePressed){
-            generateKick(playerVector);
-        }
-    }
-};
-
-const catBodyCollisionDetect = function (playerVector, hitRadius)
-{
-    const catCenterX = 50 + playerVector.currentX;
-    const catCenterY = 50 + playerVector.currentY;
-    const ball = cache.ballLoc;
-    const ballCenterX = ball.cx + 5;
-    const ballCenterY = ball.cy + 5;
-
-    const ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - catCenterX), 2) + Math.pow((ballCenterY - catCenterY),2));
-
-    if (ballCenterDelta < hitRadius) {
-        ball.dx += (1.1 * (playerVector.right) - ball.dx);
-        ball.dy += (1.1 * (playerVector.down)  - ball.dy);
-    }
-};
-
-const generateKick = function (playerVector)
-{
-    const ball = cache.ballLoc;
-    const map = {
-	   0   : [0,-.502],
-        45  : [.502,-.502],
-        90  : [.502,0],
-        135 : [.502,.502],
-        180 : [0,.502],
-        225 : [-.502,.502],
-        270 : [-.502,0],
-        315 : [-.502,-.502]
-    };
-    const xdiff = (Math.floor(Math.random() * 300) - 150) / 1000;
-    const ydiff = (Math.floor(Math.random() * 300) - 150) / 1000;
-    const array = map[playerVector.rotation];
-
-    array[0] += xdiff;
-    array[1] += ydiff;
-    ball.cx += (5 * array[0]);
-    ball.cy += (5 * array[1]);
-    ball.dx = array[0];
-    ball.dy = array[1];
-};
-
-const moveTheBall = function () 
-{
-    const ball = cache.ballLoc;
-    const timeDelta = (thisTime - lastTime);
-    ball.cx += ball.dx * timeDelta;
-    ball.cy += ball.dy * timeDelta;
-    console.log(cache.ballLoc);
-    //friction on y axis
-    if (Math.abs(ball.dy) > 0.02){
-        if (ball.dy > 0){
-            ball.dy -= .0021;
-        } else {
-            ball.dy += .0021;
-        }
-    } else {
-        ball.dy = 0;
+    
+    // check for head collisions
+    // array of players
+    const currentPlayers = activePlayers.map(id=>players[id]);
+    for (let player of currentPlayers) {
+        ball.catHeadCollides(player);
     }
 
-    //friction on y axis
-    if (Math.abs(ball.dx) > 0.02){
-        if (ball.dx > 0){
-            ball.dx -= .0021;
-        } else {
-            ball.dx += .0021;
-        }
-    } else {
-        ball.dx = 0;
-    }	
-
-    ballGoalCollisionDetect();
-    ballWallCollisionDetect();
-    //gotta 'strapolate because we only ticking at like 30hz
-    //and there's a decent chance the ball will pass through people who respond slowly
-    cache.players.forEach((vector) => 
-    {
-        // catHeadBallCollisionDetect(vector, 11);
-        // catBodyCollisionDetect(vector, 13);
-        const predictionVector = extrapolatePlayerVector(vector);
-        catHeadBallCollisionDetect(predictionVector, 13);
-        catBodyCollisionDetect(predictionVector, 11);
-    });
-};
-
-const determineStart = function () 
-{	console.log(socketQueue.length);
-    return (socketQueue.length >= 1);
-};
-
-const extrapolatePlayerVector = function (playerVector)
-{
-    const timeSinceLastUpdate = (Date.now() - playerVector.updateTime);
-    const newVector = Object.assign({}, playerVector);
-    newVector.currentX += (newVector.right * timeSinceLastUpdate);
-    newVector.currenyY += (newVector.down  * timeSinceLastUpdate);
-    return newVector;
-};
-
-const findNextPlayerId = function (){
-    for (let i = 0; i < cache.players.length; i ++){
-        if (cache.players[i].id === 'disconnected'){
-            return i;
-        }
+    // check for body collisions
+    for (let player of currentPlayers) {
+        ball.catHeadCollides(player);
     }
-    return cache.players.length;
+
+    // check for goals
+    const teamScored = ball.isGoal(); // false, 1, 2
+    if (teamScored) {
+        score[teamScored]++;
+        ball.reset();
+    }
+    // check for wall bounce on ball last, to prevent boundry errors
+    ball.handleWallBounce();
+
+
+    // check for player out of bounds issues
+    for (let player of currentPlayers){
+        player && player.handleCollisions();
+    }
+
 };
+
+const lockPlayers = () => {
+    try{
+        activePlayers.forEach(id => {
+            players[id].canmove = false;
+        });
+    }catch(err){console.log(err);}
+    
+};
+
+const freePlayers = () => {
+   
+    try {
+        activePlayers.forEach(id => {
+            players[id].canmove = true;
+        });
+    } catch (err) { console.log(err); }
+    
+};
+
 
 const startGame = function () 
-{
-    //on game should start, emit init game event, 
-    //which should trigger DOM build for subcavnases on each of thye connected clients
-    io.of('/').emit('initGame', cache);
+{   
+    console.log('Waiting to start game');
+    gameStatus = status.active;
+    ball = new Ball();
+    const data = minify();
+    console.log('sending init data');
+    io.of('/').emit('initGame', data);
+
     var startWait = Date.now();
+    
     while (Date.now() - startWait < 2000){
-        var wait = true;
-        console.log('waiting');
+        continue;
+    }
+    console.log('Started New Game');
+    
+   
+};
+
+const checkForEnd = ()=>{
+
+    if (score[1] === winningGoalCount)
+    {
+        clearInterval(serverTick);
+        io.emit('won', 1);
+    }
+    
+    else if (score[2] === winningGoalCount){
+        clearInterval(serverTick);
+        io.emit('won',2);
     }
 
-    alreadyStarted = true;
-    console.log('starting New Game');
-    cache.gameStartTime = Date.now();
-    countdown = 10000;
-    leniency = 5000;
-
-    //establish server ticking
-    tony = setInterval(()=>
-    {
-        lastTime = thisTime;
-        thisTime = Date.now();
-        moveTheBall();
-        console.log(cache.players.length);
-        cache.officialServerTime = Date.now();
-        let next = socketQueue.shift();
-        io.to(next).emit('cache', cache);
-        socketQueue.push(next);
-    }, 30);	
 };
+
+const checkForDisconnects = () => {
+    while(disconnectedPlayers.length>0){
+        const id = disconnectedPlayers.pop();
+        
+        console.log('disconnecting', id);
+        activePlayers.splice(activePlayers.indexOf(id), 1 );
+        delete playerMovementQueue[id];
+        delete players[id];
+        
+        io.to('/').emit('removePlayer', id);
+    }
+};
+
+const addWaitingPlayers = ()=>{
+    // just adds one for now if there's room
+    if (audienceQueue.length>0 && activePlayers.length<maxnumplayers){
+        const id = audienceQueue.pop();
+        addPlayerFromQueue(id);
+    }
+};
+ 
+const gameLoop = () => setInterval(() => {
+    checkForDisconnects();
+    if(gameStatus === status.active){
+        lockPlayers();
+        moveThings();
+        handleCollisions();
+        checkForEnd();
+
+        const data = minify();
+        io.of('/').emit('sync', data);
+
+        while (playersWhoNeedInitialData.length > 0) {
+            const id = playersWhoNeedInitialData.pop();
+            io.to(id).emit('initGame', data);
+        }
+        freePlayers();
+
+    } else if (gameStatus === status.waitingForPlayers){
+        if(activePlayers.length>=minnumplayers){
+            startGame();
+        }
+    }
+    
+    
+    addWaitingPlayers();
+
+}, TICK);
+
+
+const serverLog = ()=>setInterval(()=>{
+    const now = Date.now();
+    console.log(now, 'Server Status', gameStatus, 'Players', activePlayers.length, 'Audience', audienceQueue.length);
+}, 5000);
+
+
+serverTick = gameLoop();
+logTick = serverLog();
+
+
+http.listen(port, () => {
+    console.log(`Game Instance Server running on port ${port}`);
+});

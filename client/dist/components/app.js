@@ -1,6 +1,7 @@
 angular.module('app')
 
-    .controller('appCtrl', function (auth, $http, $scope){
+    .controller('appCtrl', function (auth, $http, $scope, $window){
+
 
         this.showLoginForm = false;
         this.showSignUpForm = false;
@@ -9,6 +10,13 @@ angular.module('app')
         this.showLoginButton = true;
         this.showSignUpButton = true;
         this.showLeaderboard = false;
+        this.user = null;
+
+        this.$onInit = function () {
+            this.verifyLogin();
+        };
+
+        this.socket = io.connect('http://localhost:1337');
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -43,14 +51,14 @@ angular.module('app')
         };
 
         this.toggleLoaded = () => {
-            console.log($scope)
+            console.log($scope);
             this.loaded = !this.loaded;
-            console.log(this.loaded)
-            console.log(this)
-            $scope.$digest()
-        }
+            console.log(this.loaded);
+            console.log(this);
+            $scope.$digest();
+        };
 
-        this.toggleLoaded = this.toggleLoaded.bind(this)
+        this.toggleLoaded = this.toggleLoaded.bind(this);
 
         this.leaderboardInfo;
         this.submitGetRequest = false;
@@ -68,6 +76,22 @@ angular.module('app')
                 });
             }
         };
+
+        this.verifyLogin = () => {
+            $http({
+                method: 'GET',
+                url: '/api/verify'
+            })
+                .then(response => {
+                    if (response.data) {
+                        this.user = response.data;
+                        this.toggle();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        };
         
         // This sends info to server that someone is logging out
         this.handleLogOut = () => {
@@ -76,6 +100,7 @@ angular.module('app')
                 url: '/api/logout'
             }).then((response) => {
                 console.log(response);
+                $window.location.reload();
             }, (error) => {
                 console.log(error);
             });
@@ -86,20 +111,24 @@ angular.module('app')
 
         this.loaded = false;
 
-
+        this.randomHash = null;
+        const self = this;
 
         this.handleJoinGame = () => {
             console.log('inside join game function');
-            this.socket = io.connect('http://localhost:1337')   
-
+            
+            
             $http({
                 method: 'GET',
                 url: 'api/joingame'
             }).then((response) => {
                 console.log(response);
                 if (response.data) {
+                    const {randomHash} = response.data;
+                    console.log(randomHash);
+                    self.randomHash = randomHash;
+                    // Retrieve
                     this.loadPage = true;
-
                 } else {
                     this.notLoggedIn = true;
                 }

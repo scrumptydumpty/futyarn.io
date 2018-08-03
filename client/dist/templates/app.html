@@ -52,24 +52,24 @@
             </div>
           </div>
         <div>
-           <div ng-if="$ctrl.showLoginButton">  
+           <div ng-if="!$ctrl.user">  
              <input class="btn" type="button" value="Login" ng-click="$ctrl.toggleLoginForm()"/>
                <div ng-if="$ctrl.showLoginForm">
                  <log-in toggle="$ctrl.toggle"/>
                </div>
            </div>
-           <div ng-if="$ctrl.showLogOut">
-             <input class="btn" type="button" value="Logout" ng-click="$ctrl.toggle(); $ctrl.handleLogOut();"/>
+           <div ng-if="$ctrl.user">
+             <input class="btn" type="button" value="Logout" ng-click="$ctrl.handleLogOut();"/>
            </div>
         </div>
-        <div ng-if="$ctrl.showSignUpButton"> 
-          <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
+          <div ng-if="!$ctrl.user"> 
+            <input class="btn" type="button" value="Sign Up" ng-click="$ctrl.toggleSignUpForm()"/>
              <div ng-if="$ctrl.showSignUpForm">
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
              </div>
         </div>
         <div> 
-        <form action="http://localhost:1337">
+        <form >
           <input class="btn" type="submit" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
         </form>
           <div ng-if="$ctrl.notLoggedIn">
@@ -81,13 +81,11 @@
   </div>
 </div>
 <div ng-if="$ctrl.loadPage">
-    
     <div ng-hide="$ctrl.loaded">
-      <loading socket="$ctrl.socket" toggle-loaded="$ctrl.toggleLoaded" loaded="$ctrl.loaded"/>
+      <loading socket="$ctrl.socket" toggle-loaded="$ctrl.toggleLoaded" random-hash="$ctrl.randomHash" loaded="$ctrl.loaded"/>
     </div>
-    <div ng-show="$ctrl.loaded">
-      <!-- <gamecanvas teamoneimg="$ctrl.catImageOne" teamtwoimg=
-      "$ctrl.catImageTwo" socket="$ctrl.socket" cache="$ctrl.localCache" initcache="$ctrl.initcache" /> -->
+    <div  ng-show="$ctrl.loaded">
+      <gamecanvas socket="$ctrl.socket"/>
     </div>
     <!-- <game ng-hide="$ctrl.notloaded" socket= "$ctrl.socket"/>  -->
 </div>

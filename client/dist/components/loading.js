@@ -2,7 +2,7 @@ angular.module('app')
     .controller('loading', function() {
 
         //refactor in Angular directive
-
+        this.socket = io.connect('http://localhost:1337');
         const canvas = document.getElementById('load-page');
         // Sets width and height of canvas to take up entire screen
         canvas.width = window.innerWidth;
@@ -38,6 +38,8 @@ angular.module('app')
 
             init();
         });
+
+
 
         // Randomize the color that is generated for each moving particle
         function randomColor(colors) {
@@ -128,9 +130,20 @@ angular.module('app')
                 ctrl.socket.on('initGame',() => {
                     ctrl.toggleLoaded()
                     console.log('triggered')
-                    console.log(ctrl.loaded)
-                    console.log(ctrl)
                 })
+
+
+        
+                var shouldSendCredentials = setInterval(() => {
+                    console.log('submitting random hash',ctrl.randomHash)
+                    ctrl.socket.emit('credentials', { randomHash: ctrl.randomHash });
+                }, 500);
+
+                ctrl.socket.on('credentialsVerified', () => {
+                    clearInterval(shouldSendCredentials);
+                    console.log('verified credentials!');
+                });
+
             }
         }
     })
@@ -138,6 +151,7 @@ angular.module('app')
         bindings : {
             socket : '=',
             toggleLoaded : '=',
+            randomHash: '=',
             loaded : '='
         },
         controller: 'loading',

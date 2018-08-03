@@ -1,9 +1,11 @@
 <div>
-<!-- <input type="button" class="submit" value="Login with Google!" ng-click="$ctrl.handleGoogleLogin()"/>
+  <form action="http://localhost:3000/api/login/google" method="GET">
+    <button class="submit" type="submit">Login with Google</button>
+  </form>
 <div>
   OR
 </div> -->
-<form ng-submit="$ctrl.handleLogin(); $ctrl.toggle();">
+<form ng-submit="$ctrl.handleLogin();">
   <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
   <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
   <input type="submit" class="submit" value="Log In!"/>
