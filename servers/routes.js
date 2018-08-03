@@ -256,19 +256,19 @@ router.get('/api/userinfo', (req, res) => {
 
 // contact game server to join a new game
 router.get('/api/joingame', (req, res, next) => {
-    const {user} = req.user;
-       if ( !user ) {
-           console.log('user not logged in');
-           res.send(false);
-       } else {
-           // redirect?
+    const {user} = req;
+    if ( !user ) {
+        console.log('user not logged in');
+        res.send(false);
+    } else {
+        // redirect?
            
-           const user_id = user.user_id
-           const randomHash = user_id+'__'+Math.floor(Math.random()*1000000000);
-           hashUserConnectionDict[randomHash] = user_id;
-            res.send({randomHash});
+        const user_id = user.user_id;
+        const randomHash = user_id+'__'+Math.floor(Math.random()*1000000000);
+        hashUserConnectionDict[randomHash] = user_id;
+        res.send({randomHash});
             
-     //   }
+    }
 });
 
 // receive game results from game server and post to db
