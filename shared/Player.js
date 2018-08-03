@@ -48,16 +48,16 @@ class Player {
     handleCollisions(){
 
         // left
-        if (this.x < 0){
-            this.x = 0;
+        if (this.x < -20){
+            this.x =-20;
         }
         // right
         if(this.x > (WIDTH - 80)) {
             this.x = WIDTH-80;
         }
         // top
-        if (this.y < -10){
-            this.y = -10;
+        if (this.y < -20){
+            this.y = -20;
         }
         // bottom
         if(this.y > (HEIGHT - 80)) {
