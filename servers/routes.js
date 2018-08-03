@@ -256,7 +256,7 @@ router.get('/api/userinfo', (req, res) => {
 
 // contact game server to join a new game
 router.get('/api/joingame', (req, res, next) => {
-    const {user} = req.user;
+    const {user} = req;
        if ( !user ) {
            console.log('user not logged in');
            res.send(false);
