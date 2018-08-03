@@ -1,5 +1,5 @@
 angular.module('app')
-    .service('auth', function($http) {
+    .service('auth', function($http, $window) {
         this.login = function(username, password) {
             var obj = {
                 username: username,
@@ -7,6 +7,7 @@ angular.module('app')
             };
             $http.post('/api/login', obj)
                 .then(function({data}) {
+                    $window.location.reload();
                     console.log(data);
                 })
                 .catch(function(err) {

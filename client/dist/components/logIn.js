@@ -6,7 +6,6 @@ angular
     // Passes username and password from text fields into service function in services file
     this.handleLogin = () => {
       auth.login(this.username, this.password);
-      $window.location.reload();
     };
 
     // This is code that can be uncommented for a google auth button
