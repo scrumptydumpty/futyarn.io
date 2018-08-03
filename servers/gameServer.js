@@ -47,17 +47,17 @@ const minify = () => {
 io.on('connection', function(socket)
 {
 
-    socket.on("credentials",(msg)=>{
+    socket.on('credentials',(msg)=>{
 
         const {randomHash} = msg;
         if(hashUserConnectionDict[randomHash]){
-            socket.emit("credentialsVerified");
-            socket.username = hashUserConnectionDict[randomHash];
+            socket.emit('credentialsVerified');
+            socket.user_id = hashUserConnectionDict[randomHash];
             // delete hashUserConnectionDict[randomHash];
             const playerId = socket.id;
             audienceQueue.push(playerId);
 
-            console.log('user ',socket.username,'connected')
+            console.log('user ', socket.user_id,'connected');
         }
     });
 
@@ -215,27 +215,27 @@ const handleWin = ()=> {
 
     // disconnect all users
     Object.keys(io.sockets.sockets).forEach(function(s) {
-        console.log(s)
-        console.log('NOT WORKING!!!')
-      s.disconnect(true);
+        console.log(s);
+        console.log('NOT WORKING!!!');
+        s.disconnect(true);
     });
 
     gameStatus = status.waitingForPlayers;
     computingGameLoop = false;
     
-}
+};
 
 const checkForEnd = ()=>{
 
     if (score[1] === winningGoalCount)
-    {   console.log('team 1 won!')
+    {   console.log('team 1 won!');
         io.emit('won', 1);
         gameStatus = status.gameWon;
        
     }
     
     else if (score[2] === winningGoalCount){
-        console.log("team 2 won!");
+        console.log('team 2 won!');
         io.emit('won',2);
         gameStatus = status.gameWon;
     }
@@ -277,7 +277,7 @@ const gameLoop = () => setInterval(() => {
         checkForEnd();
 
         if(gameStatus === status.gameWon){
-            handleWin()
+            handleWin();
             return;
         }
 
