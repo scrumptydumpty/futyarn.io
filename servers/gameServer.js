@@ -95,7 +95,7 @@ const addPlayerFromQueue = (playerId)=>{
     const playerTeam = teamToggle;
 
     // toggle team for next person who joins
-    teamToggle = (teamToggle++) % 2;
+    teamToggle = (teamToggle+1) % 2;
 
     const newplayer = new Player(playerTeam, playerId);
     players[playerId] = newplayer;
