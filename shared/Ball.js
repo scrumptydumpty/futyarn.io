@@ -33,14 +33,15 @@ class Ball {
         var ballCenterX = this.x + 5;
         var ballCenterY = this.y + 5;
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
-
-        const facingRight = player.rotation < 90 || player.rotation > 270 ? SPEED : -SPEED;
-        const facingDown = player.rotation < 360 && player.rotation > 180 ? SPEED : -SPEED;
+        
+        const playerDx = Math.cos(player.rotation * Math.PI / 180) * SPEED;
+        const playerDy = -Math.sin(player.rotation * Math.PI / 180) * SPEED;
+       
 
         if(ballCenterDelta < 11){
            
-            this.dx += 1.05 * facingRight - this.dx;
-            this.dy += 1.05 * facingDown - this.dy;
+            this.dx += 1.05 * playerDx - this.dx;
+            this.dy += 1.05 * playerDy - this.dy;
             
             if (player.kicking) {
                 
@@ -74,10 +75,10 @@ class Ball {
 
         if (ballCenterDelta < 12){
       
-            const facingRight = player.rotation < 90 || player.rotation > 270 ? SPEED : -SPEED;
-            const facingDown =  player.rotation < 360 && player.rotation > 180 ? SPEED : -SPEED;
-            this.dx += (1.1 * (facingRight) - this.dx);
-            this.dy += (1.1 * (facingDown) - this.dy);
+            const playerDx = Math.cos(player.rotation * Math.PI / 180) * SPEED;
+            const playerDy = -Math.sin(player.rotation * Math.PI / 180) * SPEED;
+            this.dx += 1.1 * playerDx - this.dx;
+            this.dy += 1.1 * playerDy - this.dy;
         }
     }
 
