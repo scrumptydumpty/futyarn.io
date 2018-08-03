@@ -2,7 +2,7 @@ angular.module('app')
     .controller('loading', function() {
 
         //refactor in Angular directive
-        this.socket = io.connect('http://localhost:1337');
+        
         const canvas = document.getElementById('load-page');
         // Sets width and height of canvas to take up entire screen
         canvas.width = window.innerWidth;
@@ -121,21 +121,23 @@ angular.module('app')
     .directive('gameLauncher', function()
     {
         return {
-            restrict : "A",
+            restrict : 'A',
 
             link : (scope, element, attrs, controller) =>
             {
-                var ctrl = scope.$ctrl
-                console.log(ctrl.loaded)
+                var ctrl = scope.$ctrl;
+                console.log(ctrl.loaded);
+                ctrl.socket = io.connect('http://localhost:1337');
                 ctrl.socket.on('initGame',() => {
-                    ctrl.toggleLoaded()
-                    console.log('triggered')
-                })
+                    ctrl.toggleLoaded();
+                    
+                    console.log('triggered');
+                });
 
 
         
                 var shouldSendCredentials = setInterval(() => {
-                    console.log('submitting random hash',ctrl.randomHash)
+                    console.log('submitting random hash',ctrl.randomHash);
                     ctrl.socket.emit('credentials', { randomHash: ctrl.randomHash });
                 }, 500);
 
@@ -145,7 +147,7 @@ angular.module('app')
                 });
 
             }
-        }
+        };
     })
     .component('loading', {
         bindings : {

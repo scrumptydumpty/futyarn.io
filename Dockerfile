@@ -12,6 +12,6 @@ RUN npm install
 COPY . .
 
 # our apps port
-EXPOSE 1337
-
-CMD ["npm","run","start-game"]
+EXPOSE 3000
+CMD ["npm","run","game-dev"]
+CMD ["npm","run","start-routing"]
