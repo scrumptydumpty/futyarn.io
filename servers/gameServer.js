@@ -10,18 +10,20 @@ hashUserConnectionDict['a'] = 'a';
 var port = 1337;
 
 // GAME STATE LIVES HERE
-const score = {1:0, 2:0};
+let score = {1:0, 2:0};
 let maxnumplayers = 4;
 let minnumplayers = 1;
 let winningGoalCount = 1;
 let ball = null;
+let computingGameLoop = false; //prevent one loop from running over another 
 let players = {}; // player objects
 let gameStatus = status.waitingForPlayers;
-const activePlayers = [];
-const audienceQueue = [];
-const disconnectedPlayers = [];
-const playersWhoNeedInitialData = [];
+let activePlayers = [];
+let audienceQueue = [];
+let disconnectedPlayers = [];
+let playersWhoNeedInitialData = [];
 let playerMovementQueue = [];
+
 
 // server vars
 let serverTick; // interval that clicks every TICK ms (200 default);
@@ -52,14 +54,11 @@ io.on('connection', function(socket)
             socket.emit("credentialsVerified");
             socket.username = hashUserConnectionDict[randomHash];
             // delete hashUserConnectionDict[randomHash];
-
             const playerId = socket.id;
             audienceQueue.push(playerId);
 
             console.log('user ',socket.username,'connected')
         }
-
-
     });
 
 
@@ -193,17 +192,52 @@ const startGame = function ()
    
 };
 
+const handleWin = ()=> {
+    
+
+    winningTeam = score[0]>score[1]? 1 : 2;
+
+
+    // reset score
+    
+    
+    //clear queues and game settings
+    activePlayers = [];
+    audienceQueue = [];
+    disconnectedPlayers = [];
+    playersWhoNeedInitialData = [];
+    playerMovementQueue = [];
+    players = {};
+    score = { 0: 0, 1: 0 };
+    teamToggle = 0;
+
+    // send redirect signal
+
+    // disconnect all users
+    Object.keys(io.sockets.sockets).forEach(function(s) {
+        console.log(s)
+        console.log('NOT WORKING!!!')
+      s.disconnect(true);
+    });
+
+    gameStatus = status.waitingForPlayers;
+    computingGameLoop = false;
+    
+}
+
 const checkForEnd = ()=>{
 
     if (score[1] === winningGoalCount)
-    {
-        clearInterval(serverTick);
+    {   console.log('team 1 won!')
         io.emit('won', 1);
+        gameStatus = status.gameWon;
+       
     }
     
     else if (score[2] === winningGoalCount){
-        clearInterval(serverTick);
+        console.log("team 2 won!");
         io.emit('won',2);
+        gameStatus = status.gameWon;
     }
 
 };
@@ -230,12 +264,22 @@ const addWaitingPlayers = ()=>{
 };
  
 const gameLoop = () => setInterval(() => {
+    if(computingGameLoop){
+        return;
+    }
+    computingGameLoop = true;
+
     checkForDisconnects();
     if(gameStatus === status.active){
         lockPlayers();
         moveThings();
         handleCollisions();
         checkForEnd();
+
+        if(gameStatus === status.gameWon){
+            handleWin()
+            return;
+        }
 
         const data = minify();
         io.of('/').emit('sync', data);
@@ -254,7 +298,7 @@ const gameLoop = () => setInterval(() => {
     
     
     addWaitingPlayers();
-
+    computingGameLoop = false;
 }, TICK);
 
 
