@@ -155,7 +155,6 @@ angular
                         console.log(err);
                     }
                 };
-                console.log('in the game canvaseasdfasfd');
                 //iterate through keys pressed, check for true
                 //if the key is pressed, change player vector based on keymap
                 //set depressed keys to zero, unless alternate key is also pressed
@@ -234,7 +233,7 @@ angular
                     const currplayers = [];
                     const { players, score, username} = data;
                     ctrl.score = score;
-                    console.log(score);
+       
                     for (let player of players) {
                         const { rotation, team, id, x, y, user_id, goals } = player;
                         if (!ctrl.players[id]) {
