@@ -2,7 +2,7 @@ const express = require('express');
 const gameInstance = express();
 const http = require('http').createServer(gameInstance);
 const io = require('socket.io')(http);
-const { TICK, status } = require('../shared/gamelogic');
+const { TICK, status, TEAM } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
 const { hashUserConnectionDict } = require('./routes.js');
@@ -12,7 +12,7 @@ var port = 1337;
 
 // GAME STATE LIVES HERE
 let socketIdToUserObject = {};
-let score = {0:0, 1:0};
+let score = {orange:0, black:0};
 let maxnumplayers = 4;
 let minnumplayers = 1;
 let winningGoalCount = 3;
@@ -30,7 +30,7 @@ let playerMovementQueue = [];
 // server vars
 let serverTick; // interval that clicks every TICK ms (200 default);
 let logTick;// interval for console logs
-let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team 1 and 2
+let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team orange and black
 
 const minify = () => {
     // array list of players
@@ -106,7 +106,7 @@ io.on('connection', function(socket)
 });
 
 const addPlayerFromQueue = (socketId)=>{
-    const playerTeam = teamToggle;
+    const playerTeam = teamToggle===TEAM.black? 'black':'orange';
 
     // toggle team for next person who joins
     teamToggle = (teamToggle+1) % 2;
@@ -152,14 +152,14 @@ const handleCollisions = () => {
     }
 
     // check for goals
-    const teamScored = ball.isGoal(); // false, 0 , 1
+    const teamScored = ball.isGoal(); // false, orange , black
     if (teamScored) {
         const playerWhoScoredId = ball.playerLastTouched;
         const playerWhoScored = players[playerWhoScoredId];
         console.log('player', playerWhoScored.username,'scored!');
         console.log(players);
-        console.log(+teamScored, 'teamScored', playerWhoScored.team, 'players team');
-        if (playerWhoScored && +teamScored !== playerWhoScored.team) { // teams are backwards! hacky fix
+        console.log(teamScored, 'teamScored', playerWhoScored.team, 'players team');
+        if (playerWhoScored && teamScored === playerWhoScored.team) { // teams are backwards! hacky fix
             playerWhoScored.goals++;
         }
         score[teamScored]++;
@@ -232,7 +232,7 @@ const handleWin = ()=> {
     playersWhoNeedInitialData = [];
     playerMovementQueue = [];
     players = {};
-    score = { 0: 0, 1: 0 };
+    score = { orange: 0, black: 0 };
     teamToggle = 0;
     console.log('restarting game server');
     gameStatus = status.waitingForPlayers;
@@ -242,9 +242,12 @@ const handleWin = ()=> {
 
 const checkForEnd = ()=>{
 
-    if (score[0] === winningGoalCount) {
+
+    if (score.black === winningGoalCount)
+    {   console.log('team black won');
+        
         activePlayers.forEach((socketId)=>{
-            if (players[socketId].team === 0) {
+            if (players[socketId].team === 'black') {
                 updateUserInfo({
                     user: players[socketId].user_id,
                     wins: 1,
@@ -259,14 +262,16 @@ const checkForEnd = ()=>{
                 },()=>{});
             }
         });
-        console.log('team 1 won!');
-        io.emit('won', 0);
+        console.log('team black won!');
+        io.emit('won', 'black');
+
         gameStatus = status.gameWon;
     }
     
-    else if (score[1] === winningGoalCount){
+
+    else if (score.orange === winningGoalCount){
         activePlayers.forEach((socketId)=>{
-            if (players[socketId].team === 1) {
+            if (players[socketId].team === 'orange') {
                 updateUserInfo({
                     user: players[socketId].user_id,
                     wins: 1,
@@ -281,8 +286,8 @@ const checkForEnd = ()=>{
                 },()=>{});
             }
         });
-        console.log('team 2 won!');
-        io.emit('won',1);
+        console.log('team orange won!');
+        io.emit('won','orange');
         gameStatus = status.gameWon;
     }
 

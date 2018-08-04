@@ -1,15 +1,14 @@
 const { Ball }  = require('../../shared/Ball');
 const { Player } = require('../../shared/Player');
-const { TICK } = require('../../shared/gamelogic');
+const { TICK, TEAM } = require('../../shared/gamelogic');
 
 angular
     .module('app')
     .controller('gamecanvasctrl', function() {
-        this.img1 = new Image();
-        this.img1.src = '/images/BlackCatUp.gif';
-        this.img2 = new Image();
-        this.img2.src = '/images/orangeCatSpriteUp.gif';
-
+        this.blackCatImg = new Image();
+        this.blackCatImg.src = '/images/BlackCatUp.gif';
+        this.orangeCatImg = new Image();
+        this.orangeCatImg.src = '/images/orangeCatSpriteUp.gif';
         this.isLoading = true;
         this.gameLoop = null;
         this.animationLoop = null;
@@ -19,8 +18,8 @@ angular
 
         //map of keycodes to whether or not they're currently pressed
         this.score = {
-            0: 0,
-            1: 0
+            orange: 0,
+            black: 0
         };
         this.keysPressed = {
             65: false, // "A"-key
@@ -83,11 +82,14 @@ angular
                     }
 
                     // check for goals
-                    const teamScored = b.isGoal(); // false, 1, 2
+                    const teamScored = b.isGoal(); // false, 'orange','black'
                     if (teamScored) {
                         ctrl.score[teamScored]++;
                         b.reset();
                     }
+                       
+                    
+                
 
                     // check for wall bounce on ball last, to prevent boundry errors
                     b.handleWallBounce();
@@ -105,7 +107,7 @@ angular
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '40px Arial';
                     ctx.fillStyle = 'white';
-                    ctx.fillText(`${ctrl.score[0]} : ${ctrl.score[1]}`, 561, 40);
+                    ctx.fillText(`${ctrl.score['orange']} : ${ctrl.score['black']}`, 561, 40);
                     ctx.fillRect(50, 0, 4, 650);
                     ctx.fillRect(1146, 0, 4, 650);
                     ctx.fillRect(598, 0, 4, 650);
@@ -207,11 +209,13 @@ angular
                 angular.element(window).on('keydown', keydownHandler);
                 angular.element(window).on('keyup', keyupHandler);
 
-                ctrl.socket.on('won', winner => {
-                    const teamname = winner===1? 'Black' : 'Orange';
+                ctrl.socket.on('won', teamname => {
+                   
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '100px Arial';
-                    ctx.fillText(`Team ${teamname} Won!!!`,120,300);
+
+                    ctx.fillText(`Team ${teamname} Won!!!`,400,300);
+
 
                     clearInterval(ctrl.gameLoop);
                     clearInterval(ctrl.animationLoop);
@@ -230,12 +234,12 @@ angular
                     const currplayers = [];
                     const { players, score, username} = data;
                     ctrl.score = score;
-
+                    console.log(score);
                     for (let player of players) {
                         const { rotation, team, id, x, y, user_id } = player;
                         if (!ctrl.players[id]) {
                             ctrl.players[id] = new Player(team, id, user_id, username);
-                            const img = team === 1 ? ctrl.img1 : ctrl.img2;
+                            const img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;
                             ctrl.players[id].generateCanvas(img);
                         }
 
@@ -272,7 +276,7 @@ angular
                         ctrl.players[id] = new Player(team, id, user_id, username);
                         ctrl.players[id].setPos(x, y, rotation);
 
-                        ctrl.players[id].img = team === 1 ? ctrl.img1 : ctrl.img2;
+                        ctrl.players[id].img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;
 
                         var playercanvas = document.createElement('CANVAS');
                         playercanvas.id = id;
@@ -319,10 +323,10 @@ angular
 
                         ctx.translate(canvas.width / 2, canvas.height / 2);
                         ctx.rotate((spin * Math.PI) / 180);
-                        if (!(ctrl.player.team % 2)) {
-                            ctx.drawImage(ctrl.teamoneimg, 0, 0, 25, 60, -14, -20, 25, 60);
+                        if (!(ctrl.player.team === 'black')) {
+                            ctx.drawImage(ctrl.blackCatImg, 0, 0, 25, 60, -14, -20, 25, 60);
                         } else {
-                            ctx.drawImage(ctrl.teamtwoimg, 0, 0, 25, 60, -14, -20, 25, 60);
+                            ctx.drawImage(ctrl.orangeCatImg, 0, 0, 25, 60, -14, -20, 25, 60);
                         }
                         ctx.rotate(((0 - spin) * Math.PI) / 180);
                         ctx.translate(-canvas.width / 2, -canvas.height / 2);
