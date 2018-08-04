@@ -14,7 +14,7 @@ var port = 1337;
 let socketIdToUserObject = {};
 let score = {orange:0, black:0};
 let maxnumplayers = 4;
-let minnumplayers = 2;
+let minnumplayers = 1;
 let winningGoalCount = 3;
 let ball = null;
 let computingGameLoop = false; //prevent one loop from running over another 
@@ -334,12 +334,14 @@ const gameLoop = () => setInterval(() => {
         }
 
         const data = minify();
-        io.of('/').emit('sync', data);
+        
 
         while (playersWhoNeedInitialData.length > 0) {
             const id = playersWhoNeedInitialData.pop();
+            
             io.to(id).emit('initGame', data);
         }
+        io.of('/').emit('sync', data);
         freePlayers();
 
     } else if (gameStatus === status.waitingForPlayers){
