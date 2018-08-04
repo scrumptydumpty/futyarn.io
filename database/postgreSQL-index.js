@@ -160,7 +160,7 @@ const getUserInfo = (method, identifier, callback) =>
 // FUNCTION FILL_ME_IN
 const updateUserInfo = ({user, wins, losses}, callback) => {
     let userUpdate = `
-    UPDATE player
+    UPDATE players
     SET wins = wins + ${wins}, losses = losses + ${losses} , games_played = games_played + 1
     WHERE user_id = ${user}`;
 

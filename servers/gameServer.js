@@ -6,6 +6,7 @@ const { TICK, status, TEAM } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
 const { hashUserConnectionDict } = require('./routes.js');
+const { updateUserInfo } = require('../database/postgreSQL-index');
 
 var port = 1337;
 
@@ -218,7 +219,7 @@ const startGame = function ()
 const handleWin = ()=> {
     
 
-    winningTeam = score[0]>score[1]? 1 : 2;
+    //winningTeam = score[0]>score[1]? 1 : 2;
 
 
     // reset score
@@ -241,15 +242,51 @@ const handleWin = ()=> {
 
 const checkForEnd = ()=>{
 
+
     if (score.black === winningGoalCount)
     {   console.log('team black won');
+        
+        activePlayers.forEach((socketId)=>{
+            if (players[socketId].team === 'black') {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 1,
+                    losses: 0
+                },()=>{});
+            }
+            else {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 0,
+                    losses: 1
+                },()=>{});
+            }
+        });
+        console.log('team black won!');
         io.emit('won', 'black');
+
         gameStatus = status.gameWon;
-       
     }
     
+
     else if (score.orange === winningGoalCount){
-        console.log('team orange won');
+        activePlayers.forEach((socketId)=>{
+            if (players[socketId].team === 'orange') {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 1,
+                    losses: 0
+                },()=>{});
+            }
+            else {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 0,
+                    losses: 1
+                },()=>{});
+            }
+        });
+        console.log('team orange won!');
         io.emit('won','orange');
         gameStatus = status.gameWon;
     }
