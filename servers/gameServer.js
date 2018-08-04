@@ -157,7 +157,8 @@ const handleCollisions = () => {
         const playerWhoScored = players[playerWhoScoredId];
         console.log('player', playerWhoScored.username,'scored!');
         console.log(players);
-        if (playerWhoScored && +teamScored === playerWhoScored.team) {
+        console.log(+teamScored, 'teamScored', playerWhoScored.team, 'players team');
+        if (playerWhoScored && +teamScored !== playerWhoScored.team) { // teams are backwards! hacky fix
             playerWhoScored.goals++;
         }
         score[teamScored]++;
