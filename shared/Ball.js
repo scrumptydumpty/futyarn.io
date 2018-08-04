@@ -88,9 +88,9 @@ class Ball {
         // returns goal
         if (y > 250 && y < 400) {
             if (x < 55) {
-                return '1';
+                return '0';
             } else if (x > (WIDTH - 55)) {
-                return '2';
+                return '1';
             }
         }
         return false;

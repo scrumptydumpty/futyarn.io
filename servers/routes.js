@@ -86,13 +86,13 @@ passport.use(new LocalStrategy(
 
 // passport middleware to store user_id in session data
 passport.serializeUser((user, done) => {
-    console.log('serializeUser function fired');
+    //console.log('serializeUser function fired');
     done(null, user.user_id);
 });
 
 // passport middleware to retreive user_id from session data and use to find the user in the db
 passport.deserializeUser((id, done) => {
-    console.log('deserilizeUser function fired');
+    //console.log('deserilizeUser function fired');
     db.getUserInfo('id', id, (err, foundUser) => {
         done(null, foundUser);
     });
@@ -215,10 +215,10 @@ router.get('/api/logout', (req, res) => {
 
 router.get('/api/verify', (req, res) => {
     if (req.user) {
-        console.log('user is verified');
+        //console.log('user is verified');
         res.send({ id: req.user.id, username: req.user.username });
     } else {
-        console.log('user is not verified');
+        //console.log('user is not verified');
         res.send(false);
     }
 });

@@ -1,4 +1,4 @@
-<div ng-hide="$ctrl.loadPage">
+<div ng-hide="$ctrl.showGamePage">
     <div><div ng-if="!$ctrl.user">
         <h1 class="section">
           Fútyarn
@@ -68,7 +68,7 @@
               <sign-up togglesignup="$ctrl.toggleSignUpForm"/>
              </div>
         </div>
-        <div> 
+        <div ng-if="$ctrl.user"> 
         <form >
           <input class="btn" type="submit" value="Let's Play!" ng-click="$ctrl.handleJoinGame()">
         </form>
@@ -80,19 +80,14 @@
     </div>
   </div>
 </div>
-<div ng-if="$ctrl.loadPage">
+<div ng-if="$ctrl.showGamePage">
     <div ng-hide="$ctrl.loaded">
       <loading socket="$ctrl.socket" toggle-loaded="$ctrl.toggleLoaded" random-hash="$ctrl.randomHash" loaded="$ctrl.loaded"/>
     </div>
     <div  ng-show="$ctrl.loaded">
-      <gamecanvas socket="$ctrl.socket"/>
+      <gamecanvas loaded="$ctrl.loaded" show-game-page="$ctrl.showGamePage" socket="$ctrl.socket"/>
     </div>
     <!-- <game ng-hide="$ctrl.notloaded" socket= "$ctrl.socket"/>  -->
 </div>
-<!-- 
-<div ng-if="$ctrl.loadPage">
-    <gameClient />
-</div>
 
- -->
     

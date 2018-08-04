@@ -106,7 +106,7 @@ angular.module('app')
         };
         
         this.notLoggedIn = false;
-        this.loadPage = false;
+        this.showGamePage = false;
 
         this.loaded = false;
 
@@ -127,7 +127,7 @@ angular.module('app')
                     console.log(randomHash);
                     self.randomHash = randomHash;
                     // Retrieve
-                    this.loadPage = true;
+                    this.showGamePage = true;
                 } else {
                     this.notLoggedIn = true;
                 }

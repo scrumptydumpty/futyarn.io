@@ -10,7 +10,7 @@ const { hashUserConnectionDict } = require('./routes.js');
 var port = 1337;
 
 // GAME STATE LIVES HERE
-let score = {1:0, 2:0};
+let score = {0:0, 1:0};
 let maxnumplayers = 4;
 let minnumplayers = 1;
 let winningGoalCount = 1;
@@ -44,21 +44,31 @@ const minify = () => {
     return { score, players:miniPlayers, ball:{x,y,dx,dy} };
 };
 
+
+
 io.on('connection', function(socket)
 {
 
     socket.on('credentials',(msg)=>{
-        console.log(hashUserConnectionDict);
+        
         const {randomHash} = msg;
         if(hashUserConnectionDict[randomHash]){
-            socket.emit('credentialsVerified');
             socket.user_id = hashUserConnectionDict[randomHash];
-            // delete hashUserConnectionDict[randomHash];
-            const playerId = socket.id;
-            audienceQueue.push(playerId);
-
-            console.log('user ', socket.user_id,'connected');
+            console.log('user',socket.user_id,'connected to game server');
+            socket.emit('credentialsVerified');
         }
+    }); 
+
+    socket.on('joingame', function () {
+
+        if (!socket.user_id) {
+            return;
+        }
+        const playerId = socket.id;
+        audienceQueue.push(playerId);
+        console.log('user ', socket.user_id, 'joined the game');
+
+
     });
 
 
@@ -101,7 +111,7 @@ const addPlayerFromQueue = (playerId)=>{
     players[playerId] = newplayer;
     activePlayers.push(playerId);
     io.to(playerId).emit('you', { playerId });
-    console.log('added new player to game', playerId);
+    console.log('added new player to game');
 
     if (gameStatus === status.active) {
         console.log('sending active game data to user');
@@ -138,7 +148,7 @@ const handleCollisions = () => {
     }
 
     // check for goals
-    const teamScored = ball.isGoal(); // false, 1, 2
+    const teamScored = ball.isGoal(); // false, 0 , 1
     if (teamScored) {
         score[teamScored]++;
         ball.reset();
@@ -212,13 +222,7 @@ const handleWin = ()=> {
     players = {};
     score = { 0: 0, 1: 0 };
     teamToggle = 0;
-    
-    Object.keys(hashUserConnectionDict).forEach(key=>{
-        delete hashUserConnectionDict[key];
-    });
-
-    
-
+    console.log('restarting game server');
     gameStatus = status.waitingForPlayers;
     computingGameLoop = false;
     
@@ -226,16 +230,16 @@ const handleWin = ()=> {
 
 const checkForEnd = ()=>{
 
-    if (score[1] === winningGoalCount)
+    if (score[0] === winningGoalCount)
     {   console.log('team 1 won!');
-        io.emit('won', 1);
+        io.emit('won', 0);
         gameStatus = status.gameWon;
        
     }
     
-    else if (score[2] === winningGoalCount){
+    else if (score[1] === winningGoalCount){
         console.log('team 2 won!');
-        io.emit('won',2);
+        io.emit('won',1);
         gameStatus = status.gameWon;
     }
 
@@ -308,7 +312,7 @@ const serverLog = ()=>setInterval(()=>{
 
 
 serverTick = gameLoop();
-logTick = serverLog();
+//logTick = serverLog();
 
 
 http.listen(port, () => {
