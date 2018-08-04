@@ -132,7 +132,7 @@ angular.module('app')
             {
                 var ctrl = scope.$ctrl;
                 console.log(ctrl.loaded);
-                ctrl.socket = io.connect();
+                ctrl.socket = io.connect('http://localhost:1337');
                 ctrl.socket.on('initGame',() => {
                     ctrl.toggleLoaded();
                     
