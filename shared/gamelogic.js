@@ -21,6 +21,10 @@ module.exports = {
         active:1,
         gameWon:2,
         abandoned:3
+    },
+    TEAM:{
+        orange:0,
+        black:1
     }
     
 

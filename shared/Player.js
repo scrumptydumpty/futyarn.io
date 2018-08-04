@@ -1,11 +1,11 @@
-const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
+const { TICK, SPEED, WIDTH, HEIGHT } = require('./gamelogic');
 
 class Player {
     constructor(team, id, user_id, username, x,y=200,rotation){
         this.team = team;
         this.id = id;
         if (x === undefined) {
-            x = !team ? 200 : 600; // team 0 on the left, team 1 on the right
+            x = team==='orange' ? 200 : 600; // team orange on the left, team black on the right
         }
         this.x = x;
         this.y = y; 
@@ -18,7 +18,7 @@ class Player {
         this.user_id = user_id;
 
         if(rotation === undefined){
-            rotation = !team? 0 : 180; //team 0 faces right, team 1 faces left on start
+            rotation = team === 'orange' ? 0 : 180; // team orange on the left, team black on the right
         }
         this.rotation = rotation; //degrees
         this.kicking = false;
