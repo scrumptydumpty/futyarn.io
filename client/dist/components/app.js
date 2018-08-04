@@ -63,17 +63,15 @@ angular.module('app')
         this.submitGetRequest = false;
         // This retrieves the top 10 players from the database
         this.handleLeaderboard = () => {
-            if (!this.submitGetRequest) {
-                $http({
-                    method: 'GET',
-                    url: '/api/leaderboards'
-                }).then((response) => {
-                    this.submitGetRequest = true;
-                    this.leaderboardInfo = response.data;
-                }, (error) => {
-                    console.log(error);
-                });
-            }
+            $http({
+                method: 'GET',
+                url: '/api/leaderboards'
+            }).then((response) => {
+                this.submitGetRequest = true;
+                this.leaderboardInfo = response.data;
+            }, (error) => {
+                console.log(error);
+            });
         };
 
         this.verifyLogin = () => {

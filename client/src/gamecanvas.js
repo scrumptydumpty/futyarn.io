@@ -124,6 +124,10 @@ angular
                     ctx.fillStyle = 'white';
                     ctx.fillRect(0, 250, 50, 150);
                     ctx.fillRect(1150, 250, 50, 150);
+                    ctx.fillStyle = 'orange';
+                    ctx.fillRect(45, 250, 5, 150);
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(1150, 250, 5, 150);
                     //scope.$digest();
                     ctrl.ball.draw(ctx);
                     drawPlayers();
