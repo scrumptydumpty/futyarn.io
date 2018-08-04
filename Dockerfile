@@ -13,5 +13,5 @@ COPY . .
 
 # our apps port
 EXPOSE 3000
-CMD ["npm","run","game-dev"]
+
 CMD ["npm","run","start-routing"]
