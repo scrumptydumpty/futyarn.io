@@ -12,8 +12,8 @@ var port = 1337;
 // GAME STATE LIVES HERE
 let score = {0:0, 1:0};
 let maxnumplayers = 4;
-let minnumplayers = 1;
-let winningGoalCount = 1;
+let minnumplayers = 2;
+let winningGoalCount = 3;
 let ball = null;
 let computingGameLoop = false; //prevent one loop from running over another 
 let players = {}; // player objects
@@ -296,6 +296,8 @@ const gameLoop = () => setInterval(() => {
     } else if (gameStatus === status.waitingForPlayers){
         if(activePlayers.length>=minnumplayers){
             startGame();
+        }else{
+            io.emit('connectedcount',activePlayers.length);
         }
     }
     
