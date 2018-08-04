@@ -22,6 +22,7 @@ angular.module('app')
             };
             $http.post('/api/signup', obj)
                 .then(function({data}) {
+                    $window.location.reload();
                     console.log(data);
                 }) 
                 .catch(function(err) {
