@@ -161,7 +161,7 @@ angular.module('app')
                     
 
                 };
-                console.log('in the game canvaseasdfasfd')
+                console.log('in the game canvaseasdfasfd');
                 //iterate through keys pressed, check for true
                 //if the key is pressed, change player vector based on keymap
                 //set depressed keys to zero, unless alternate key is also pressed                    
@@ -218,13 +218,6 @@ angular.module('app')
                 angular.element(window).on('keydown', keydownHandler);
                 angular.element(window).on('keyup', keyupHandler);
                     
-                ctrl.socket.on('removePlayer', data=>{
-                    const {id} = data;
-                    console.log('deleting',id);
-                    delete ctrl.players[id];
-
-                });
-                console.log('randomhash',ctrl.randomHash);
 
                 ctrl.socket.on('sync', (data) => {
                     const currplayers = [];
@@ -252,6 +245,8 @@ angular.module('app')
                             delete ctrl.players[key];
                         }
                     });
+
+                    
 
                     
                 });
@@ -362,7 +357,7 @@ angular.module('app')
     })
     .component('gamecanvas', {
         bindings : {
-           socket:'='
+            socket:'='
         },
         controller: 'gamecanvasctrl',
         templateUrl : './templates/gamecanvas.html'

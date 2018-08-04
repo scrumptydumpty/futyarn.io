@@ -6,7 +6,7 @@ const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
 const { hashUserConnectionDict } = require('./routes.js');
-hashUserConnectionDict['a'] = 'a';
+
 var port = 1337;
 
 // GAME STATE LIVES HERE
@@ -48,7 +48,7 @@ io.on('connection', function(socket)
 {
 
     socket.on('credentials',(msg)=>{
-
+        console.log(hashUserConnectionDict);
         const {randomHash} = msg;
         if(hashUserConnectionDict[randomHash]){
             socket.emit('credentialsVerified');
@@ -86,6 +86,7 @@ io.on('connection', function(socket)
     socket.on('disconnect', function()
     {   
         disconnectedPlayers.push(socket.id);
+
     });
 
 });
@@ -179,8 +180,8 @@ const startGame = function ()
     gameStatus = status.active;
     ball = new Ball();
     const data = minify();
-    console.log('sending init data');
-    io.of('/').emit('initGame', data);
+   
+    
 
     var startWait = Date.now();
     
@@ -188,6 +189,7 @@ const startGame = function ()
         continue;
     }
     console.log('Started New Game');
+    io.of('/').emit('initGame', data);
     
    
 };
@@ -210,15 +212,12 @@ const handleWin = ()=> {
     players = {};
     score = { 0: 0, 1: 0 };
     teamToggle = 0;
-
-    // send redirect signal
-
-    // disconnect all users
-    Object.keys(io.sockets.sockets).forEach(function(s) {
-        console.log(s);
-        console.log('NOT WORKING!!!');
-        s.disconnect(true);
+    
+    Object.keys(hashUserConnectionDict).forEach(key=>{
+        delete hashUserConnectionDict[key];
     });
+
+    
 
     gameStatus = status.waitingForPlayers;
     computingGameLoop = false;
@@ -245,13 +244,10 @@ const checkForEnd = ()=>{
 const checkForDisconnects = () => {
     while(disconnectedPlayers.length>0){
         const id = disconnectedPlayers.pop();
-        
         console.log('disconnecting', id);
         activePlayers.splice(activePlayers.indexOf(id), 1 );
         delete playerMovementQueue[id];
         delete players[id];
-        
-        io.to('/').emit('removePlayer', id);
     }
 };
 
@@ -270,6 +266,9 @@ const gameLoop = () => setInterval(() => {
     computingGameLoop = true;
 
     checkForDisconnects();
+    if(!activePlayers.length){
+        gameStatus = status.waitingForPlayers;
+    }
     if(gameStatus === status.active){
         lockPlayers();
         moveThings();
