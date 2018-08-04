@@ -99,7 +99,10 @@ angular
                     b.handleWallBounce();
 
                     // check for player out of bounds issues
-                    ctrl.players[ctrl.socketId].handleCollisions();
+                    if(ctrl.socketId){
+                        ctrl.players[ctrl.socketId].handleCollisions();
+                    }
+                    
                 };
 
                 //main draw loop (all draw fucntions live in here)
@@ -130,7 +133,7 @@ angular
 
                     if(!ctrl.socketId){
                         
-                        ctx.fillText('Audience Mode', 100, 100);
+                        ctx.fillText('Audience Mode', 300, 100);
                     }
                 };
 
