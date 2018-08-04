@@ -1,7 +1,7 @@
 angular.module('app')
 
     .controller('appCtrl', function (auth, $http, $scope, $window){
-
+        
 
         this.showLoginForm = false;
         this.showSignUpForm = false;
@@ -16,7 +16,6 @@ angular.module('app')
             this.verifyLogin();
         };
 
-        this.socket = io.connect('http://localhost:1337');
 
         this.toggleLoginForm = () => {
             this.showLoginForm = !this.showLoginForm;
@@ -107,7 +106,7 @@ angular.module('app')
         };
         
         this.notLoggedIn = false;
-        this.loadPage = false;
+        this.showGamePage = false;
 
         this.loaded = false;
 
@@ -128,7 +127,7 @@ angular.module('app')
                     console.log(randomHash);
                     self.randomHash = randomHash;
                     // Retrieve
-                    this.loadPage = true;
+                    this.showGamePage = true;
                 } else {
                     this.notLoggedIn = true;
                 }

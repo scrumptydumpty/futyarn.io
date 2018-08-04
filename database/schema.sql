@@ -2,11 +2,11 @@
 -- Explicit schema not necessary since we only have single user (app server)
 -- Use the default Public shema
 
-CREATE DATABASE futyarn.io;
+CREATE DATABASE futyarn;
 
-USE futyarn.io;
+USE futyarn;
 
--- DROP TABLE IF EXISTS players
+DROP TABLE IF EXISTS players
 
 -- Postgres uses SERIAL instead of AUTO_INCREMENT. If using SERIAL, do not have to use INTERGER.
 -- PG does not need FOREIGN KEY property. Using REFERENCES is all that is required.
@@ -25,7 +25,7 @@ CREATE TABLE players (
     CHECK ((wins + losses) = games_played)
 );
 
--- DROP TABLE IF EXISTS games
+DROP TABLE IF EXISTS games
 
 CREATE TABLE games ( 
     game_id                SERIAL PRIMARY KEY,
@@ -43,6 +43,8 @@ CREATE TABLE games (
     losing_team            VARCHAR(10) NOT NULL,
     cat_of_the_game        INTEGER REFERENCES players(user_id)
 );
+
+DROP TABLE IF EXISTS sessions
 
 CREATE TABLE sessions ( 
     session_id             SERIAL PRIMARY KEY,

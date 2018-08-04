@@ -1,18 +1,31 @@
-const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
+const { TICK, SPEED, WIDTH, HEIGHT } = require('./gamelogic');
 
 class Player {
-    constructor(team,id , x = 200,y = 200,rotation = 0){
+    constructor(team, id, user_id, username, x,y=200,rotation){
         this.team = team;
         this.id = id;
+        if (x === undefined) {
+            x = team==='orange' ? 200 : 600; // team orange on the left, team black on the right
+        }
         this.x = x;
-        this.y = y;
+        this.y = y; 
         this.canvas = null; // client side used
         this.img = null; //client side used
+        if(username.length>10){
+            username = username.slice(0,10);
+        }
+        this.username = username;
+        this.user_id = user_id;
+
+        if(rotation === undefined){
+            rotation = team === 'orange' ? 0 : 180; // team orange on the left, team black on the right
+        }
         this.rotation = rotation; //degrees
         this.kicking = false;
         this.canmove = false; // used on server to prevent spam. locked down every TICK
         this.animationFrame = 0;
         this.queuedTransmission = false;
+        this.goals = 0;
         this.lastTransmission = Date.now();
 
     }
@@ -48,16 +61,16 @@ class Player {
     handleCollisions(){
 
         // left
-        if (this.x < 0){
-            this.x = 0;
+        if (this.x < -20){
+            this.x =-20;
         }
         // right
         if(this.x > (WIDTH - 80)) {
             this.x = WIDTH-80;
         }
         // top
-        if (this.y < -10){
-            this.y = -10;
+        if (this.y < -20){
+            this.y = -20;
         }
         // bottom
         if(this.y > (HEIGHT - 80)) {
@@ -111,6 +124,9 @@ class Player {
         playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
         playerctx.drawImage(this.img, 2+(this.animationFrame*29), 0, 25, 60, -14, -20, 25, 60);
         ctx.drawImage(this.canvas, this.x, this.y);
+        ctx.font = '12px Arial';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(this.username,this.x+50,this.y+25);
     }
 }
 

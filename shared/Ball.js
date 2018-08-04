@@ -9,6 +9,7 @@ class Ball {
         this.y = 0;
         this.dx = 0;
         this.dy = .4;
+        this.playerLastTouched = null;
     }
 
     setPos(x,y,dx,dy){
@@ -23,6 +24,7 @@ class Ball {
         this.y = 0;
         this.dx = 0;
         this.dy = .4;
+        this.playerLastTouched = null;
         
     }
 
@@ -39,6 +41,7 @@ class Ball {
        
 
         if(ballCenterDelta < 11){
+            this.playerLastTouched = player.id;
            
             this.dx += 1.05 * playerDx - this.dx;
             this.dy += 1.05 * playerDy - this.dy;
@@ -74,7 +77,7 @@ class Ball {
         var ballCenterDelta = Math.sqrt(Math.pow((ballCenterX - currentCenterX), 2) + Math.pow((ballCenterY - currentCenterY), 2));
 
         if (ballCenterDelta < 12){
-      
+            this.playerLastTouched = player.id;
             const playerDx = Math.cos(player.rotation * Math.PI / 180) * SPEED;
             const playerDy = -Math.sin(player.rotation * Math.PI / 180) * SPEED;
             this.dx += 1.1 * playerDx - this.dx;
@@ -88,9 +91,9 @@ class Ball {
         // returns goal
         if (y > 250 && y < 400) {
             if (x < 55) {
-                return '1';
+                return 'black';
             } else if (x > (WIDTH - 55)) {
-                return '2';
+                return 'orange';
             }
         }
         return false;

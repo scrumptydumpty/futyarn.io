@@ -152,6 +152,16 @@ html {
         -moz-animation:    fade_move_down 4s ease-in-out infinite;
         animation:         fade_move_down 4s ease-in-out infinite;
 }
+/* 
+#maincanvas {
+  margin: 5em auto;
+  text-align: center;
+} */
+
+#gcbox {
+  text-align: center;
+  margin: 5em auto;
+}
 
 
 /*animated scroll arrow animation*/
