@@ -135,7 +135,7 @@ router.use(passport.session());
 // first checks if user is already in db
 // if yes, send back 409 status
 // if no, adds user to db
-router.post('/api/signup', (req, res) => {
+router.post('/api/signup', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     const google_id = '';
@@ -153,15 +153,19 @@ router.post('/api/signup', (req, res) => {
                             console.log('error with user signup');
                         } else {
                             console.log('user signup completed');
-                            res.setStatus = 201;
-                            res.send('user successfully signed up');
+                            next();
                         }
                     });
                 });
             });
         }
     });
-});
+}, passport.authenticate('local', {
+    failureRedirect: '/api/login'
+}), (req,res)=>{
+    res.setStatus = 200;
+    res.send('done');
+} );
 
 
 // authenticates user using passport
