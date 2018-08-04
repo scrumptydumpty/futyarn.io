@@ -35,7 +35,6 @@ html {
     margin:0;
     padding:0;
     color:black;
-    background:rgba(255,255,255,0.3);
     text-align:center;
     padding:50px 80px;
     text-align: justify;
@@ -48,6 +47,7 @@ html {
   table, th, td {
         border: 1px solid black;
         letter-spacing: 5px;
+        background:rgba(255,255,255,0.3);
         text-transform: uppercase;
         color: #111;
         text-align: center;
