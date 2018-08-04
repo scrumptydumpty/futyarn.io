@@ -263,9 +263,9 @@ router.get('/api/joingame', (req, res, next) => {
     } else {
         // redirect?
            
-        const user_id = user.user_id;
+        const {user_id , username} = user;
         const randomHash = user_id+'__'+Math.floor(Math.random()*1000000000);
-        hashUserConnectionDict[randomHash] = user_id;
+        hashUserConnectionDict[randomHash] = {user_id,username};
         res.send({randomHash});
             
     }

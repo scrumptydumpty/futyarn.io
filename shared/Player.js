@@ -1,14 +1,21 @@
 const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
-    constructor(team,id , x = 200,y,rotation){
+    constructor(team, id, user_id, username, x,y=200,rotation){
         this.team = team;
         this.id = id;
+        if (x === undefined) {
+            x = !team ? 200 : 600; // team 0 on the left, team 1 on the right
+        }
         this.x = x;
-        this.y = !team? 200: 600; // team 0 on the left, team 1 on the right
+        this.y = y; 
         this.canvas = null; // client side used
         this.img = null; //client side used
-
+        if(username.length>10){
+            username = username.slice(0,10);
+        }
+        this.username = username;
+        this.user_id = user_id;
 
         if(rotation === undefined){
             rotation = !team? 0 : 180; //team 0 faces right, team 1 faces left on start
@@ -18,6 +25,7 @@ class Player {
         this.canmove = false; // used on server to prevent spam. locked down every TICK
         this.animationFrame = 0;
         this.queuedTransmission = false;
+        this.goals = 0;
         this.lastTransmission = Date.now();
 
     }
@@ -116,6 +124,9 @@ class Player {
         playerctx.rotate(((90 - this.rotation) * Math.PI) / 180);
         playerctx.drawImage(this.img, 2+(this.animationFrame*29), 0, 25, 60, -14, -20, 25, 60);
         ctx.drawImage(this.canvas, this.x, this.y);
+        ctx.font = '12px Arial';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(this.username,this.x+50,this.y+25);
     }
 }
 
