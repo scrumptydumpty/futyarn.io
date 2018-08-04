@@ -14,7 +14,7 @@ var port = 1337;
 let socketIdToUserObject = {};
 let score = {orange:0, black:0};
 let maxnumplayers = 4;
-let minnumplayers = 1;
+let minnumplayers = 2;
 let winningGoalCount = 3;
 let ball = null;
 let computingGameLoop = false; //prevent one loop from running over another 
@@ -36,8 +36,8 @@ const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');
     const miniPlayers = activePlayers.map(id=> players[id]).map(
-        ({ rotation, team, id, x, y, kicking, username, user_id }) => {
-            return { rotation, team, id, x, y, kicking, username, user_id };
+        ({ rotation, team, id, x, y, kicking, username, user_id, goals }) => {
+            return { rotation, team, id, x, y, kicking, username, user_id, goals };
         }
     );
 
