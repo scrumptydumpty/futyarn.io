@@ -296,11 +296,12 @@ const checkForEnd = ()=>{
 
 const checkForDisconnects = () => {
     while(disconnectedPlayers.length>0){
-        const id = disconnectedPlayers.pop();
-        console.log('disconnecting', id);
-        activePlayers.splice(activePlayers.indexOf(id), 1 );
-        delete playerMovementQueue[id];
-        delete players[id];
+        const socketid = disconnectedPlayers.pop();
+        const username = socketIdToUserObject.socketid.username;
+        console.log('disconnecting', username);
+        activePlayers.splice(activePlayers.indexOf(socketid), 1 );
+        delete playerMovementQueue[socketid];
+        delete players[socketid];
     }
 };
 

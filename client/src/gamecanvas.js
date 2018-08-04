@@ -131,16 +131,21 @@ angular
                 };
 
                 const gameLoop = function() {
-                    const keyPressed = Object.keys(ctrl.keysPressed).reduce(
-                        (m, i) => m || ctrl.keysPressed[i],
-                        false
-                    );
-                    if (ctrl.socketId && keyPressed) {
-                        alterPlayer();
-                        ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                    try{
+                        const keyPressed = Object.keys(ctrl.keysPressed).reduce(
+                            (m, i) => m || ctrl.keysPressed[i],
+                            false
+                        );
+                        if (ctrl.socketId && keyPressed) {
+                            alterPlayer();
+                            ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                        }
+                        ctrl.ball.move();
+                        handleCollisions();
+                    }catch(err){
+                        console.log(err);
                     }
-                    ctrl.ball.move();
-                    handleCollisions();
+                    
                 };
 
                 var drawPlayers = function() {
