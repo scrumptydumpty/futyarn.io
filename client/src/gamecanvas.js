@@ -206,7 +206,7 @@ angular
                     const teamname = winner===1? 'Black' : 'Orange';
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '100px Arial';
-                    ctx.fillText(`Team ${teamname} Won!!!`,400,300);
+                    ctx.fillText(`Team ${teamname} Won!!!`,120,300);
 
                     clearInterval(ctrl.gameLoop);
                     clearInterval(ctrl.animationLoop);
@@ -217,7 +217,7 @@ angular
                         ctrl.showGamePage = false;
                         ctrl.loaded = false;
                         scope.$digest();
-                    }, 1000);
+                    }, 3000);
                     
                 });
 
