@@ -6,6 +6,7 @@ const { TICK, status } = require('../shared/gamelogic');
 const { Player } = require('../shared/Player');
 const { Ball } = require('../shared/Ball');
 const { hashUserConnectionDict } = require('./routes.js');
+const { updateUserInfo } = require('../database/postgreSQL-index');
 
 var port = 1337;
 
@@ -218,7 +219,7 @@ const startGame = function ()
 const handleWin = ()=> {
     
 
-    winningTeam = score[0]>score[1]? 1 : 2;
+    //winningTeam = score[0]>score[1]? 1 : 2;
 
 
     // reset score
@@ -241,14 +242,45 @@ const handleWin = ()=> {
 
 const checkForEnd = ()=>{
 
-    if (score[0] === winningGoalCount)
-    {   console.log('team 1 won!');
+    if (score[0] === winningGoalCount) {
+        activePlayers.forEach((socketId)=>{
+            if (players[socketId].team === 0) {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 1,
+                    losses: 0
+                },()=>{});
+            }
+            else {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 0,
+                    losses: 1
+                },()=>{});
+            }
+        });
+        console.log('team 1 won!');
         io.emit('won', 0);
         gameStatus = status.gameWon;
-       
     }
     
     else if (score[1] === winningGoalCount){
+        activePlayers.forEach((socketId)=>{
+            if (players[socketId].team === 1) {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 1,
+                    losses: 0
+                },()=>{});
+            }
+            else {
+                updateUserInfo({
+                    user: players[socketId].user_id,
+                    wins: 0,
+                    losses: 1
+                },()=>{});
+            }
+        });
         console.log('team 2 won!');
         io.emit('won',1);
         gameStatus = status.gameWon;
