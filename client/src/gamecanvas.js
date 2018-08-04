@@ -240,7 +240,7 @@ angular
                     ctrl.score = score;
        
                     for (let player of players) {
-                        const { rotation, team, id, x, y, user_id, goals } = player;
+                        const { rotation, team, id, x, y, user_id, goals, username } = player;
                         if (!ctrl.players[id]) {
                             ctrl.players[id] = new Player(team, id, user_id, username);
                             const img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;
