@@ -1,7 +1,7 @@
 const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
-    constructor(team, id, username, x,y=200,rotation){
+    constructor(team, id, user_id, username, x,y=200,rotation){
         this.team = team;
         this.id = id;
         if (x === undefined) {
@@ -15,6 +15,7 @@ class Player {
             username = username.slice(0,10);
         }
         this.username = username;
+        this.user_id = user_id;
 
         if(rotation === undefined){
             rotation = !team? 0 : 180; //team 0 faces right, team 1 faces left on start
@@ -24,6 +25,7 @@ class Player {
         this.canmove = false; // used on server to prevent spam. locked down every TICK
         this.animationFrame = 0;
         this.queuedTransmission = false;
+        this.goals = 0;
         this.lastTransmission = Date.now();
 
     }

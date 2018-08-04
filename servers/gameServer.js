@@ -10,7 +10,7 @@ const { hashUserConnectionDict } = require('./routes.js');
 var port = 1337;
 
 // GAME STATE LIVES HERE
-let socketIdUsernameDict = {};
+let socketIdToUserObject = {};
 let score = {0:0, 1:0};
 let maxnumplayers = 4;
 let minnumplayers = 1;
@@ -35,8 +35,8 @@ const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');
     const miniPlayers = activePlayers.map(id=> players[id]).map(
-        ({ rotation, team, id, x, y, kicking, username }) => {
-            return { rotation, team, id, x, y, kicking, username };
+        ({ rotation, team, id, x, y, kicking, username, user_id }) => {
+            return { rotation, team, id, x, y, kicking, username, user_id };
         }
     );
 
@@ -53,10 +53,11 @@ io.on('connection', function(socket)
     socket.on('credentials',(msg)=>{
         
         const {randomHash} = msg;
-        if(hashUserConnectionDict[randomHash]){
-            socket.user_id = hashUserConnectionDict[randomHash].user_id;
-            socketIdUsernameDict[socket.id] = hashUserConnectionDict[randomHash].username;
-            console.log('user',socket.user_id,'connected to game server');
+        if (hashUserConnectionDict[randomHash]) {
+            const { username, user_id } = hashUserConnectionDict[randomHash];
+            socket.user_id = user_id;
+            socketIdToUserObject[socket.id] = {username, user_id};
+            console.log('user',username,'connected to game server');
             socket.emit('credentialsVerified');
         }
     }); 
@@ -103,21 +104,21 @@ io.on('connection', function(socket)
 
 });
 
-const addPlayerFromQueue = (playerId)=>{
+const addPlayerFromQueue = (socketId)=>{
     const playerTeam = teamToggle;
 
     // toggle team for next person who joins
     teamToggle = (teamToggle+1) % 2;
-    const username = socketIdUsernameDict[playerId];
-    const newplayer = new Player(playerTeam, playerId, username);
-    players[playerId] = newplayer;
-    activePlayers.push(playerId);
-    io.to(playerId).emit('you', { playerId });
+    const {username, user_id} = socketIdToUserObject[socketId];
+    const newplayer = new Player(playerTeam, socketId, user_id, username);
+    players[socketId] = newplayer;
+    activePlayers.push(socketId);
+    io.to(socketId).emit('you', { socketId });
     console.log('added new player to game');
 
     if (gameStatus === status.active) {
         console.log('sending active game data to user');
-        playersWhoNeedInitialData.push(playerId);
+        playersWhoNeedInitialData.push(socketId);
     }
 };
 
@@ -152,6 +153,13 @@ const handleCollisions = () => {
     // check for goals
     const teamScored = ball.isGoal(); // false, 0 , 1
     if (teamScored) {
+        const playerWhoScoredId = ball.playerLastTouched;
+        const playerWhoScored = players[playerWhoScoredId];
+        console.log('player', playerWhoScored.username,'scored!');
+        console.log(players);
+        if (playerWhoScored && +teamScored === playerWhoScored.team) {
+            playerWhoScored.goals++;
+        }
         score[teamScored]++;
         ball.reset();
     }

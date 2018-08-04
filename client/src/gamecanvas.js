@@ -33,7 +33,7 @@ angular
         //right is a postive or negative number (left neg)
         //down is a positive or negative number (up neg)
         //holder for keypresses
-        this.playerId = null;
+        this.socketId = null;
 
         this.players = {};
 
@@ -93,7 +93,7 @@ angular
                     b.handleWallBounce();
 
                     // check for player out of bounds issues
-                    ctrl.players[ctrl.playerId].handleCollisions();
+                    ctrl.players[ctrl.socketId].handleCollisions();
                 };
 
                 //main draw loop (all draw fucntions live in here)
@@ -122,7 +122,7 @@ angular
                     ctrl.ball.draw(ctx);
                     drawPlayers();
 
-                    if(!ctrl.playerId){
+                    if(!ctrl.socketId){
                         
                         ctx.fillText('Audience Mode', 100, 100);
                     }
@@ -133,9 +133,9 @@ angular
                         (m, i) => m || ctrl.keysPressed[i],
                         false
                     );
-                    if (ctrl.playerId && keyPressed) {
+                    if (ctrl.socketId && keyPressed) {
                         alterPlayer();
-                        ctrl.players[ctrl.playerId].transmit(ctrl.socket);
+                        ctrl.players[ctrl.socketId].transmit(ctrl.socket);
                     }
                     ctrl.ball.move();
                     handleCollisions();
@@ -160,7 +160,7 @@ angular
                 var alterPlayer = function() {
                     const k = ctrl.keysPressed;
 
-                    const p = ctrl.players[ctrl.playerId];
+                    const p = ctrl.players[ctrl.socketId];
                     if (!p) {
                         return;
                     }
@@ -232,9 +232,9 @@ angular
                     ctrl.score = score;
 
                     for (let player of players) {
-                        const { rotation, team, id, x, y } = player;
+                        const { rotation, team, id, x, y, user_id } = player;
                         if (!ctrl.players[id]) {
-                            ctrl.players[id] = new Player(team, id, username);
+                            ctrl.players[id] = new Player(team, id, user_id, username);
                             const img = team === 1 ? ctrl.img1 : ctrl.img2;
                             ctrl.players[id].generateCanvas(img);
                         }
@@ -254,9 +254,9 @@ angular
                 });
 
                 ctrl.socket.on('you', msg => {
-                    const { playerId } = msg;
-                    ctrl.playerId = playerId;
-                    console.log(ctrl.playerId, 'you');
+                    const { socketId } = msg;
+                    ctrl.socketId = socketId;
+                    console.log(ctrl.socketId, 'you');
                 });
 
                 ctrl.socket.on('initGame', data => {
@@ -268,8 +268,8 @@ angular
                     shouldStart = true;
 
                     for (let player of players) {
-                        const { rotation, username, team, id, x, y } = player;
-                        ctrl.players[id] = new Player(team, id,username);
+                        const { rotation, username, team, id, user_id, x, y } = player;
+                        ctrl.players[id] = new Player(team, id, user_id, username);
                         ctrl.players[id].setPos(x, y, rotation);
 
                         ctrl.players[id].img = team === 1 ? ctrl.img1 : ctrl.img2;
