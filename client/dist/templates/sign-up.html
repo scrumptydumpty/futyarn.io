@@ -1,7 +1,14 @@
 <div>
-<form ng-submit="$ctrl.handleSignUp(); $ctrl.togglesignup();">
-  <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
-  <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
-  <input type="submit" class="submit" value="Sign Up!" />
-</form>
+  <div>
+    <form action="/api/login/google" method="GET">
+      <button class="submit" type="submit">Login with Google</button>
+    </form>
+    <div>
+    </div>
+    <div>
+      <form ng-submit="$ctrl.handleSignUp(); $ctrl.togglesignup();">
+        <input class="user-input" type="text" placeholder="username" ng-model="$ctrl.username" />
+        <input class="user-input" type="password" placeholder="password" ng-model="$ctrl.password" />
+        <input type="submit" class="submit" value="Sign Up!" />
+      </form>
 </div>

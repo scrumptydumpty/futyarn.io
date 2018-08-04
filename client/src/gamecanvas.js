@@ -216,7 +216,7 @@ angular
                    
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '100px Arial';
-
+                    ctrl.gameSummaryData.winningTeam = teamname;
                     for (let player in ctrl.players) {
                         let thisGuy = ctrl.players[player];
                         let playerObj = {
@@ -231,7 +231,6 @@ angular
                             ctrl.gameSummaryData.black.push(playerObj);
                         }
                     }
-
                     ctrl.gameOver = true;                    
                     clearInterval(ctrl.gameLoop);
                     clearInterval(ctrl.animationLoop);
@@ -242,7 +241,7 @@ angular
                         ctrl.showGamePage = false;
                         ctrl.loaded = false;
                         scope.$digest();
-                    }, 3000);
+                    }, 4000);
                     
                 });
 

@@ -2,6 +2,11 @@
     <div ng-if="$ctrl.userIsNotLoggedIn">redirect if user does not have a random hash to the login screen!</div>
     <div ng-if="!$ctrl.userIsNotLoggedIn">
         <div ng-if="$ctrl.gameOver">
+            <div>
+                <h1 class="winning-team">
+                    {{$ctrl.gameSummaryData.winningTeam.toUpperCase()}} TEAM WINS!
+                </h1>
+            </div>
             <h2><strong>Game Stats</strong></h2>
               <table>
                 <thead>
