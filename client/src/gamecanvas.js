@@ -135,16 +135,21 @@ angular
                 };
 
                 const gameLoop = function() {
-                    const keyPressed = Object.keys(ctrl.keysPressed).reduce(
-                        (m, i) => m || ctrl.keysPressed[i],
-                        false
-                    );
-                    if (ctrl.socketId && keyPressed) {
-                        alterPlayer();
-                        ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                    try{
+                        const keyPressed = Object.keys(ctrl.keysPressed).reduce(
+                            (m, i) => m || ctrl.keysPressed[i],
+                            false
+                        );
+                        if (ctrl.socketId && keyPressed) {
+                            alterPlayer();
+                            ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                        }
+                        ctrl.ball.move();
+                        handleCollisions();
+                    }catch(err){
+                        console.log(err);
                     }
-                    ctrl.ball.move();
-                    handleCollisions();
+                    
                 };
 
                 var drawPlayers = function() {
@@ -252,7 +257,7 @@ angular
                     ctrl.score = score;
        
                     for (let player of players) {
-                        const { rotation, team, id, x, y, user_id, goals } = player;
+                        const { rotation, team, id, x, y, user_id, goals, username } = player;
                         if (!ctrl.players[id]) {
                             ctrl.players[id] = new Player(team, id, user_id, username);
                             const img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;

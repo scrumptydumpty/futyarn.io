@@ -110,7 +110,7 @@ class Ball {
           
         }
         // returns vertical bounce
-        if (y < 0 || y > (HEIGHT - 10)) {
+        if (y < 10 || y > (HEIGHT - 10)) {
             this.y -= Math.floor( ((2 * this.dy)) * TICK );
             this.dy -= (2 * (this.dy));
          

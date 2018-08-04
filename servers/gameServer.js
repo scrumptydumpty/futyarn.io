@@ -30,7 +30,6 @@ let playerMovementQueue = [];
 // server vars
 let serverTick; // interval that clicks every TICK ms (200 default);
 let logTick;// interval for console logs
-let teamToggle = 0; // swaps back and forth between 0 and 1, used to identify team orange and black
 
 const minify = () => {
     // array list of players
@@ -106,10 +105,20 @@ io.on('connection', function(socket)
 });
 
 const addPlayerFromQueue = (socketId)=>{
-    const playerTeam = teamToggle===TEAM.black? 'black':'orange';
 
-    // toggle team for next person who joins
-    teamToggle = (teamToggle+1) % 2;
+    let blackCount = 0;
+    let orangeCount = 0;
+    activePlayers.forEach(socketId=>{
+        if(players[socketId] && players[socketId].team === 'orange'){
+            orangeCount++;
+        }else{
+            blackCount++;
+        }
+    });
+
+    const playerTeam = orangeCount <= blackCount ? 'orange' : 'black';
+
+    
     const {username, user_id} = socketIdToUserObject[socketId];
     const newplayer = new Player(playerTeam, socketId, user_id, username);
     players[socketId] = newplayer;
@@ -161,7 +170,7 @@ const handleCollisions = () => {
         console.log(teamScored, 'teamScored', playerWhoScored.team, 'players team');
         if (playerWhoScored && teamScored === playerWhoScored.team) { // teams are backwards! hacky fix
             playerWhoScored.goals++;
-            updateUserInfo({user_id: playerWhoScored.user_id, goal:true}, ()=>{});
+            updateUserInfo({user: playerWhoScored.user_id, goal:true}, ()=>{});
         }
         score[teamScored]++;
         ball.reset();
@@ -234,7 +243,7 @@ const handleWin = ()=> {
     playerMovementQueue = [];
     players = {};
     score = { orange: 0, black: 0 };
-    teamToggle = 0;
+   
     console.log('restarting game server');
     gameStatus = status.waitingForPlayers;
     computingGameLoop = false;
@@ -296,11 +305,17 @@ const checkForEnd = ()=>{
 
 const checkForDisconnects = () => {
     while(disconnectedPlayers.length>0){
-        const id = disconnectedPlayers.pop();
-        console.log('disconnecting', id);
-        activePlayers.splice(activePlayers.indexOf(id), 1 );
-        delete playerMovementQueue[id];
-        delete players[id];
+        const socketid = disconnectedPlayers.pop();
+        if (socketIdToUserObject[socketid]) {
+            const username = socketIdToUserObject[socketid].username;
+            console.log('disconnecting', username);
+        }else{
+            console.log('disconnecting non-credentialed connection', socketid);
+        } 
+        
+        activePlayers.splice(activePlayers.indexOf(socketid), 1 );
+        delete playerMovementQueue[socketid];
+        delete players[socketid];
     }
 };
 
@@ -334,12 +349,14 @@ const gameLoop = () => setInterval(() => {
         }
 
         const data = minify();
-        io.of('/').emit('sync', data);
+        
 
         while (playersWhoNeedInitialData.length > 0) {
             const id = playersWhoNeedInitialData.pop();
+            
             io.to(id).emit('initGame', data);
         }
+        io.of('/').emit('sync', data);
         freePlayers();
 
     } else if (gameStatus === status.waitingForPlayers){
