@@ -121,6 +121,11 @@ angular
                     //scope.$digest();
                     ctrl.ball.draw(ctx);
                     drawPlayers();
+
+                    if(!ctrl.playerId){
+                        
+                        ctx.fillText('Audience Mode', 100, 100);
+                    }
                 };
 
                 const gameLoop = function() {

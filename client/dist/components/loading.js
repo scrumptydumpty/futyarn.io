@@ -45,7 +45,7 @@ angular.module('app')
         function randomColor(colors) {
             return colors[Math.floor(Math.random() * colors.length)];
         }
-
+        this.numPlayersConnected = 0;
         // Sets all of the methods for each Particle
         function Particle(x, y, radius, color) {
             this.x = x;
@@ -78,6 +78,8 @@ angular.module('app')
                 this.draw(lastPoint);
             };
 
+          
+
             this.draw = function(lastPoint) {
                 ctx.beginPath();
                 ctx.strokeStyle = this.color;
@@ -102,7 +104,7 @@ angular.module('app')
                 particles.push(new Particle(canvas.width/2, canvas.height/2, radius, randomColor(colorArray)));
             }  
         }
-
+        const self = this;
         function animate() {
             requestAnimationFrame(animate);
             // Rectangle is drawn on top of circles each time animate loop is run
@@ -111,6 +113,9 @@ angular.module('app')
             particles.forEach(particle => {
                 particle.update();
             });
+            ctx.fillStyle = 'rgba(0,0,0,1)';
+       
+            ctx.fillText(`Waitng for Players: ${self.numPlayersConnected}/4 Connected`, 300, 50);
         }
 
         init();
@@ -122,12 +127,12 @@ angular.module('app')
     {
         return {
             restrict : 'A',
-
+            
             link : (scope, element, attrs, controller) =>
             {
                 var ctrl = scope.$ctrl;
                 console.log(ctrl.loaded);
-                ctrl.socket = io.connect('http://52:15:166:98:1337');
+                ctrl.socket = io.connect();
                 ctrl.socket.on('initGame',() => {
                     ctrl.toggleLoaded();
                     
@@ -140,6 +145,11 @@ angular.module('app')
                     console.log('submitting random hash',ctrl.randomHash);
                     ctrl.socket.emit('credentials', { randomHash: ctrl.randomHash });
                 }, 500);
+
+
+                ctrl.socket.on('connectedcount', (numplayers)=>{
+                    ctrl.numPlayersConnected = numplayers;
+                });
 
                 ctrl.socket.on('credentialsVerified', () => {
                     clearInterval(shouldSendCredentials);
