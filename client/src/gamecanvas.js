@@ -236,13 +236,13 @@ angular
                     ctrl.score = score;
                     console.log(score);
                     for (let player of players) {
-                        const { rotation, team, id, x, y, user_id } = player;
+                        const { rotation, team, id, x, y, user_id, goals } = player;
                         if (!ctrl.players[id]) {
                             ctrl.players[id] = new Player(team, id, user_id, username);
                             const img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;
                             ctrl.players[id].generateCanvas(img);
                         }
-
+                        ctrl.players[id].goals = goals;
                         ctrl.players[id].setPos(x, y, rotation);
                         currplayers.push(id);
                     }

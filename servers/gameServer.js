@@ -36,8 +36,8 @@ const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');
     const miniPlayers = activePlayers.map(id=> players[id]).map(
-        ({ rotation, team, id, x, y, kicking, username, user_id }) => {
-            return { rotation, team, id, x, y, kicking, username, user_id };
+        ({ rotation, team, id, x, y, kicking, username, user_id, goals }) => {
+            return { rotation, team, id, x, y, kicking, username, user_id, goals };
         }
     );
 
