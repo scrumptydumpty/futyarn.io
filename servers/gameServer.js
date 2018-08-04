@@ -71,6 +71,12 @@ io.on('connection', function(socket)
         audienceQueue.push(playerId);
         console.log('user ', socket.user_id, 'joined the game');
 
+        if (gameStatus === status.active) {
+            console.log('sending active game data to user');
+            playersWhoNeedInitialData.push(playerId);
+        }
+        
+
 
     });
 
@@ -126,10 +132,6 @@ const addPlayerFromQueue = (socketId)=>{
     io.to(socketId).emit('you', { socketId });
     console.log('added new player to game');
 
-    if (gameStatus === status.active) {
-        console.log('sending active game data to user');
-        playersWhoNeedInitialData.push(socketId);
-    }
 };
 
 

@@ -253,7 +253,7 @@ angular
 
                 ctrl.socket.on('sync', data => {
                     const currplayers = [];
-                    const { players, score, username} = data;
+                    const { players, score} = data;
                     ctrl.score = score;
        
                     for (let player of players) {
@@ -306,8 +306,7 @@ angular
                         // rotate 45 degrees clockwise
                         ctrl.players[id].canvas = playercanvas;
                     }
-                    console.log('players', ctrl.players);
-                });
+                    console.log('players', ctrl.players);   });
 
                 //call the main game loop
                 const waitForStart = setInterval(() => {
