@@ -144,6 +144,8 @@ angular.module('app')
                 ctrl.socket.on('credentialsVerified', () => {
                     clearInterval(shouldSendCredentials);
                     console.log('verified credentials!');
+                    console.log(ctrl.socket);
+                    ctrl.socket.emit('joingame');
                 });
 
             }

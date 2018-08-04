@@ -20,7 +20,7 @@ pgClient.once('open', () =>
 // db is queried to insert the session, user_id, and username into the sessions table
 // note: for various endpoints, active session is verified via verifySession function before being allowed to continue
 const storeSession = (session, user_id, username, callback) => {
-    console.log(`storeSession fired for username: ${username}, session: ${session}`);
+    //console.log(`storeSession fired for username: ${username}, session: ${session}`);
     let storeSessionQuery = `INSERT INTO sessions (session, user_id, username) VALUES ('${session}', ${user_id}, '${username}');`;
     pgClient.query(storeSessionQuery, (err, results/*, fields*/) => {
         if (err) {
@@ -28,7 +28,7 @@ const storeSession = (session, user_id, username, callback) => {
             console.log(err);
             callback(err, null);
         } else {
-            console.log('storeSession completed, stored session: ', session);
+            //console.log('storeSession completed, stored session: ', session);
             callback(null, results);
         }
     });
@@ -40,7 +40,7 @@ const storeSession = (session, user_id, username, callback) => {
     // if yes, user is in an active session and is allowed to continue
     // if no, user is asked to login or sign up
 const verifySession = (session, callback) => {
-    console.log(`verifySession fired session: ${session}`);
+    //console.log(`verifySession fired session: ${session}`);
     let verifySessionQuery = `SELECT * FROM sessions WHERE session = '${session}';`;
     pgClient.query(verifySessionQuery, (err, results/*, fields*/) => {
         if (err) {
@@ -48,7 +48,7 @@ const verifySession = (session, callback) => {
             console.log(err);
             callback(err, null);
         } else {
-            console.log('verifySession completed, verified session: ', session);
+            //console.log('verifySession completed, verified session: ', session);
             const data = results.rows[0];
             callback(null, data);
         }
@@ -59,7 +59,7 @@ const verifySession = (session, callback) => {
 // removes session from the sessions table
 // this ends the active session for the user becasue the user can no longer be authorized
 const removeSession = (session, callback) => {
-    console.log(`removeSession fired for session: ${session}`);
+    //console.log(`removeSession fired for session: ${session}`);
     let removeSessionQuery = `DELETE FROM sessions WHERE session = '${session}';`;
     pgClient.query(removeSessionQuery, (err, results/*, fields*/) => {
         if (err) {
@@ -67,7 +67,7 @@ const removeSession = (session, callback) => {
             console.log(err);
             callback(err, null);
         } else {
-            console.log('removeSession completed: removed session: ', session);
+            //console.log('removeSession completed: removed session: ', session);
             callback(null, results);
         }
     });
@@ -115,7 +115,7 @@ const authenticateUser = (username, callback) =>
             callback(err, null);
         } else {
             const foundUser = results.rows[0];
-            console.log('authenticateUser results: ', foundUser);
+            console.log('authenticateUser success',username);
             callback(null, foundUser);
         }
     });
@@ -137,10 +137,10 @@ const getUserInfo = (method, identifier, callback) =>
 {
     let getUserInfoQuery;
     if (method === 'username') {
-        console.log('getUserInfo function fired, username: ', identifier);
+        //console.log('getUserInfo function fired, username: ', identifier);
         getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE username = '${identifier}';`;
     } else if (method === 'id') {
-        console.log('getUserInfo function fired, id: ', identifier);
+        //console.log('getUserInfo function fired, id: ', identifier);
         getUserInfoQuery = `SELECT user_id, username, wins, losses, games_played, goals_made FROM players WHERE user_id = ${identifier};`;
     }
     pgClient.query(getUserInfoQuery, (err, results/*, fields*/) => {
@@ -150,7 +150,7 @@ const getUserInfo = (method, identifier, callback) =>
             callback(err, null);
         } else {
             const foundUser = results.rows[0];
-            console.log('getUserInfo results: ', foundUser);
+            //console.log('getUserInfo results: ', foundUser);
             callback(null, foundUser);
         }
     });
@@ -197,7 +197,7 @@ const getLeaderboards = (callback) =>
             console.log(err);
             callback(err. null);
         } else {
-            console.log('getLeaderboardQuery results:', results);
+            //console.log('getLeaderboardQuery results:', results);
             const topTenPlayers = results.rows;
             callback(null, topTenPlayers);
         }
