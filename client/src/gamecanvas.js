@@ -13,7 +13,11 @@ angular
         this.gameLoop = null;
         this.animationLoop = null;
         this.canvas;
-
+        this.gameOver = false;
+        this.gameSummaryData = {
+            orange: [],
+            black: []
+        };
         this.lastDraw;
 
         //map of keycodes to whether or not they're currently pressed
@@ -213,9 +217,22 @@ angular
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '100px Arial';
 
-                    ctx.fillText(`Team ${teamname} Won!!!`,400,300);
+                    for (let player in ctrl.players) {
+                        let thisGuy = ctrl.players[player];
+                        let playerObj = {
+                            goals: thisGuy.goals,
+                            username: thisGuy.username,
+                            id: thisGuy.user_id,
+                            team: thisGuy.team
+                        };
+                        if (thisGuy.team === 'orange') {
+                            ctrl.gameSummaryData.orange.push(playerObj);
+                        } else if (thisGuy.team === 'black') {
+                            ctrl.gameSummaryData.black.push(playerObj);
+                        }
+                    }
 
-
+                    ctrl.gameOver = true;                    
                     clearInterval(ctrl.gameLoop);
                     clearInterval(ctrl.animationLoop);
                     ctrl.socket.disconnect(true);

@@ -1,6 +1,29 @@
 <div id="gcbox">
     <div ng-if="$ctrl.userIsNotLoggedIn">redirect if user does not have a random hash to the login screen!</div>
     <div ng-if="!$ctrl.userIsNotLoggedIn">
+        <div ng-if="$ctrl.gameOver">
+            <h2><strong>Game Stats</strong></h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Orange</th>
+                    <th>Black</th>
+                  </tr>
+                </thead>
+                <tbody align="right">
+                  <tr ng-repeat="player in $ctrl.gameSummaryData.orange">
+                    <td>
+                        <strong>{{player.username}}</strong> — {{player.goals}} goals
+                    </td>
+                  </tr>
+                  <tr ng-repeat="player in $ctrl.gameSummaryData.black">
+                        <td>
+                            <strong>{{player.username}}</strong> — {{player.goals}} goals
+                        </td>
+                      </tr>
+                </tbody>
+              </table>
+        </div>
         <canvas id="maincanvas" height="650" width="1200" ng-mousemove="$ctrl.mouseoverHandler($event)" anim></canvas>
     </div>
 </div>
