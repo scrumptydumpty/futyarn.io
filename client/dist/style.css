@@ -30,6 +30,15 @@ html {
     border-radius: 25px;
   }
   
+  .winning-team {
+    text-align: center;
+    font-size: 80px;
+    color: white;
+    font-family: 'Graduate', cursive;
+    border-radius: 25px;
+    text-shadow: 2px 2px black;
+  }
+
   .info {
     height: cover;
     margin:0;
