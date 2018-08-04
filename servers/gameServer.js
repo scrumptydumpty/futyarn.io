@@ -10,9 +10,10 @@ const { hashUserConnectionDict } = require('./routes.js');
 var port = 1337;
 
 // GAME STATE LIVES HERE
+let socketIdUsernameDict = {};
 let score = {0:0, 1:0};
 let maxnumplayers = 4;
-let minnumplayers = 2;
+let minnumplayers = 1;
 let winningGoalCount = 3;
 let ball = null;
 let computingGameLoop = false; //prevent one loop from running over another 
@@ -34,8 +35,8 @@ const minify = () => {
     // array list of players
     //console.log(activePlayers,'activeplayers');
     const miniPlayers = activePlayers.map(id=> players[id]).map(
-        ({ rotation, team, id, x, y, kicking }) => {
-            return { rotation, team, id, x, y, kicking };
+        ({ rotation, team, id, x, y, kicking, username }) => {
+            return { rotation, team, id, x, y, kicking, username };
         }
     );
 
@@ -53,7 +54,8 @@ io.on('connection', function(socket)
         
         const {randomHash} = msg;
         if(hashUserConnectionDict[randomHash]){
-            socket.user_id = hashUserConnectionDict[randomHash];
+            socket.user_id = hashUserConnectionDict[randomHash].user_id;
+            socketIdUsernameDict[socket.id] = hashUserConnectionDict[randomHash].username;
             console.log('user',socket.user_id,'connected to game server');
             socket.emit('credentialsVerified');
         }
@@ -106,8 +108,8 @@ const addPlayerFromQueue = (playerId)=>{
 
     // toggle team for next person who joins
     teamToggle = (teamToggle+1) % 2;
-
-    const newplayer = new Player(playerTeam, playerId);
+    const username = socketIdUsernameDict[playerId];
+    const newplayer = new Player(playerTeam, playerId, username);
     players[playerId] = newplayer;
     activePlayers.push(playerId);
     io.to(playerId).emit('you', { playerId });

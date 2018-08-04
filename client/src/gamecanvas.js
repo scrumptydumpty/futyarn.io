@@ -228,13 +228,13 @@ angular
 
                 ctrl.socket.on('sync', data => {
                     const currplayers = [];
-                    const { players, score } = data;
+                    const { players, score, username} = data;
                     ctrl.score = score;
 
                     for (let player of players) {
                         const { rotation, team, id, x, y } = player;
                         if (!ctrl.players[id]) {
-                            ctrl.players[id] = new Player(team, id);
+                            ctrl.players[id] = new Player(team, id, username);
                             const img = team === 1 ? ctrl.img1 : ctrl.img2;
                             ctrl.players[id].generateCanvas(img);
                         }
@@ -268,8 +268,8 @@ angular
                     shouldStart = true;
 
                     for (let player of players) {
-                        const { rotation, team, id, x, y } = player;
-                        ctrl.players[id] = new Player(team, id);
+                        const { rotation, username, team, id, x, y } = player;
+                        ctrl.players[id] = new Player(team, id,username);
                         ctrl.players[id].setPos(x, y, rotation);
 
                         ctrl.players[id].img = team === 1 ? ctrl.img1 : ctrl.img2;
