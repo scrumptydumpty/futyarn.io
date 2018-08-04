@@ -114,8 +114,8 @@ angular.module('app')
                 particle.update();
             });
             ctx.fillStyle = 'rgba(0,0,0,1)';
-       
-            ctx.fillText(`Waitng for Players: ${self.numPlayersConnected}/4 Connected`, 300, 50);
+            ctx.font = '40px Courier';
+            ctx.fillText(`Waiting for Players: ${self.numPlayersConnected}/4 Connected`, 300, 200);
         }
 
         init();
