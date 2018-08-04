@@ -1,11 +1,11 @@
 const { TICK, SPEED, WIDTH, HEIGHT} = require('./gamelogic');
 
 class Player {
-    constructor(team,id , x = 200,y = 200,rotation = 0){
+    constructor(team,id , x = 200,y,rotation = 0){
         this.team = team;
         this.id = id;
         this.x = x;
-        this.y = y;
+        this.y = !team? 200: 600; // team 0 on the left, team 1 on the right
         this.canvas = null; // client side used
         this.img = null; //client side used
         this.rotation = rotation; //degrees
