@@ -13,7 +13,11 @@ angular
         this.gameLoop = null;
         this.animationLoop = null;
         this.canvas;
-
+        this.gameOver = false;
+        this.gameSummaryData = {
+            orange: [],
+            black: []
+        };
         this.lastDraw;
 
         //map of keycodes to whether or not they're currently pressed
@@ -95,7 +99,10 @@ angular
                     b.handleWallBounce();
 
                     // check for player out of bounds issues
-                    ctrl.players[ctrl.socketId].handleCollisions();
+                    if(ctrl.socketId){
+                        ctrl.players[ctrl.socketId].handleCollisions();
+                    }
+                    
                 };
 
                 //main draw loop (all draw fucntions live in here)
@@ -126,21 +133,26 @@ angular
 
                     if(!ctrl.socketId){
                         
-                        ctx.fillText('Audience Mode', 100, 100);
+                        ctx.fillText('Audience Mode', 300, 100);
                     }
                 };
 
                 const gameLoop = function() {
-                    const keyPressed = Object.keys(ctrl.keysPressed).reduce(
-                        (m, i) => m || ctrl.keysPressed[i],
-                        false
-                    );
-                    if (ctrl.socketId && keyPressed) {
-                        alterPlayer();
-                        ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                    try{
+                        const keyPressed = Object.keys(ctrl.keysPressed).reduce(
+                            (m, i) => m || ctrl.keysPressed[i],
+                            false
+                        );
+                        if (ctrl.socketId && keyPressed) {
+                            alterPlayer();
+                            ctrl.players[ctrl.socketId].transmit(ctrl.socket);
+                        }
+                        ctrl.ball.move();
+                        handleCollisions();
+                    }catch(err){
+                        console.log(err);
                     }
-                    ctrl.ball.move();
-                    handleCollisions();
+                    
                 };
 
                 var drawPlayers = function() {
@@ -212,10 +224,22 @@ angular
                    
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.font = '100px Arial';
-
-                    ctx.fillText(`Team ${teamname} Won!!!`,400,300);
-
-
+                    ctrl.gameSummaryData.winningTeam = teamname;
+                    for (let player in ctrl.players) {
+                        let thisGuy = ctrl.players[player];
+                        let playerObj = {
+                            goals: thisGuy.goals,
+                            username: thisGuy.username,
+                            id: thisGuy.user_id,
+                            team: thisGuy.team
+                        };
+                        if (thisGuy.team === 'orange') {
+                            ctrl.gameSummaryData.orange.push(playerObj);
+                        } else if (thisGuy.team === 'black') {
+                            ctrl.gameSummaryData.black.push(playerObj);
+                        }
+                    }
+                    ctrl.gameOver = true;                    
                     clearInterval(ctrl.gameLoop);
                     clearInterval(ctrl.animationLoop);
                     ctrl.socket.disconnect(true);
@@ -225,17 +249,17 @@ angular
                         ctrl.showGamePage = false;
                         ctrl.loaded = false;
                         scope.$digest();
-                    }, 3000);
+                    }, 4000);
                     
                 });
 
                 ctrl.socket.on('sync', data => {
                     const currplayers = [];
-                    const { players, score, username} = data;
+                    const { players, score} = data;
                     ctrl.score = score;
        
                     for (let player of players) {
-                        const { rotation, team, id, x, y, user_id, goals } = player;
+                        const { rotation, team, id, x, y, user_id, goals, username } = player;
                         if (!ctrl.players[id]) {
                             ctrl.players[id] = new Player(team, id, user_id, username);
                             const img = team === 'black' ? ctrl.blackCatImg : ctrl.orangeCatImg;
@@ -284,8 +308,7 @@ angular
                         // rotate 45 degrees clockwise
                         ctrl.players[id].canvas = playercanvas;
                     }
-                    console.log('players', ctrl.players);
-                });
+                    console.log('players', ctrl.players);   });
 
                 //call the main game loop
                 const waitForStart = setInterval(() => {

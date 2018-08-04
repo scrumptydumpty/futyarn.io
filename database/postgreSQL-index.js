@@ -109,13 +109,13 @@ const authenticateUser = (username, callback) =>
     console.log('authenticateUser function fired, username: ', username);
     authenticateUserQuery = `SELECT * FROM players WHERE username = '${username}';`;
     pgClient.query(authenticateUserQuery, (err, results/*, fields*/) => {
-        if (err) {
+        if (err || results.rows[0]===undefined) {
             console.log('error: authenticateUser failed');
             console.log(err);
             callback(err, null);
         } else {
             const foundUser = results.rows[0];
-            console.log('authenticateUser success',username);
+            console.log('authenticateUser success',foundUser);
             callback(null, foundUser);
         }
     });

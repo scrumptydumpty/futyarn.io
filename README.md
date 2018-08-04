@@ -1,4 +1,4 @@
-# Project Name
+# Futyarn
 
 > Pithy project description
 
@@ -7,6 +7,9 @@
   - __Cat Priority Officer__: Clayton Lin
   - __Snarf Master__: Elyse Vest  
   - __Cat Technical Officer__: Big Rusty
+  - __Socket Czar__: Scott Grimes
+  - __DevOps Wizard__: Brian Hickey
+  - __Auth Commando__: Nicholas Keeling
   - __Vice Presidents of Development__: Errybody 
 
 ## Table of Contents

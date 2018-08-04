@@ -69,8 +69,8 @@ class Player {
             this.x = WIDTH-80;
         }
         // top
-        if (this.y < -20){
-            this.y = -20;
+        if (this.y < -30){
+            this.y = -30;
         }
         // bottom
         if(this.y > (HEIGHT - 80)) {
