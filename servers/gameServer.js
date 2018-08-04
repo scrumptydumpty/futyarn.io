@@ -297,8 +297,13 @@ const checkForEnd = ()=>{
 const checkForDisconnects = () => {
     while(disconnectedPlayers.length>0){
         const socketid = disconnectedPlayers.pop();
-        const username = socketIdToUserObject[socketid].username;
-        console.log('disconnecting', username);
+        if (socketIdToUserObject[socketid]) {
+            const username = socketIdToUserObject[socketid].username;
+            console.log('disconnecting', username);
+        }else{
+            console.log('disconnecting non-credentialed connection', socketid);
+        } 
+        
         activePlayers.splice(activePlayers.indexOf(socketid), 1 );
         delete playerMovementQueue[socketid];
         delete players[socketid];
