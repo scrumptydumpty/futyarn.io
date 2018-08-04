@@ -161,6 +161,7 @@ const handleCollisions = () => {
         console.log(teamScored, 'teamScored', playerWhoScored.team, 'players team');
         if (playerWhoScored && teamScored === playerWhoScored.team) { // teams are backwards! hacky fix
             playerWhoScored.goals++;
+            updateUserInfo({user_id: playerWhoScored.user_id, goal:true}, ()=>{});
         }
         score[teamScored]++;
         ball.reset();

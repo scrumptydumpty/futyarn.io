@@ -158,12 +158,19 @@ const getUserInfo = (method, identifier, callback) =>
 
 
 // FUNCTION FILL_ME_IN
-const updateUserInfo = ({user, wins, losses}, callback) => {
-    let userUpdate = `
-    UPDATE players
-    SET wins = wins + ${wins}, losses = losses + ${losses} , games_played = games_played + 1
-    WHERE user_id = ${user}`;
-
+const updateUserInfo = ({user, wins, losses, goal}, callback) => {
+    let userUpdate = '';
+    if(goal) {
+        userUpdate = `
+        Update players
+        SET goals_made = goals_made + 1
+        WHERE user_id = ${user}`;
+    } else {
+        userUpdate = `
+        UPDATE players
+        SET wins = wins + ${wins}, losses = losses + ${losses} , games_played = games_played + 1
+        WHERE user_id = ${user}`;
+    }
     pgClient.query(userUpdate, (err, results) => {
         if (err) {
             console.log('error: updateUserInfo failed');
